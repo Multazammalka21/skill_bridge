@@ -1,122 +1,61 @@
+{{-- Visual World: Image Quiz — NO AUDIO, WCAG AA contrast, 80×80px buttons --}}
 @props(['pertanyaan', 'pilihan'])
 
-<div x-data="imageQuiz()" class="image-quiz" aria-live="polite">
+<div x-data="imageQuiz()" class="image-quiz" role="region" aria-label="Kuis gambar" aria-live="polite">
     <style>
-        .image-quiz {
-            max-width: 100%;
-            margin: 2rem auto;
-        }
-        .image-quiz .question {
-            font-size: 1.5rem;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .image-quiz .grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(140px, 1fr));
-            gap: 1rem;
-        }
-        .image-quiz .card {
-            position: relative;
-            border: 2px solid transparent;
-            border-radius: .5rem;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform .2s ease;
-        }
-        .image-quiz .card img {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-        }
-        .image-quiz .card .label {
-            padding: .5rem;
-            text-align: center;
-            font-weight: 500;
-        }
-        .image-quiz .card.benar {
-            border-color: #28a745; /* green */
-        }
-        .image-quiz .card.salah {
-            border-color: #dc3545; /* red */
-        }
-        .shake {
-            animation: shake 0.5s;
-        }
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
-        }
+        .image-quiz{max-width:100%;margin:2rem auto;padding:1rem;background:#fff;color:#1a1a2e}
+        .image-quiz .question{font-size:1.5rem;font-weight:700;text-align:center;margin-bottom:1.5rem;color:#1a1a2e}
+        .image-quiz .grid{display:grid;grid-template-columns:repeat(2,minmax(140px,1fr));gap:1rem}
+        .image-quiz .card{position:relative;border:3px solid #e2e8f0;border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s;background:#f8fafc;min-height:80px}
+        .image-quiz .card:hover,.image-quiz .card:focus-visible{transform:translateY(-2px);border-color:#2563eb;outline:none}
+        .image-quiz .card img{width:100%;height:140px;object-fit:cover}
+        .image-quiz .card .label{padding:.75rem;text-align:center;font-weight:600;color:#2d2d4e;font-size:1rem}
+        .image-quiz .card.benar{border-color:#16a34a;background:#f0fdf4}
+        .image-quiz .card.salah{border-color:#dc2626;background:#fef2f2}
+        .image-quiz .shake{animation:iq-shake .5s}
+        @keyframes iq-shake{0%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-5px)}100%{transform:translateX(0)}}
+        .image-quiz .feedback{text-align:center;font-size:1.25rem;font-weight:700;margin-top:1rem;min-height:2rem;color:#1a1a2e}
+        .image-quiz .nav-btn{min-width:80px;min-height:80px;padding:1rem 2rem;font-size:1.125rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#16a34a,#15803d);border:none;border-radius:12px;cursor:pointer;transition:transform .15s,box-shadow .2s;margin-top:1.5rem;display:block;margin-left:auto;margin-right:auto;font-family:inherit}
+        .image-quiz .nav-btn:hover,.image-quiz .nav-btn:focus-visible{transform:translateY(-2px);box-shadow:0 6px 20px rgba(22,163,74,.3);outline:3px solid #4ade80;outline-offset:2px}
     </style>
 
-    <div class="question" aria-label="Pertanyaan kuis">{{ $pertanyaan }}</div>
+    <div class="question" aria-label="Pertanyaan kuis gambar">{{ $pertanyaan }}</div>
 
-    <div class="grid" aria-label="Pilihan gambar kuis">
+    <div class="grid" role="radiogroup" aria-label="Pilihan jawaban kuis gambar">
         @foreach($pilihan as $index => $item)
             <div
                 class="card"
+                role="radio"
+                tabindex="0"
                 :class="dipilih === {{ $index }} ? (status === 'benar' ? 'benar' : 'salah') : ''"
                 @click="pilih({{ $index }}, {{ $item['benar'] ? 'true' : 'false' }})"
+                @keydown.enter="pilih({{ $index }}, {{ $item['benar'] ? 'true' : 'false' }})"
+                @keydown.space.prevent="pilih({{ $index }}, {{ $item['benar'] ? 'true' : 'false' }})"
                 x-ref="card{{ $index }}"
-                aria-label="Pilihan {{ $index + 1 }}: {{ $item['label'] }}, {{ $item['benar'] ? 'Jawaban benar' : 'Jawaban salah' }}"
+                aria-label="Pilihan {{ $index + 1 }}: {{ $item['label'] }}"
+                :aria-checked="dipilih === {{ $index }} ? 'true' : 'false'"
             >
-                <img src="{{ $item['gambar'] }}" alt="{{ $item['label'] }}" />
+                <img src="{{ $item['gambar'] }}" alt="{{ $item['label'] }}" loading="lazy" />
                 <div class="label">{{ $item['label'] }}</div>
             </div>
         @endforeach
     </div>
 
-    <!-- Lottie mascot placeholder; will be injected via script when needed -->
-    <div x-ref="lottieMascot" style="position:absolute; top:0; left:0; width:150px; height:150px; pointer-events:none;"></div>
+    <p class="feedback" x-text="feedbackMsg" aria-live="assertive" aria-label="Hasil jawaban kuis"></p>
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-    <script>
-        function imageQuiz() {
-            return {
-                dipilih: null,
-                status: null,
-                async pilih(index, benar) {
-                    this.dipilih = index;
-                    this.status = benar ? 'benar' : 'salah';
-                    const cardEl = this.$refs['card' + index];
-                    if (benar) {
-                        // green border already applied via class binding
-                        // confetti
-                        confetti({
-                            particleCount: 80,
-                            spread: 70,
-                            origin: { y: 0.6 }
-                        });
-                        // mascot Lottie joget (happy)
-                        this.playMascot('https://assets9.lottiefiles.com/packages/lf20_jcikwtzn.json');
-                        setTimeout(() => {
-                            this.$dispatch('quiz-selesai');
-                        }, 1500);
-                    } else {
-                        // add shake animation
-                        cardEl.classList.add('shake');
-                        setTimeout(() => cardEl.classList.remove('shake'), 1000);
-                        // mascot Lottie geleng kepala (sad)
-                        this.playMascot('https://assets9.lottiefiles.com/packages/lf20_ka0r6zkc.json');
-                    }
-                },
-                playMascot(url) {
-                    const container = this.$refs.lottieMascot;
-                    container.innerHTML = '';
-                    lottie.loadAnimation({
-                        container,
-                        renderer: 'svg',
-                        loop: false,
-                        autoplay: true,
-                        path: url
-                    });
-                }
-            };
-        }
-    </script>
+    <button
+        class="nav-btn"
+        x-show="selesai"
+        @click="$dispatch('quiz-selesai')"
+        aria-label="Lanjut setelah kuis gambar selesai"
+        id="btn-image-quiz-next"
+    >Lanjut →</button>
 </div>
+
+<script>
+function imageQuiz(){return{dipilih:null,status:null,selesai:false,feedbackMsg:'',
+pilih(i,benar){if(this.selesai)return;this.dipilih=i;this.status=benar?'benar':'salah';
+if(benar){this.feedbackMsg='✅ Benar! Hebat!';this.selesai=true;
+if(window.confetti)confetti({particleCount:80,spread:70,origin:{y:.6}})}
+else{this.feedbackMsg='❌ Coba lagi!';const c=this.$refs['card'+i];if(c){c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),600)}}}}}
+</script>
