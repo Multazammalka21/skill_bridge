@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChildController;
 use App\Http\Controllers\Api\LessonController;
+use App\Http\Controllers\Api\ModuleController;
 use App\Http\Controllers\Api\ParentDashboardController;
 use App\Http\Controllers\Api\QuizController;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Parent Dashboard
     Route::get('/dashboard', [ParentDashboardController::class, 'index']);
     Route::get('/dashboard/child/{child}', [ParentDashboardController::class, 'childProgress']);
+
+    // Modules (Repository Pattern)
+    Route::get('/modules', [ModuleController::class, 'index']);
 
     // Lessons (lazy load: index = metadata only, show = full media)
     Route::get('/lessons', [LessonController::class, 'index']);

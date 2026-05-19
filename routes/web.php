@@ -21,3 +21,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [ParentDashboardWebController::class, 'index'])->name('dashboard');
 });
 
+// ─── Play Routes (Token/Cookie Auth) ─────────────────────────────────
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/play/tunanetra', function () {
+        return view('play.tunanetra');
+    })->name('play.tunanetra');
+
+    Route::get('/play/tunarungu', function () {
+        return view('play.tunarungu');
+    })->name('play.tunarungu');
+});
+

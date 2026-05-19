@@ -61,8 +61,7 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Login berhasil.',
             'user' => $user,
-            'token' => $token,
-        ]);
+        ])->cookie('jwt_token', $token, 60 * 24, '/', null, false, true); // httpOnly = true
     }
 
     /**
