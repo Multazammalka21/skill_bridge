@@ -8,86 +8,59 @@
         {{ \Illuminate\Support\Js::from($jawabanBenar) }},
         {{ $lessonId }}
     )"
-    class="voice-quiz"
+    class="voice-quiz surface-card animate-slide-up"
     role="region"
     aria-label="Kuis suara untuk pelajaran"
     aria-live="polite"
 >
     <style>
         .voice-quiz {
-            max-width: 100%;
-            padding: 1.5rem;
+            width: 100%;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
-        .voice-quiz .pulse {
-            width: 3rem;
-            height: 3rem;
-            background: hsla(200,70%,60%,0.6);
+        .mic-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 1rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            background: var(--surface);
             border-radius: 50%;
-            animation: vq-pulse 1.2s infinite;
-            margin: .5rem auto;
-        }
-        @keyframes vq-pulse {
-            0%   { transform: scale(1); opacity: .7; }
-            50%  { transform: scale(1.3); opacity: 1; }
-            100% { transform: scale(1); opacity: .7; }
+            z-index: 1;
         }
         .voice-quiz .msg {
-            font-size: 1.125rem;
+            font-size: 1.5rem;
             text-align: center;
-            margin-top: .75rem;
-            min-height: 1.5rem;
-        }
-        .voice-quiz .big-button {
-            /* ENFORCED: minimum 80×80px for nav buttons */
-            min-width: 80px;
-            min-height: 80px;
-            padding: 1rem 1.5rem;
             margin-top: 1rem;
-            font-size: 1rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, hsl(140,55%,45%), hsl(140,55%,35%));
-            color: #fff;
-            border: none;
-            border-radius: .75rem;
-            cursor: pointer;
-            transition: transform .15s ease, box-shadow .2s ease;
-            text-align: center;
-            font-family: inherit;
-        }
-        .voice-quiz .big-button:hover,
-        .voice-quiz .big-button:focus-visible {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,.2);
-            outline: 3px solid hsl(140, 55%, 60%);
-            outline-offset: 2px;
-        }
-        .voice-quiz .big-button.secondary {
-            background: linear-gradient(135deg, hsl(210,70%,55%), hsl(210,70%,40%));
-        }
-        .voice-quiz .big-button.secondary:focus-visible {
-            outline-color: hsl(210, 70%, 70%);
+            min-height: 2rem;
+            color: var(--text);
+            font-weight: bold;
         }
         .voice-quiz .permission-modal {
-            background: #fff;
-            border: 2px solid hsl(210,70%,50%);
-            border-radius: .75rem;
-            padding: 1.5rem;
-            max-width: 360px;
+            background: var(--surface);
+            border: 2px solid rgba(155, 114, 247, 0.5);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 400px;
             margin: 1rem auto;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,.3);
         }
         .voice-quiz .permission-modal h2 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
         }
         .voice-quiz .permission-modal p {
-            margin-bottom: 1rem;
-            color: #555;
+            margin-bottom: 1.5rem;
+            color: var(--text-muted);
+            font-size: 1.25rem;
         }
     </style>
 
@@ -97,7 +70,7 @@
             <h2 id="perm-title">Izin Mikrofon</h2>
             <p id="perm-desc">Untuk kuis suara, aplikasi membutuhkan izin mikrofon. Tekan tombol berikut untuk memberi izin.</p>
             <button
-                class="big-button"
+                class="btn"
                 @click="requestPermission()"
                 aria-label="Berikan izin akses mikrofon untuk kuis suara"
                 id="btn-mic-permission"
@@ -106,12 +79,10 @@
     </template>
 
     <!-- Pulse while listening -->
-    <div
-        x-show="listening"
-        class="pulse"
-        role="status"
-        aria-label="Mikrofon aktif, silakan berbicara sekarang"
-    ></div>
+    <div x-show="listening" class="mic-container" role="status" aria-label="Mikrofon aktif, silakan berbicara sekarang">
+        🎤
+        <div class="mic-ring"></div>
+    </div>
 
     <p class="msg"
         x-text="message"
@@ -121,7 +92,7 @@
 
     <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:0.75rem;">
         <button
-            class="big-button secondary"
+            class="btn" style="background: transparent; border: 2px solid rgba(155, 114, 247, 0.5);"
             x-show="!listening && permissionGranted && !finished"
             @click="startRecognition()"
             aria-label="Ulangi mendengarkan jawaban suara"
@@ -129,7 +100,7 @@
         >🎤 Bicara Lagi</button>
 
         <button
-            class="big-button"
+            class="btn"
             x-show="finished"
             @click="$dispatch('next-lesson')"
             aria-label="Lanjut ke pelajaran berikutnya setelah kuis selesai"

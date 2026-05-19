@@ -3,496 +3,322 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Masuk ke Dashboard Orang Tua - Skill Bridge. Pantau kemajuan belajar anak Anda.">
-    <title>Masuk - Skill Bridge Parent Portal</title>
+    <meta name="description" content="Masuk ke Skill Bridge - Dunia Petualangan Belajar">
+    <title>Masuk - Skill Bridge</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <!-- AlpineJS for state management (role selection) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        /* ─── Design System ─────────────────────────────────────────── */
         :root {
-            --bg-primary: #0f1117;
-            --bg-card: rgba(26, 29, 40, 0.75);
-            --border-subtle: rgba(255, 255, 255, 0.06);
-            --border-accent: rgba(99, 102, 241, 0.4);
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --accent-indigo: #818cf8;
-            --accent-violet: #a78bfa;
-            --accent-emerald: #34d399;
-            --gradient-primary: linear-gradient(135deg, #818cf8, #a78bfa);
-            --radius: 20px;
-            --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px var(--border-subtle);
-            --shadow-focus: 0 0 20px rgba(129, 140, 248, 0.25);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            /* General text colors */
+            --text-light: #ffffff;
+            --text-dark: #1a1a2e;
+            
+            /* Login specific colors */
+            --login-bg-1: #1a0b2e; /* Ungu gelap */
+            --login-bg-2: #0f172a; /* Biru tua */
+            --login-card-bg: rgba(255, 255, 255, 0.05);
+            --login-card-border: rgba(255, 255, 255, 0.1);
+            
+            /* Buttons */
+            --btn-child: #ff6b35;
+            --btn-child-shadow: rgba(255, 107, 53, 0.5);
+            --btn-child-hover: #ff8c5a;
+            
+            --btn-parent: #9b72f7;
+            --btn-parent-shadow: rgba(155, 114, 247, 0.5);
+            --btn-parent-hover: #b48fff;
         }
 
         body {
-            font-family: 'Inter', -apple-system, system-ui, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
             min-height: 100vh;
+            font-family: 'Fredoka', sans-serif;
+            background: radial-gradient(circle at top left, var(--login-bg-1), transparent 70%),
+                        radial-gradient(circle at bottom right, var(--login-bg-2), transparent 70%);
+            background-color: #0b071a;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden;
+            color: var(--text-light);
+            overflow: hidden;
             position: relative;
-            -webkit-font-smoothing: antialiased;
         }
 
-        /* ─── Animated BG ───────────────────────────────────────────── */
-        .bg-gradient {
-            position: fixed;
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Nunito', sans-serif;
+        }
+
+        /* Animated Mesh Background */
+        .bg-mesh {
+            position: absolute;
             inset: 0;
             z-index: 0;
             overflow: hidden;
-            pointer-events: none;
         }
-        .bg-gradient::before,
-        .bg-gradient::after {
+        .bg-mesh::before, .bg-mesh::after {
             content: '';
             position: absolute;
             border-radius: 50%;
-            filter: blur(130px);
-            opacity: 0.15;
-            animation: float 25s infinite ease-in-out;
+            filter: blur(100px);
+            opacity: 0.5;
+            animation: float 20s infinite alternate ease-in-out;
         }
-        .bg-gradient::before {
-            width: 600px;
-            height: 600px;
-            background: var(--accent-indigo);
-            top: -150px;
-            left: -100px;
+        .bg-mesh::before {
+            width: 50vw;
+            height: 50vw;
+            background: rgba(155, 114, 247, 0.2);
+            top: -10%;
+            left: -10%;
         }
-        .bg-gradient::after {
-            width: 500px;
-            height: 500px;
-            background: var(--accent-violet);
-            bottom: -150px;
-            right: -100px;
-            animation-delay: -12s;
-        }
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -40px) scale(1.08); }
-            66% { transform: translate(-30px, 30px) scale(0.92); }
+        .bg-mesh::after {
+            width: 60vw;
+            height: 60vw;
+            background: rgba(45, 111, 255, 0.2);
+            bottom: -20%;
+            right: -10%;
+            animation-delay: -10s;
         }
 
-        /* ─── Login Container ───────────────────────────────────────── */
-        .login-container {
-            width: 100%;
-            max-width: 440px;
-            padding: 1.5rem;
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(10%, 10%); }
+        }
+
+        /* Card Container */
+        .login-wrapper {
             position: relative;
-            z-index: 1;
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            z-index: 10;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .login-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: var(--radius);
-            padding: 2.75rem 2.25rem;
-            box-shadow: var(--shadow-card);
-            border: 1px solid var(--border-subtle);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient-primary);
-        }
-
-        /* ─── Header ────────────────────────────────────────────────── */
-        .brand-header {
+            background: var(--login-card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--login-card-border);
+            border-radius: 32px;
+            padding: 40px;
             text-align: center;
-            margin-bottom: 2rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .brand-logo {
-            display: inline-flex;
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(40px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mascot Placeholder */
+        .mascot-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .mascot {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            background: var(--gradient-primary);
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 1.25rem;
-            box-shadow: 0 8px 24px rgba(129, 140, 248, 0.3);
+            font-size: 40px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
+        .mascot.wulan { background: linear-gradient(135deg, #ff6b35, #ff8c5a); }
+        .mascot.sinar { background: linear-gradient(135deg, #9b72f7, #b48fff); }
 
-        .brand-title {
-            font-size: 1.5rem;
+        .title {
+            font-size: 32px;
             font-weight: 800;
-            background: var(--gradient-primary);
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #fff, #a7a9be);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.02em;
-            margin-bottom: 0.5rem;
         }
 
-        .brand-subtitle {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 500;
+        .subtitle {
+            font-size: 20px;
+            color: #a7a9be;
+            margin-bottom: 40px;
         }
 
-        /* ─── Form Elements ─────────────────────────────────────────── */
-        .form-group {
-            margin-bottom: 1.25rem;
-            position: relative;
-        }
-
-        .form-label {
+        /* Buttons */
+        .btn {
             display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 14px;
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            pointer-events: none;
-            transition: var(--transition);
-        }
-
-        .form-input {
             width: 100%;
-            padding: 12px 14px 12px 42px;
-            background: rgba(15, 17, 23, 0.6);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 0.95rem;
-            transition: var(--transition);
-            outline: none;
-        }
-
-        .form-input:focus {
-            border-color: var(--accent-indigo);
-            box-shadow: var(--shadow-focus);
-            background: rgba(15, 17, 23, 0.85);
-        }
-
-        .form-input:focus + .input-icon {
-            color: var(--accent-indigo);
-        }
-
-        /* Password Toggle */
-        .password-toggle {
-            position: absolute;
-            right: 14px;
-            background: none;
+            border-radius: 50px;
+            padding: 18px 36px;
+            font-size: 22px;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
             border: none;
-            color: var(--text-muted);
             cursor: pointer;
-            padding: 4px;
+            text-align: center;
+            color: #fff;
+            margin-bottom: 20px;
+            min-height: 80px;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
-            transition: var(--transition);
+            text-decoration: none;
         }
 
-        .password-toggle:hover {
-            color: var(--text-primary);
+        .btn-child {
+            background: var(--btn-child);
+            box-shadow: 0 6px 24px var(--btn-child-shadow);
+        }
+        .btn-child:hover {
+            background: var(--btn-child-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(255, 107, 53, 0.65);
         }
 
-        /* Remember & Forget */
-        .form-options {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 1.25rem 0 1.75rem 0;
-            font-size: 0.85rem;
+        .btn-parent {
+            background: var(--btn-parent);
+            box-shadow: 0 6px 24px var(--btn-parent-shadow);
+        }
+        .btn-parent:hover {
+            background: var(--btn-parent-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(155, 114, 247, 0.65);
         }
 
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-            user-select: none;
+        .btn-back {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.2);
+            font-size: 20px;
+            min-height: 60px;
+            box-shadow: none;
+            margin-top: 20px;
         }
-
-        .remember-checkbox {
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border: 1px solid var(--border-subtle);
-            border-radius: 4px;
-            background: rgba(15, 17, 23, 0.6);
-            cursor: pointer;
-            position: relative;
-            transition: var(--transition);
-            outline: none;
-        }
-
-        .remember-checkbox:checked {
-            background: var(--accent-indigo);
-            border-color: var(--accent-indigo);
-        }
-
-        .remember-checkbox:checked::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -52%);
-            color: #ffffff;
-            font-size: 0.65rem;
-            font-weight: bold;
-        }
-
-        /* Submit Button */
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            background: var(--gradient-primary);
-            border: none;
-            border-radius: 12px;
-            color: #ffffff;
-            font-family: inherit;
-            font-size: 0.95rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(129, 140, 248, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-submit:hover {
+        .btn-back:hover {
+            background: rgba(255,255,255,0.1);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(129, 140, 248, 0.35);
         }
 
-        .btn-submit:active {
-            transform: translateY(0);
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
         }
-
-        /* ─── Alert / Errors ────────────────────────────────────────── */
-        .error-alert {
-            background: rgba(251, 113, 133, 0.1);
-            border: 1px solid rgba(251, 113, 133, 0.25);
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.85rem;
-            color: #fda4af;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            animation: shake 0.4s ease-in-out;
-        }
-
-        /* ─── Demo Account Box ──────────────────────────────────────── */
-        .demo-box {
-            margin-top: 2rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px dashed rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 1rem 1.25rem;
-        }
-
-        .demo-title {
-            font-size: 0.75rem;
+        .form-label {
+            display: block;
+            font-family: 'Nunito', sans-serif;
+            font-size: 20px;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--accent-violet);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        .form-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 16px 24px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 20px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            border-color: #9b72f7;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 15px rgba(155, 114, 247, 0.3);
+        }
+        
+        .error-message {
+            background: rgba(239, 35, 60, 0.2);
+            border: 1px solid rgba(239, 35, 60, 0.4);
+            color: #ffb3b8;
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 18px;
+            margin-bottom: 20px;
+            animation: slide-up 0.3s ease;
         }
 
-        .demo-credential {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.25rem;
-            line-height: 1.4;
-        }
-
-        .demo-credential code {
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: var(--text-primary);
-            font-size: 0.85rem;
-        }
-
-        /* ─── Animations ────────────────────────────────────────────── */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(24px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
-        }
-
-        .footer-text {
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
     </style>
 </head>
 <body>
 
-    <div class="bg-gradient"></div>
+    <div class="bg-mesh"></div>
 
-    <div class="login-container">
+    <div class="login-wrapper" x-data="{ view: 'role' }">
         <div class="login-card">
-            <!-- Brand -->
-            <div class="brand-header">
-                <div class="brand-logo" aria-hidden="true">🌉</div>
-                <h1 class="brand-title">Skill Bridge</h1>
-                <p class="brand-subtitle">Portal Monitoring Orang Tua</p>
+            
+            <div class="mascot-container">
+                <div class="mascot wulan" title="Wulan - Visual World">👁️</div>
+                <div class="mascot sinar" title="Sinar - Audio World">🎧</div>
             </div>
 
-            <!-- Validation Errors -->
-            @if ($errors->any())
-                <div class="error-alert" role="alert">
-                    <span>⚠️</span>
-                    <span>{{ $errors->first() }}</span>
-                </div>
-            @endif
+            <!-- Role Selection View -->
+            <div x-show="view === 'role'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                <h1 class="title">Selamat Datang!</h1>
+                <p class="subtitle">Siapa yang mau masuk hari ini?</p>
 
-            <!-- Form -->
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
-
-                <!-- Email Address -->
-                <div class="form-group">
-                    <label for="email" class="form-label">Alamat Surel (Email)</label>
-                    <div class="input-wrapper">
-                        <span class="input-icon">✉️</span>
-                        <input
-                            id="email"
-                            type="email"
-                            name="email"
-                            value="{{ old('email') }}"
-                            required
-                            autofocus
-                            autocomplete="username"
-                            placeholder="nama@email.com"
-                            class="form-input"
-                        >
-                    </div>
-                </div>
-
-                <!-- Password -->
-                <div class="form-group">
-                    <label for="password" class="form-label">Kata Sandi</label>
-                    <div class="input-wrapper">
-                        <span class="input-icon">🔒</span>
-                        <input
-                            id="password"
-                            type="password"
-                            name="password"
-                            required
-                            autocomplete="current-password"
-                            placeholder="Masukkan kata sandi"
-                            class="form-input"
-                        >
-                        <button
-                            type="button"
-                            id="togglePassword"
-                            class="password-toggle"
-                            aria-label="Tampilkan kata sandi"
-                        >
-                            👁️
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Remember Me -->
-                <div class="form-options">
-                    <label for="remember_me" class="remember-me">
-                        <input
-                            id="remember_me"
-                            type="checkbox"
-                            name="remember"
-                            class="remember-checkbox"
-                        >
-                        <span>Ingat Saya</span>
-                    </label>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" class="btn-submit">
-                    Masuk ke Dashboard
+                <button @click="window.location.href='/play'" class="btn btn-child">
+                    Masuk sebagai Anak
                 </button>
-            </form>
-
-            <!-- Seeded Demo Accounts -->
-            <div class="demo-box">
-                <div class="demo-title">🔑 Akun Demo Percobaan</div>
-                <div class="demo-credential">
-                    Email: <code>parent@skillbridge.test</code>
-                </div>
-                <div class="demo-credential">
-                    Sandi: <code>password</code>
-                </div>
+                
+                <button @click="view = 'form'" class="btn btn-parent">
+                    Orang Tua / Guru
+                </button>
             </div>
-        </div>
 
-        <p class="footer-text">&copy; {{ date('Y') }} Skill Bridge. Hak Cipta Dilindungi.</p>
+            <!-- Form View (Parent/Teacher) -->
+            <div x-show="view === 'form'" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                <h2 class="title">Masuk Portal</h2>
+                <p class="subtitle">Untuk Orang Tua dan Guru</p>
+
+                @if ($errors->any())
+                    <div class="error-message">
+                        Oh tidak! {{ $errors->first() }}
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="ketik email di sini..." class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Kata Sandi</label>
+                        <input id="password" type="password" name="password" required autocomplete="current-password" placeholder="ketik rahasia di sini..." class="form-input">
+                    </div>
+
+                    <!-- Input tersembunyi untuk remember -->
+                    <input type="hidden" name="remember" value="on">
+
+                    <button type="submit" class="btn btn-parent" style="margin-top: 30px;">
+                        Ayo Masuk!
+                    </button>
+                </form>
+
+                <button @click="view = 'role'" class="btn btn-back">
+                    Kembali
+                </button>
+            </div>
+
+        </div>
     </div>
 
-    <script>
-        // Password visibility toggle
-        const togglePasswordBtn = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
-
-        togglePasswordBtn.addEventListener('click', function () {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            
-            // Toggle emoji
-            this.textContent = type === 'password' ? '👁️' : '🙈';
-            this.setAttribute('aria-label', type === 'password' ? 'Tampilkan kata sandi' : 'Sembunyikan kata sandi');
-        });
-    </script>
 </body>
 </html>

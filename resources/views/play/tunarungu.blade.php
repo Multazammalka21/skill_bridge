@@ -38,13 +38,13 @@
         </template>
 
         <template x-if="currentState === 'done'">
-            <div style="text-align: center; margin-top: 4rem;">
-                <h1 style="color: var(--visual-success); font-size: 3rem;">Selesai! 🎉</h1>
+            <div class="lesson-card animate-slide-up delay-1" style="text-align: center; margin-top: 4rem;">
+                <h1 style="color: var(--accent-2); font-size: 3rem; margin-bottom: 2rem;">Selesai! 🎉</h1>
                 <button 
                     @click="window.location.href='/dashboard'"
-                    style="background: var(--visual-primary); color: white; border: none; padding: 1rem 2rem; border-radius: 12px; font-size: 1.25rem; font-weight: bold; cursor: pointer; margin-top: 2rem; min-width: 80px; min-height: 80px;"
+                    class="btn"
                 >
-                    Kembali
+                    Kembali ke Dashboard
                 </button>
             </div>
         </template>

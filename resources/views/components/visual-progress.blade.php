@@ -4,11 +4,11 @@
 <div x-data="visualProgress({{ $completed }}, {{ $total }})" class="visual-progress" role="region" aria-label="Progress belajar visual" aria-live="polite">
     <style>
         .visual-progress{width:100%;max-width:600px;margin:1rem auto;padding:1rem}
-        .visual-progress .bar-bg{width:100%;height:28px;background:#e2e8f0;border-radius:14px;overflow:hidden;position:relative}
-        .visual-progress .bar-fill{height:100%;background:linear-gradient(90deg,#2563eb,#3b82f6);transition:width .6s ease;border-radius:14px}
-        .visual-progress .percentage{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#1a1a2e;pointer-events:none}
-        .visual-progress .stars{margin-top:.75rem;text-align:center;font-size:1.4rem;color:#ca8a04;letter-spacing:.2em}
-        .visual-progress .label-text{text-align:center;margin-top:.5rem;font-size:.9rem;font-weight:600;color:#2d2d4e}
+        .visual-progress .bar-bg{width:100%;height:32px;background:rgba(255, 107, 53, 0.1);border-radius:16px;overflow:hidden;position:relative}
+        .visual-progress .bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-hover, #ff8c5a));transition:width .6s ease;border-radius:16px}
+        .visual-progress .percentage{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:700;color:#fff;pointer-events:none;text-shadow: 0 2px 4px rgba(0,0,0,0.2);}
+        .visual-progress .stars{margin-top:1rem;text-align:center;font-size:2rem;color:var(--accent-3);letter-spacing:.2em;}
+        .visual-progress .label-text{text-align:center;margin-top:1rem;font-size:1.25rem;font-weight:700;color:var(--text);}
     </style>
 
     <div class="bar-bg" role="progressbar" aria-valuenow="{{ $completed }}" aria-valuemin="0" aria-valuemax="{{ $total }}" aria-label="Progress: {{ $completed }} dari {{ $total }} pelajaran selesai">
