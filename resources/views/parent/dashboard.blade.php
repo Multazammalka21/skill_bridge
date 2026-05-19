@@ -132,6 +132,30 @@
             font-weight: 600;
             font-size: 0.95rem;
         }
+        .logout-btn {
+            background: rgba(251, 113, 133, 0.12);
+            border: 1px solid rgba(251, 113, 133, 0.2);
+            color: var(--accent-rose);
+            padding: 0.4rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-family: inherit;
+            margin-left: 0.5rem;
+            text-decoration: none;
+            outline: none;
+        }
+        .logout-btn:hover {
+            background: var(--accent-rose);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(251, 113, 133, 0.25);
+        }
 
         /* ─── Summary Cards ─────────────────────────────────────────── */
         .summary-grid {
@@ -337,6 +361,12 @@
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
                 <span class="user-name">{{ $user->name }}</span>
+                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="logout-btn" title="Keluar">
+                        <span>Keluar</span> 🚪
+                    </button>
+                </form>
             </div>
         </header>
 
