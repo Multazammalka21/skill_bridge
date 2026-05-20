@@ -120,7 +120,19 @@ return [
 
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
-        'store' => env('APP_MAINTENANCE_STORE', 'database'),
+        'store'  => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | API Key
+    |--------------------------------------------------------------------------
+    |
+    | This key is used to authenticate requests to public API endpoints
+    | that do not require user login. Set APP_API_KEY in your .env file.
+    |
+    */
+
+    'api_key' => env('APP_API_KEY', null),
 
 ];

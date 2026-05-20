@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -17,72 +16,126 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
             'password' => $validated['password'],
-            'role' => 'parent',
+            'role'     => 'parent',
         ]);
 
-        $token = $user->createToken('skill-bridge-app')->plainTextToken;
+        $token = auth('api')->login($user);
 
         return response()->json([
             'message' => 'Registrasi berhasil.',
-            'user' => $user,
-            'token' => $token,
+            'user'    => $user,
+            'token'   => $token,
+            'type'    => 'bearer',
+            'expires_in' => auth('api')->factory()->getTTL() * 60,
         ], 201);
     }
 
     /**
-     * Login user and return API token.
+     * Login with email + password — returns JWT Bearer token.
+     * Also demonstrates Basic Auth support (credentials in body or header).
      */
     public function login(Request $request)
     {
         $validated = $request->validate([
-            'email' => 'required|string|email',
+            'email'    => 'required|string|email',
             'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $validated['email'])->first();
+        $token = auth('api')->attempt([
+            'email'    => $validated['email'],
+            'password' => $validated['password'],
+        ]);
 
-        if (! $user || ! Hash::check($validated['password'], $user->password)) {
+        if (! $token) {
             throw ValidationException::withMessages([
                 'email' => ['Email atau kata sandi salah.'],
             ]);
         }
 
-        $token = $user->createToken('skill-bridge-app')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login berhasil.',
-            'user' => $user,
-        ])->cookie('jwt_token', $token, 60 * 24, '/', null, false, true); // httpOnly = true
+        return $this->respondWithToken($token);
     }
 
     /**
-     * Logout user and revoke current token.
+     * Login via HTTP Basic Auth (Authorization: Basic base64(email:password)).
+     * Demonstrates the Basic Auth requirement.
      */
-    public function logout(Request $request)
+    public function loginBasic(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        // Basic Auth credentials come from Authorization header
+        $email    = $request->getUser();
+        $password = $request->getPassword();
+
+        if (! $email || ! $password) {
+            return response()->json([
+                'message' => 'Basic Auth credentials diperlukan.',
+            ], 401)->header('WWW-Authenticate', 'Basic realm="Skill Bridge API"');
+        }
+
+        $token = auth('api')->attempt([
+            'email'    => $email,
+            'password' => $password,
+        ]);
+
+        if (! $token) {
+            return response()->json([
+                'message' => 'Email atau kata sandi salah.',
+            ], 401)->header('WWW-Authenticate', 'Basic realm="Skill Bridge API"');
+        }
+
+        return $this->respondWithToken($token);
+    }
+
+    /**
+     * Logout — invalidate the current JWT token.
+     */
+    public function logout()
+    {
+        auth('api')->logout();
 
         return response()->json([
-            'message' => 'Logout berhasil.',
+            'message' => 'Logout berhasil. Token telah dibatalkan.',
         ]);
     }
 
     /**
-     * Get authenticated user info.
+     * Refresh JWT token — get a new token before the old one expires.
      */
-    public function me(Request $request)
+    public function refresh()
+    {
+        return $this->respondWithToken(auth('api')->refresh());
+    }
+
+    /**
+     * Get the authenticated user info.
+     */
+    public function me()
+    {
+        $user = auth('api')->user()->load('children');
+
+        return response()->json([
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * Return a standardised JWT response.
+     */
+    protected function respondWithToken(string $token)
     {
         return response()->json([
-            'user' => $request->user()->load('children'),
+            'access_token' => $token,
+            'token_type'   => 'bearer',
+            'expires_in'   => auth('api')->factory()->getTTL() * 60,
+            'user'         => auth('api')->user(),
         ]);
     }
 }
