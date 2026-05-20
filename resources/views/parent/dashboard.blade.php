@@ -617,7 +617,7 @@
                             id="tab-child-{{ $child->id }}"
                             onclick="selectChild({{ $index }})"
                         >
-                            <span class="tab-icon">{{ $child->isAudioWorld() ? '🔊' : '👁️' }}</span>
+                            <span class="tab-icon">{{ $child->isAudioWorld() ? '🦉' : '👁️' }}</span>
                             <span>{{ $child->nama_panggilan ?? 'Anak '.($index + 1) }}</span>
                             <span class="tab-badge">{{ $child->jenis_disabilitas === 'tunanetra' ? 'Audio' : 'Visual' }}</span>
                         </button>
