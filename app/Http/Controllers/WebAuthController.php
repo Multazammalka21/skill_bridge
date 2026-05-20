@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class WebAuthController extends Controller
 {
@@ -38,6 +40,40 @@ class WebAuthController extends Controller
         throw ValidationException::withMessages([
             'email' => ['Surel (email) atau kata sandi yang Anda masukkan salah.'],
         ]);
+    }
+
+    /**
+     * Show the register form.
+     */
+    public function showRegisterForm()
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.register');
+    }
+
+    /**
+     * Handle the registration request.
+     */
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'parent'
+        ]);
+
+        Auth::login($user);
+
+        return redirect()->route('dashboard');
     }
 
     /**

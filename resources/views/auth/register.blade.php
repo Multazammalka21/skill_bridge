@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Masuk ke Skill Bridge - Dunia Petualangan Belajar">
-    <title>Masuk - Skill Bridge</title>
+    <meta name="description" content="Daftar ke Skill Bridge - Dunia Petualangan Belajar">
+    <title>Daftar - Skill Bridge</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -142,7 +142,7 @@
             filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2));
         }
 
-        /* Login Card */
+        /* Login/Register Card */
         .login-wrapper {
             position: relative;
             z-index: 10;
@@ -150,7 +150,7 @@
             max-width: 400px;
             padding: 20px;
             box-sizing: border-box;
-            /* margin-top removed to center vertically better */
+            /* margin removed for better center alignment */
         }
 
         .login-card {
@@ -163,7 +163,7 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-
+        
         /* Customize scrollbar for card */
         .login-card::-webkit-scrollbar {
             width: 8px;
@@ -267,10 +267,11 @@
             color: #c62828;
             padding: 12px;
             border-radius: 12px;
-            font-size: 16px;
-            margin-bottom: 20px;
+            font-size: 14px;
+            margin-bottom: 15px;
             border: 1px solid #ffcdd2;
         }
+
     </style>
 </head>
 <body>
@@ -301,12 +302,12 @@
     
     <div class="ground"></div>
 
-    <!-- Login Card -->
+    <!-- Register Card -->
     <div class="login-wrapper">
         <div class="login-card">
             
-            <h1 class="title">Halo, Petualang Kecil!</h1>
-            <p class="subtitle">Ayo mulai petualangan belajarmu hari ini</p>
+            <h1 class="title">Halo, Teman Baru!</h1>
+            <p class="subtitle">Buat akun untuk memulai petualanganmu</p>
 
             @if ($errors->any())
                 <div class="error-message">
@@ -314,26 +315,35 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('register') }}">
                 @csrf
+                
+                <div class="form-group">
+                    <label for="name" class="form-label">Nama Lengkap</label>
+                    <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" placeholder="Ketik namamu..." class="form-input">
+                </div>
+                
                 <div class="form-group">
                     <label for="email" class="form-label">Email Petualang</label>
-                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="ketik email..." class="form-input">
+                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="Ketik emailmu..." class="form-input">
                 </div>
 
                 <div class="form-group">
                     <label for="password" class="form-label">Kata Sandi Rahasia</label>
-                    <input id="password" type="password" name="password" required autocomplete="current-password" placeholder="ketik kata sandi..." class="form-input">
+                    <input id="password" type="password" name="password" required autocomplete="new-password" placeholder="Buat kata sandi..." class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password_confirmation" class="form-label">Ulangi Kata Sandi</label>
+                    <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Ketik ulang kata sandi..." class="form-input">
                 </div>
 
-                <input type="hidden" name="remember" value="on">
-
-                <button type="submit" class="btn btn-child">
-                    Masuk Sekarang!
+                <button type="submit" class="btn btn-child" style="margin-top: 20px;">
+                    Daftar Sekarang!
                 </button>
                 
-                <a href="{{ route('register') }}" class="btn btn-parent" style="margin-top: 15px;">
-                    Daftar Akun Baru
+                <a href="{{ route('login') }}" class="btn btn-parent">
+                    Sudah Punya Akun? Masuk
                 </a>
             </form>
 
