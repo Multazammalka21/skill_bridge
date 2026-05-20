@@ -7,11 +7,229 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
     
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--visual-bg, #fff9f0);
+            color: #333;
+            font-family: var(--font-body);
+            font-size: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            margin-top: 0;
+            color: var(--visual-primary);
+        }
+
+        /* Topbar */
+        .topbar {
+            background-color: transparent;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .topbar-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            color: var(--visual-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Organic Blobs */
+        .blob-1 {
+            position: absolute;
+            top: -20px;
+            left: -40px;
+            width: 180px; height: 180px;
+            border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+            background: var(--visual-blob-1, rgba(255,209,102,0.25));
+            animation: blob-drift 6s ease-in-out infinite;
+            z-index: -1;
+        }
+        .blob-2 {
+            position: absolute;
+            bottom: -30px;
+            right: -30px;
+            width: 140px; height: 140px;
+            border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%;
+            background: var(--visual-blob-2, rgba(6,214,160,0.18));
+            animation: blob-drift 8s ease-in-out infinite reverse;
+            z-index: -1;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            text-align: center;
+        }
+        .progress-bar-bg {
+            height: 20px;
+            background: #ffe3d8;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--visual-primary), var(--visual-yellow));
+            border-radius: 20px;
+            width: 50%; /* Example width */
+            transition: width 0.4s ease;
+        }
+        .progress-star {
+            color: var(--visual-yellow);
+            font-size: 24px;
+            margin-top: 5px;
+            display: inline-block;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Quiz Cards Grid */
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .quiz-card {
+            background: #ffffff;
+            border-radius: var(--card-radius, 22px);
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-family: var(--font-display);
+            font-weight: 600;
+            cursor: pointer;
+            border: 4px solid transparent;
+            box-shadow: 0 8px 24px var(--visual-shadow, rgba(255,107,53,0.15));
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 14px 32px rgba(255,107,53,0.25);
+            border-color: #ffe3d8;
+        }
+
+        .quiz-card.correct {
+            border-color: var(--visual-success);
+            background: #e6f9f4;
+            animation: pop-correct 0.4s ease-out forwards;
+            pointer-events: none;
+        }
+
+        .quiz-card.wrong {
+            border-color: var(--visual-error);
+            background: #fde8ea;
+            animation: shake-wrong 0.5s ease-in-out forwards;
+        }
+
+        /* Global Button */
+        .btn {
+            font-family: var(--font-display);
+            border-radius: var(--btn-radius, 50px);
+            padding: 15px 30px;
+            font-size: 22px;
+            font-weight: 700;
+            min-height: var(--btn-min-h, 80px);
+            background: var(--visual-primary);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 24px var(--visual-shadow);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #ff8c5a;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(255,107,53,0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--visual-primary);
+            border: 3px solid var(--visual-primary);
+            box-shadow: none;
+        }
+        .btn-outline:hover {
+            background: #fff0eb;
+            box-shadow: none;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 600px) {
+            .quiz-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+
+    <header class="topbar">
+        <h2 class="topbar-title"><span>👁️</span> Visual World</h2>
+        <a href="#" class="btn btn-outline" style="min-height: 50px; font-size: 18px; padding: 10px 20px;">Kembali</a>
+    </header>
+
+    <main>
+        <div class="progress-container">
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill"></div>
+            </div>
+            <div class="progress-star">★ ★ ★</div>
+        </div>
+
+        @yield('content')
+    </main>
+
+</body>
+</html>    
     <style>
         :root {
             --bg: #fff9f0;

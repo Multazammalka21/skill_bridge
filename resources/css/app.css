@@ -6,6 +6,129 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Fredoka', sans-serif;
+    --font-body: 'Nunito', sans-serif;
+}
+
+@layer base {
+    :root {
+        /* ── GLOBAL ── */
+        --font-display: 'Fredoka', sans-serif;
+        --font-body:    'Nunito', sans-serif;
+        --btn-radius:   50px;
+        --card-radius:  22px;
+        --btn-min-h:    80px;
+
+        /* ── LOGIN ── */
+        --login-sky-top:    #5ba8d8;
+        --login-sky-bottom: #7ec850;
+        --login-ground:     #5aad2a;
+        --login-btn-green:  #43a047;
+        --login-shadow:     rgba(76,175,80,0.45);
+
+        /* ── AUDIO WORLD ── */
+        --audio-bg:         #0f0e17;
+        --audio-surface:    #1a1830;
+        --audio-accent:     #9b72f7;
+        --audio-glow:       rgba(155,114,247,0.45);
+        --audio-text:       #fffffe;
+        --audio-text-muted: #7b6fa0;
+        --audio-story-bg:   rgba(155,114,247,0.08);
+        --audio-border:     rgba(155,114,247,0.22);
+
+        /* ── VISUAL WORLD ── */
+        --visual-bg:        #fff9f0;
+        --visual-primary:   #ff6b35;
+        --visual-success:   #06d6a0;
+        --visual-error:     #ef233c;
+        --visual-yellow:    #ffd166;
+        --visual-shadow:    rgba(255,107,53,0.15);
+        --visual-blob-1:    rgba(255,209,102,0.25);
+        --visual-blob-2:    rgba(6,214,160,0.18);
+
+        /* ── DASHBOARD ── */
+        --dash-bg:          #f0f8ff;
+        --dash-hero-from:   #1565c0;
+        --dash-hero-to:     #42a5f5;
+        --dash-surface:     #ffffff;
+        --dash-border:      rgba(33,150,243,0.12);
+    }
+
+    body {
+        font-family: var(--font-body);
+        font-size: 20px; /* Ukuran minimum teks konten */
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-display);
+    }
+}
+
+@layer components {
+    .btn {
+        @apply font-bold rounded-[var(--btn-radius)] flex items-center justify-center transition-all duration-300;
+        font-family: var(--font-display);
+        font-size: 22px;
+        min-height: var(--btn-min-h);
+    }
+}
+
+@layer utilities {
+    @keyframes sun-pulse {
+        0%,100% { box-shadow: 0 0 0 12px rgba(255,215,0,0.22), 0 0 0 26px rgba(255,215,0,0.10); }
+        50%      { box-shadow: 0 0 0 18px rgba(255,215,0,0.28), 0 0 0 36px rgba(255,215,0,0.12); }
+    }
+    @keyframes drift {
+        0%,100% { transform: translateX(0); }
+        50%      { transform: translateX(10px); }
+    }
+    @keyframes float {
+        0%,100% { transform: translateY(0); }
+        50%      { transform: translateY(-8px); }
+    }
+    @keyframes sway {
+        0%,100% { transform: rotate(-5deg); }
+        50%      { transform: rotate(5deg); }
+    }
+    @keyframes owl-float {
+        0%,100% { transform: translateY(0); }
+        50%      { transform: translateY(-8px); }
+    }
+    @keyframes ring-pulse {
+        0%   { transform: scale(0.9); opacity: 0.7; }
+        100% { transform: scale(1.15); opacity: 0; }
+    }
+    @keyframes dot-bounce {
+        0%,100% { transform: translateY(0); opacity: 0.4; }
+        50%      { transform: translateY(-5px); opacity: 1; }
+    }
+    @keyframes blob-drift {
+        0%,100% { transform: scale(1) rotate(0deg); }
+        50%      { transform: scale(1.08) rotate(6deg); }
+    }
+    @keyframes pop-correct {
+        0%   { transform: scale(1); }
+        45%  { transform: scale(1.1); }
+        100% { transform: scale(1.03); }
+    }
+    @keyframes shake-wrong {
+        0%   { transform: translateX(0); }
+        20%  { transform: translateX(-8px); }
+        40%  { transform: translateX(8px); }
+        60%  { transform: translateX(-6px); }
+        80%  { transform: translateX(6px); }
+        100% { transform: translateX(0); }
+    }
+    
+    .animate-sun-pulse { animation: sun-pulse 3s infinite; }
+    .animate-drift { animation: drift 4s infinite ease-in-out; }
+    .animate-float { animation: float 3s infinite ease-in-out; }
+    .animate-sway { animation: sway 3s infinite ease-in-out; }
+    .animate-owl-float { animation: owl-float 3s infinite ease-in-out; }
+    .animate-ring-pulse { animation: ring-pulse 2s infinite ease-out; }
+    .animate-dot-bounce { animation: dot-bounce 1.5s infinite ease-in-out; }
+    .animate-blob-drift { animation: blob-drift 6s ease-in-out infinite; }
+    .animate-blob-drift-reverse { animation: blob-drift 8s ease-in-out infinite reverse; }
+    .animate-pop-correct { animation: pop-correct 0.4s ease-out forwards; }
+    .animate-shake-wrong { animation: shake-wrong 0.5s ease-in-out forwards; }
 }

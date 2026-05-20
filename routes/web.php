@@ -22,6 +22,10 @@ Route::middleware('auth')->group(function () {
 });
 
 // ─── Play Routes (Token/Cookie Auth) ─────────────────────────────────
+Route::get('/play', function () {
+    return view('play.index');
+})->name('play.index');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/play/tunanetra', function () {
         return view('play.tunanetra');

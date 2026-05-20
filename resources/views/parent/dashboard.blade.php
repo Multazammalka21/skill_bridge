@@ -8,10 +8,496 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
+        body {
+            font-family: var(--font-body);
+            background: var(--dash-bg, #f0f8ff);
+            color: #333;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            margin: 0;
+            padding: 0;
+            font-size: 20px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            margin: 0;
+        }
+
+        /* Topbar */
+        .topbar {
+            background: linear-gradient(135deg, #1565c0, #1976d2);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.2);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .topbar-title {
+            font-size: 24px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: #ffffff;
+            color: #1565c0;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 20px;
+            font-family: var(--font-display);
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .logout-btn:hover {
+            background: white;
+            color: #1565c0;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--dash-hero-from, #1565c0), var(--dash-hero-to, #42a5f5));
+            padding: 40px 30px;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 25px rgba(21, 101, 192, 0.15);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .summary-card {
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 22px;
+            padding: 25px;
+            color: white;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-card .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .summary-card .label {
+            font-size: 16px;
+            opacity: 0.9;
+            font-family: var(--font-body);
+        }
+
+        .summary-card .value {
+            font-size: 36px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        /* Main Content Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px 40px;
+        }
+
+        /* Progress Bars */
+        .progress-section {
+            margin-bottom: 30px;
+        }
+        .progress-item {
+            margin-bottom: 15px;
+        }
+        .progress-label {
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .progress-bar-bg {
+            background: #e0e0e0;
+            height: 20px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+        .pb-literasi { background: linear-gradient(90deg, #ff6b35, #ffa726); }
+        .pb-numerasi { background: linear-gradient(90deg, #4caf50, #8bc34a); }
+        .pb-lingkungan { background: linear-gradient(90deg, #2196f3, #64b5f6); }
+
+        /* Child Selector Tabs */
+        .child-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .child-tab {
+            min-width: 120px;
+            padding: 15px 25px;
+            background: white;
+            border: 2px solid var(--dash-border);
+            border-radius: 20px;
+            color: #666;
+            font-family: var(--font-display);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .child-tab:hover {
+            border-color: #2196f3;
+            transform: translateY(-2px);
+        }
+        .child-tab.active {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            color: #1565c0;
+        }
+
+        /* Chart/Activity Cards */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        @media (min-width: 768px) {
+            .charts-grid { grid-template-columns: 1fr 1fr; }
+            .charts-grid .chart-card:first-child { grid-column: 1 / -1; }
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.12);
+            transition: transform 0.3s ease;
+            border: 1px solid var(--dash-border);
+        }
+        .chart-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.18);
+        }
+
+        .chart-card h3 {
+            font-size: 22px;
+            color: #1565c0;
+            margin-bottom: 20px;
+        }
+
+        .chart-card canvas {
+            max-height: 300px;
+        }
+
+        /* Action Card specific */
+        .action-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border: none;
+        }
+        .action-card:hover {
+            transform: translateX(4px);
+        }
+        .btn-action {
+            background: #1565c0;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-family: var(--font-display);
+            font-size: 20px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(21, 101, 192, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn-action:hover {
+            background: #0d47a1;
+            transform: translateY(-2px);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .empty-state h2 {
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <h1 class="topbar-title">Dashboard Orang Tua</h1>
+        <div class="header-right">
+            <span class="user-name" style="font-family: var(--font-body); font-weight: 700;">{{ $user->name }}</span>
+            <div class="avatar">{{ strtoupper(substr($user->name, 0, 1)) }}</div>
+            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" class="logout-btn">Keluar</button>
+            </form>
+        </div>
+    </header>
+
+    @if($children->isEmpty())
+        <div class="empty-state">
+            <div style="font-size: 60px; margin-bottom: 20px;">👶</div>
+            <h2>Belum ada data anak</h2>
+            <p>Tambahkan anak Anda untuk mulai memantau progress petualangan belajar mereka.</p>
+        </div>
+    @else
+        <!-- Hero Section -->
+        <div class="hero-section">
+            @php
+                $totalLessons = $children->sum(fn($c) => $c->lessonCompletions->count());
+                $avgScore = $children->flatMap(fn($c) => $c->quizResults)->avg('skor') ?? 0;
+                $totalMinutes = round($children->flatMap(fn($c) => $c->studySessions)->sum('durasi_detik') / 60, 1);
+            @endphp
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="icon">📚</div>
+                    <div class="label">Total Lesson Selesai</div>
+                    <div class="value">{{ $totalLessons }}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="icon">🏆</div>
+                    <div class="label">Rata-rata Skor Kuis</div>
+                    <div class="value">{{ round($avgScore, 1) }}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="icon">⏱️</div>
+                    <div class="label">Waktu Belajar (menit)</div>
+                    <div class="value">{{ $totalMinutes }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Child Selector Tabs -->
+            <div class="child-tabs">
+                @foreach($children as $index => $child)
+                    <button
+                        class="child-tab {{ $index === 0 ? 'active' : '' }}"
+                        onclick="selectChild({{ $index }})"
+                        id="tab-child-{{ $child->id }}"
+                    >
+                        <span>{{ $child->isAudioWorld() ? '🔊' : '👁️' }}</span>
+                        <span>{{ $child->nama_panggilan ?? 'Anak '.($index+1) }}</span>
+                    </button>
+                @endforeach
+            </div>
+
+            <!-- Charts & Content -->
+            @foreach($children as $index => $child)
+                @php
+                    $startDate = now()->subDays(29)->startOfDay();
+
+                    // Lessons per day
+                    $lessonsRaw = $child->lessonCompletions
+                        ->filter(fn($lc) => $lc->completed_at >= $startDate)
+                        ->groupBy(fn($lc) => $lc->completed_at->format('Y-m-d'));
+
+                    // Quiz scores per day
+                    $quizRaw = $child->quizResults
+                        ->filter(fn($qr) => $qr->created_at >= $startDate)
+                        ->groupBy(fn($qr) => $qr->created_at->format('Y-m-d'));
+
+                    // Study time per day
+                    $sessionRaw = $child->studySessions
+                        ->filter(fn($ss) => $ss->started_at >= $startDate)
+                        ->groupBy(fn($ss) => $ss->started_at->format('Y-m-d'));
+
+                    $labels = [];
+                    $lessonsData = [];
+                    $scoresData = [];
+                    $studyData = [];
+
+                    for ($i = 0; $i < 30; $i++) {
+                        $date = now()->subDays(29 - $i)->format('Y-m-d');
+                        $labels[] = \Carbon\Carbon::parse($date)->format('d M');
+                        $lessonsData[] = isset($lessonsRaw[$date]) ? $lessonsRaw[$date]->count() : 0;
+                        $scoresData[] = isset($quizRaw[$date]) ? round($quizRaw[$date]->avg('skor'), 1) : 0;
+                        $studyData[] = isset($sessionRaw[$date]) ? round($sessionRaw[$date]->sum('durasi_detik') / 60, 1) : 0;
+                    }
+                @endphp
+
+                <div class="charts-grid {{ $index === 0 ? '' : 'hidden' }}" id="chart-panel-{{ $child->id }}">
+                    
+                    <!-- Main Action Card -->
+                    <div class="chart-card action-card">
+                        <div>
+                            <h3 style="margin-bottom: 5px;">🎮 Mulai Petualangan</h3>
+                            <p style="font-family: var(--font-body); color: #555;">Temani {{ $child->nama_panggilan ?? 'Anak' }} belajar hari ini</p>
+                        </div>
+                        <a href="{{ $child->isAudioWorld() ? route('play.tunanetra') : route('play.tunarungu') }}" class="btn-action">
+                            Main Sekarang
+                        </a>
+                    </div>
+
+                    <!-- Progress Kategori Example -->
+                    <div class="chart-card">
+                        <h3>Progress Kategori</h3>
+                        <div class="progress-section">
+                            <div class="progress-item">
+                                <div class="progress-label"><span>Literasi</span> <span>75%</span></div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill pb-literasi" style="width: 75%;"></div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-label"><span>Numerasi</span> <span>60%</span></div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill pb-numerasi" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-label"><span>Lingkungan</span> <span>90%</span></div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill pb-lingkungan" style="width: 90%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lessons Chart -->
+                    <div class="chart-card">
+                        <h3>Lesson Selesai</h3>
+                        <canvas id="lessonsChart-{{ $child->id }}"></canvas>
+                    </div>
+
+                    <!-- Scores Chart -->
+                    <div class="chart-card">
+                        <h3>Skor Kuis</h3>
+                        <canvas id="scoresChart-{{ $child->id }}"></canvas>
+                    </div>
+
+                </div>
+            @endforeach
+        </div>
+
+        <script>
+            Chart.defaults.font.family = "'Nunito', sans-serif";
+            Chart.defaults.color = '#666';
+
+            @foreach($children as $child)
+            (function() {
+                const labels = @json($labels);
+                const lessonsData = @json($lessonsData);
+                const scoresData = @json($scoresData);
+
+                // Lessons Chart
+                const lessonsCtx = document.getElementById('lessonsChart-{{ $child->id }}');
+                if (lessonsCtx) {
+                    new Chart(lessonsCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Lesson',
+                                data: lessonsData,
+                                backgroundColor: '#42a5f5',
+                                borderRadius: 8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } }
+                        }
+                    });
+                }
+
+                // Scores Chart
+                const scoresCtx = document.getElementById('scoresChart-{{ $child->id }}');
+                if (scoresCtx) {
+                    new Chart(scoresCtx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Skor',
+                                data: scoresData,
+                                borderColor: '#ff6b35',
+                                backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: { y: { min: 0, max: 100 } }
+                        }
+                    });
+                }
+            })();
+            @endforeach
+
+            function selectChild(index) {
+                document.querySelectorAll('.charts-grid').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.child-tab').forEach(tab => tab.classList.remove('active'));
+
+                const tabs = document.querySelectorAll('.child-tab');
+                const panels = document.querySelectorAll('.charts-grid');
+
+                if (tabs[index]) tabs[index].classList.add('active');
+                if (panels[index]) panels[index].classList.remove('hidden');
+            }
+        </script>
+        <style>.hidden{display:none!important}</style>
+    @endif
+</body>
+</html>
         /* ─── Design System ─────────────────────────────────────────── */
         :root {
             --bg-primary: #0f1117;
@@ -457,6 +943,19 @@
                 @endphp
 
                 <div class="charts-grid {{ $index === 0 ? '' : 'hidden' }}" id="chart-panel-{{ $child->id }}" role="tabpanel" aria-labelledby="tab-child-{{ $child->id }}">
+                    <!-- Play Button -->
+                    <div class="chart-card animate-in delay-3" style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; background: var(--gradient-primary); color: white;">
+                        <div>
+                            <h3 style="margin-bottom: 0.25rem; color: white; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>🎮</span> Mulai Sesi Belajar
+                            </h3>
+                            <p style="font-size: 0.9rem; opacity: 0.9;">Buka dunia petualangan untuk {{ $child->nama_panggilan ?? 'Anak' }}</p>
+                        </div>
+                        <a href="{{ $child->isAudioWorld() ? route('play.tunanetra') : route('play.tunarungu') }}" style="background: white; color: var(--accent-indigo); text-decoration: none; padding: 12px 28px; border-radius: 50px; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: transform 0.2s;">
+                            Mulai Main 🚀
+                        </a>
+                    </div>
+
                     <!-- Lessons Completed -->
                     <div class="chart-card animate-in delay-4">
                         <h3><span class="dot" style="background:var(--accent-indigo)"></span> Lesson Selesai per Hari</h3>
