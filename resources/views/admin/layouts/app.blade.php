@@ -510,12 +510,24 @@
                 <span>Dashboard</span>
             </a>
 
+            <a href="{{ route('admin.quiz.monitoring') }}"
+               class="sidebar-link {{ request()->routeIs('admin.quiz.monitoring') ? 'active' : '' }}">
+                <span class="link-icon">📈</span>
+                <span>Kuis Monitoring</span>
+            </a>
+
             <div class="sidebar-section-title">Manajemen Konten</div>
 
             <a href="{{ route('admin.quiz.index') }}"
-               class="sidebar-link {{ request()->routeIs('admin.quiz.*') ? 'active' : '' }}">
+               class="sidebar-link {{ request()->routeIs('admin.quiz.index') || request()->routeIs('admin.quiz.create') || request()->routeIs('admin.quiz.edit') ? 'active' : '' }}">
                 <span class="link-icon">❓</span>
                 <span>Kelola Quiz</span>
+            </a>
+
+            <a href="{{ route('admin.badges.index') }}"
+               class="sidebar-link {{ request()->routeIs('admin.badges.*') ? 'active' : '' }}">
+                <span class="link-icon">🏆</span>
+                <span>Badge Pencapaian</span>
             </a>
         </nav>
 

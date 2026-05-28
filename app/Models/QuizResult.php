@@ -15,6 +15,8 @@ class QuizResult extends Model
         'benar',
         'skor',
         'percobaan',
+        'bintang',
+        'waktu_detik',
     ];
 
     protected function casts(): array

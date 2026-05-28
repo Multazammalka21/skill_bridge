@@ -18,7 +18,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.quiz.update', $quiz->id) }}">
+                <form method="POST" action="{{ route('admin.quiz.update', $quiz->id) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -79,6 +79,46 @@
                         <button type="button" onclick="addPilihan()" class="admin-btn admin-btn--ghost admin-btn--sm" style="margin-top: 8px;">
                             ➕ Tambah Pilihan
                         </button>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Gambar Soal (Opsional)</label>
+                        @if($quiz->gambar)
+                            <div style="margin-bottom: 8px;">
+                                <img src="{{ $quiz->gambar }}" alt="Gambar kuis" style="max-height: 100px; border-radius: 8px; border: 1px solid #ddd;">
+                            </div>
+                        @endif
+                        <input type="file" name="gambar_file" class="admin-form-input" accept="image/*">
+                        <small class="admin-form-help" style="display: block; margin-top: 4px; color: #666;">Format JPG, PNG, WEBP. Maks 2MB. Untuk quiz visual tunarungu.</small>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Audio Narasi Soal (Opsional)</label>
+                        @if($quiz->audio_url)
+                            <div style="margin-bottom: 8px;">
+                                <audio controls src="{{ $quiz->audio_url }}" style="height: 36px;"></audio>
+                            </div>
+                        @endif
+                        <input type="file" name="audio_file" class="admin-form-input" accept="audio/*">
+                        <small class="admin-form-help" style="display: block; margin-top: 4px; color: #666;">Format MP3, WAV. Maks 5MB. Berguna untuk deskripsi suara kuis tunanetra.</small>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Animasi Lottie URL (Opsional)</label>
+                        <input type="text" name="animasi_url" class="admin-form-input" value="{{ old('animasi_url', $quiz->animasi_url) }}" placeholder="https://assets.lottiefiles.com/...json">
+                        <small class="admin-form-help" style="display: block; margin-top: 4px; color: #666;">Gunakan link animasi json. Bagus untuk quiz visual tunarungu.</small>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Efek Suara Khas (Opsional)</label>
+                        <input type="text" name="efek_suara_url" class="admin-form-input" value="{{ old('efek_suara_url', $quiz->efek_suara_url) }}" placeholder="https://example.com/sound.mp3">
+                        <small class="admin-form-help" style="display: block; margin-top: 4px; color: #666;">URL efek suara saat kuis dimuat.</small>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Poin Soal *</label>
+                        <input type="number" name="poin" class="admin-form-input" required value="{{ old('poin', $quiz->poin ?? 10) }}" min="1">
+                        <small class="admin-form-help" style="display: block; margin-top: 4px; color: #666;">Jumlah poin reward gamifikasi jika dijawab dengan benar.</small>
                     </div>
 
                     <div style="display: flex; gap: 12px; margin-top: 28px;">

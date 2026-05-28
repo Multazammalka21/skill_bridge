@@ -10,6 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
     
+    <!-- Lottie Web Player -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -125,6 +128,15 @@
             margin-bottom: 30px;
             position: relative;
             width: 100%;
+        }
+
+        .mascot-lottie {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
         }
 
         /* Mascot waving */
@@ -367,7 +379,7 @@
                 <!-- Slide 1: Welcome -->
                 <div class="slide slide-1 active">
                     <div class="illus-wrapper">
-                        <div class="mascot-wave">🦉</div>
+                        <div id="mascot-welcome" class="mascot-lottie"></div>
                     </div>
                     <h1 class="title">Selamat Datang di Pinteria</h1>
                     <p class="subtitle">Belajar sambil bermain dengan seru!</p>
@@ -411,7 +423,7 @@
                         <div class="confetti c-2">⭐</div>
                         <div class="confetti c-3">✨</div>
                         <div class="confetti c-4">🎈</div>
-                        <div class="mascot-jump">🦜</div>
+                        <div id="mascot-ready" class="mascot-lottie"></div>
                     </div>
                     <h1 class="title">Siap Memulai Petualangan?</h1>
                     <p class="subtitle">Tumbuh dan belajar bersama Pinteria!</p>
@@ -503,6 +515,25 @@
                 }
             }
             updateControls();
+
+            // Initialize Lottie animations
+            if (typeof lottie !== 'undefined') {
+                lottie.loadAnimation({
+                    container: document.getElementById('mascot-welcome'),
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: "{{ asset('Mascot TunaRungu Opening.json') }}"
+                });
+
+                lottie.loadAnimation({
+                    container: document.getElementById('mascot-ready'),
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: "{{ asset('Mascot TunaRungu Loading.json') }}"
+                });
+            }
         });
     </script>
 </body>

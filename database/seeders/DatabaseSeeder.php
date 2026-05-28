@@ -9,6 +9,7 @@ use App\Models\QuizQuestion;
 use App\Models\QuizResult;
 use App\Models\StudySession;
 use App\Models\User;
+use App\Models\Badge;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
@@ -52,16 +53,52 @@ class DatabaseSeeder extends Seeder
             'jenis_disabilitas' => 'tunarungu',
         ]);
 
+        // ─── Seed Default Badges ─────────────────────────────────
+        $badges = [
+            [
+                'nama' => 'Petualang Pertama',
+                'deskripsi' => 'Menyelesaikan kuis pertamamu!',
+                'ikon' => '🚀',
+                'syarat_tipe' => 'quiz_count',
+                'syarat_nilai' => 1,
+            ],
+            [
+                'nama' => 'Pencari Nada',
+                'deskripsi' => 'Menyelesaikan 5 kuis pelajaran',
+                'ikon' => '🎵',
+                'syarat_tipe' => 'quiz_count',
+                'syarat_nilai' => 5,
+            ],
+            [
+                'nama' => 'Bintang Sempurna',
+                'deskripsi' => 'Meraih skor 100 sempurna pada kuis!',
+                'ikon' => '🌟',
+                'syarat_tipe' => 'perfect_score',
+                'syarat_nilai' => 1,
+            ],
+            [
+                'nama' => 'Konsisten Belajar',
+                'deskripsi' => 'Belajar selama 3 hari beruntun!',
+                'ikon' => '🔥',
+                'syarat_tipe' => 'streak',
+                'syarat_nilai' => 3,
+            ],
+        ];
+
+        foreach ($badges as $badge) {
+            Badge::create($badge);
+        }
+
         // ─── Audio World Lessons ─────────────────────────────────
         $audioLessons = [];
         $audioTopics = [
             // Age 5-7
-            ['Mengenal Angka 1-5', 'Belajar angka satu sampai lima melalui cerita.', '5-7'],
-            ['Mengenal Warna', 'Belajar warna melalui deskripsi suara.', '5-7'],
-            ['Hewan Peliharaan', 'Mengenal suara dan nama hewan peliharaan.', '5-7'],
+            ['Mengenal Angka 1-5', 'Belajar angka satu sampai lima melalui cerita petualangan kelinci cerdik di hutan.', '5-7'],
+            ['Mengenal Warna Suara', 'Mengenali warna primer merah, kuning, biru melalui suara kicauan burung.', '5-7'],
+            ['Suara Hewan Hutan', 'Mengenal suara gajah, monyet, dan harimau di tengah rimba.', '5-7'],
             // Age 8-10
-            ['Buah-buahan', 'Belajar nama buah melalui deskripsi.', '8-10'],
-            ['Anggota Tubuh', 'Mengenal anggota tubuh melalui narasi.', '8-10'],
+            ['Misteri Buah Manis', 'Mendengar teka-teki buah apel, mangga, dan melon yang menyehatkan.', '8-10'],
+            ['Anggota Tubuh Kita', 'Cerita tentang fungsi mata, telinga, tangan, dan kaki yang ajaib.', '8-10'],
         ];
 
         foreach ($audioTopics as $i => $topic) {
@@ -82,12 +119,12 @@ class DatabaseSeeder extends Seeder
         $visualLessons = [];
         $visualTopics = [
             // Age 5-7
-            ['Bentuk Geometri', 'Belajar bentuk dasar: lingkaran, segitiga, kotak.', '5-7'],
-            ['Warna Pelangi', 'Mengenal tujuh warna pelangi.', '5-7'],
-            ['Huruf A-E', 'Belajar huruf awal alfabet dengan gambar.', '5-7'],
+            ['Bentuk Geometri', 'Menemukan bentuk lingkaran matahari, kotak rumah, dan segitiga atap.', '5-7'],
+            ['Pelangi Warna-Warni', 'Melihat keindahan pelangi dan mencocokkan setiap warnanya.', '5-7'],
+            ['Petualangan Huruf A-E', 'Membaca dan mencocokkan huruf awal buah apel, bebek, ceri, dan domba.', '5-7'],
             // Age 8-10
-            ['Angka 1-10', 'Mengenal angka dengan ilustrasi visual.', '8-10'],
-            ['Ekspresi Wajah', 'Mengenal emosi melalui ekspresi wajah.', '8-10'],
+            ['Berhitung 1-10', 'Menghitung jumlah apel dan wortel di kebun pak tani secara visual.', '8-10'],
+            ['Ekspresi Emosi', 'Belajar mengenali ekspresi senang, sedih, marah, dan terkejut.', '8-10'],
         ];
 
         foreach ($visualTopics as $i => $topic) {
@@ -107,17 +144,18 @@ class DatabaseSeeder extends Seeder
         foreach ($audioLessons as $lesson) {
             QuizQuestion::create([
                 'lesson_id' => $lesson->id,
-                'pertanyaan' => 'Sebutkan apa yang kamu pelajari di pelajaran ' . $lesson->judul . '?',
-                'jawaban_benar' => strtolower(explode(' ', $lesson->judul)[1] ?? 'jawaban'),
-                'pilihan' => ['Angka', 'Warna', 'Hewan', 'Buah', 'Tubuh'],
+                'pertanyaan' => 'Hewan apa yang sering mengeluarkan suara petualangan di pelajaran ' . $lesson->judul . '?',
+                'jawaban_benar' => 'Gajah',
+                'pilihan' => ['Gajah', 'Kucing', 'Singa', 'Burung'],
                 'tipe' => 'voice',
+                'poin' => 15,
             ]);
         }
 
         foreach ($visualLessons as $lesson) {
             QuizQuestion::create([
                 'lesson_id' => $lesson->id,
-                'pertanyaan' => 'Pilih gambar yang sesuai dengan ' . $lesson->judul,
+                'pertanyaan' => 'Manakah gambar yang mewakili ' . $lesson->judul . '?',
                 'jawaban_benar' => 'Pilihan A',
                 'pilihan' => [
                     'Pilihan A',
@@ -126,6 +164,7 @@ class DatabaseSeeder extends Seeder
                     'Pilihan D',
                 ],
                 'tipe' => 'image',
+                'poin' => 20,
             ]);
         }
 
@@ -154,14 +193,19 @@ class DatabaseSeeder extends Seeder
 
                 if ($allAudioQuestions->isNotEmpty()) {
                     $q = $allAudioQuestions->random();
+                    $skor = rand(40, 100);
+                    $bintang = $skor >= 100 ? 3 : ($skor >= 70 ? 2 : ($skor >= 40 ? 1 : 0));
                     QuizResult::create([
                         'child_id' => $childAudio->id,
                         'lesson_id' => $q->lesson_id,
                         'quiz_question_id' => $q->id,
-                        'jawaban_anak' => 'Angka',
-                        'benar' => rand(0, 1),
-                        'skor' => rand(40, 100),
+                        'jawaban_anak' => 'Gajah',
+                        'benar' => $skor >= 70 ? 1 : 0,
+                        'skor' => $skor,
+                        'bintang' => $bintang,
+                        'waktu_detik' => rand(10, 45),
                         'percobaan' => rand(1, 3),
+                        'created_at' => $date,
                     ]);
                 }
             }
@@ -184,17 +228,26 @@ class DatabaseSeeder extends Seeder
 
                 if ($allVisualQuestions->isNotEmpty()) {
                     $q = $allVisualQuestions->random();
+                    $skor = rand(50, 100);
+                    $bintang = $skor >= 100 ? 3 : ($skor >= 70 ? 2 : ($skor >= 40 ? 1 : 0));
                     QuizResult::create([
                         'child_id' => $childVisual->id,
                         'lesson_id' => $q->lesson_id,
                         'quiz_question_id' => $q->id,
                         'jawaban_anak' => 'Pilihan A',
-                        'benar' => rand(0, 1),
-                        'skor' => rand(50, 100),
+                        'benar' => $skor >= 70 ? 1 : 0,
+                        'skor' => $skor,
+                        'bintang' => $bintang,
+                        'waktu_detik' => rand(15, 60),
                         'percobaan' => rand(1, 2),
+                        'created_at' => $date,
                     ]);
                 }
             }
         }
+
+        // Award default starter badges
+        $childAudio->badges()->attach(Badge::where('syarat_tipe', 'quiz_count')->first()->id, ['earned_at' => Carbon::now()]);
+        $childVisual->badges()->attach(Badge::where('syarat_tipe', 'quiz_count')->first()->id, ['earned_at' => Carbon::now()]);
     }
 }

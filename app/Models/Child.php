@@ -69,4 +69,14 @@ class Child extends Model
     {
         return $this->jenis_disabilitas === 'tunarungu';
     }
+
+    /**
+     * Get all badges earned by this child.
+     */
+    public function badges(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Badge::class, 'child_badges')
+            ->withPivot('earned_at')
+            ->withTimestamps();
+    }
 }

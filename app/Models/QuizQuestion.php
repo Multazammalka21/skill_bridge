@@ -14,6 +14,11 @@ class QuizQuestion extends Model
         'jawaban_benar',
         'pilihan',
         'tipe',
+        'gambar',
+        'audio_url',
+        'animasi_url',
+        'efek_suara_url',
+        'poin',
     ];
 
     protected function casts(): array

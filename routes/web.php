@@ -4,6 +4,8 @@ use App\Http\Controllers\ParentDashboardWebController;
 use App\Http\Controllers\WebAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\QuizManagementController;
+use App\Http\Controllers\Admin\BadgeManagementController;
+use App\Http\Controllers\PlayController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,26 +33,27 @@ Route::post('/logout', [WebAuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     
+    // Quiz Monitoring Dashboard
+    Route::get('/quiz/monitoring', [QuizManagementController::class, 'monitoring'])->name('quiz.monitoring');
+    
     // Quiz Management CRUD
     Route::resource('quiz', QuizManagementController::class)->except(['show']);
+
+    // Badge Management CRUD
+    Route::resource('badges', BadgeManagementController::class)->except(['show']);
 });
 
-// ─── Protected Parent Routes ─────────────────────────────────────────
-Route::middleware(['auth', 'role:parent'])->group(function () {
+// ─── Protected Parent & Child Routes ─────────────────────────────────
+Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [ParentDashboardWebController::class, 'index'])->name('dashboard');
+
+    // Dynamic Play Views (With active child profile context)
+    Route::get('/play/tunanetra/{child}', [PlayController::class, 'tunanetra'])->name('play.tunanetra');
+    Route::get('/play/tunarungu/{child}', [PlayController::class, 'tunarungu'])->name('play.tunarungu');
+    Route::post('/play/quiz/submit', [PlayController::class, 'submitResult'])->name('play.quiz.submit');
 });
 
-// ─── Play Routes (Token/Cookie Auth) ─────────────────────────────────
+// Fallback old routes for safety
 Route::get('/play', function () {
     return view('play.index');
 })->name('play.index');
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/play/tunanetra', function () {
-        return view('play.tunanetra');
-    })->name('play.tunanetra');
-
-    Route::get('/play/tunarungu', function () {
-        return view('play.tunarungu');
-    })->name('play.tunarungu');
-});

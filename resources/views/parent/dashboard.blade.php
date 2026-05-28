@@ -668,11 +668,89 @@
                                 <p>Temani {{ $child->nama_panggilan ?? 'Anak' }} belajar hari ini</p>
                             </div>
                             <a
-                                href="{{ $child->isAudioWorld() ? route('play.tunanetra') : route('play.tunarungu') }}"
+                                href="{{ $child->isAudioWorld() ? route('play.tunanetra', $child->id) : route('play.tunarungu', $child->id) }}"
                                 class="btn-play"
                             >
                                 Main Sekarang 🚀
                             </a>
+                        </div>
+
+                        {{-- Gamification Badges --}}
+                        <div class="chart-card animate-in d4">
+                            <h3>🏆 Badge Pencapaian</h3>
+                            <div class="badges-row" style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px;">
+                                @forelse($child->badges as $badge)
+                                    <div class="badge-item" title="{{ $badge->deskripsi }}" style="text-align: center; background: rgba(76,175,80,0.06); padding: 12px; border-radius: 12px; border: 1px solid rgba(76,175,80,0.15); min-width: 90px; flex: 1;">
+                                        <div style="font-size: 32px; margin-bottom: 4px;">{{ $badge->ikon }}</div>
+                                        <div style="font-size: 13px; font-weight: bold; color: var(--text-dark);">{{ $badge->nama }}</div>
+                                    </div>
+                                @empty
+                                    <p style="color: #666; font-size: 14px; margin-top: 8px;">Belum ada badge yang diraih. Selesaikan kuis untuk meraih lencana pertama!</p>
+                                @endforelse
+                            </div>
+                        </div>
+
+                        {{-- Rekomendasi Belajar --}}
+                        <div class="chart-card animate-in d4">
+                            <h3>🚀 Rekomendasi Belajar</h3>
+                            <div class="rec-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
+                                @forelse($child->rekomendasi as $rec)
+                                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(41,182,246,0.06); padding: 12px; border-radius: 12px; border: 1px solid rgba(41,182,246,0.15);">
+                                        <div>
+                                            <strong style="color: var(--text-dark); display: block;">{{ $rec->judul }}</strong>
+                                            <span style="font-size: 12px; color: #666;">Kategori: {{ $rec->kategori ?? 'Literasi' }} (Usia {{ $rec->kategori_usia }} th)</span>
+                                        </div>
+                                        <span style="font-size: 20px;">{{ $rec->tipe_dunia === 'audio' ? '🦉' : '👁️' }}</span>
+                                    </div>
+                                @empty
+                                    <div style="background: rgba(76,175,80,0.06); padding: 12px; border-radius: 12px; border: 1px solid rgba(76,175,80,0.15); text-align: center; padding: 20px 10px;">
+                                        🎉 <strong>Hebat! Semua materi sudah selesai diselesaikan!</strong>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+
+                        {{-- Hasil Kuis Terbaru --}}
+                        <div class="chart-card chart-card--full animate-in d4">
+                            <h3>📝 Hasil Kuis Terbaru</h3>
+                            <div style="margin-top: 12px; overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                                    <thead>
+                                        <tr style="border-bottom: 2px solid rgba(76,175,80,0.15); font-size: 14px; color: var(--text-mid);">
+                                            <th style="padding: 8px;">Pelajaran</th>
+                                            <th style="padding: 8px;">Pertanyaan</th>
+                                            <th style="padding: 8px;">Hasil</th>
+                                            <th style="padding: 8px;">Skor</th>
+                                            <th style="padding: 8px;">Bintang</th>
+                                            <th style="padding: 8px;">Durasi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="font-size: 14px;">
+                                        @forelse($child->recentQuizzes as $result)
+                                            <tr style="border-bottom: 1px solid rgba(76,175,80,0.08);">
+                                                <td style="padding: 10px 8px; font-weight: bold; color: var(--text-dark);">{{ $result->lesson->judul }}</td>
+                                                <td style="padding: 10px 8px;">{{ Str::limit($result->quizQuestion->pertanyaan, 40) }}</td>
+                                                <td style="padding: 10px 8px;">
+                                                    @if($result->benar)
+                                                        <span style="color: #2e7d32; font-weight: bold;">✅ Benar</span>
+                                                    @else
+                                                        <span style="color: #ef5350; font-weight: bold;">❌ Salah</span>
+                                                    @endif
+                                                </td>
+                                                <td style="padding: 10px 8px; font-weight: bold;">{{ $result->skor }}</td>
+                                                <td style="padding: 10px 8px; color: #ffca28; font-size: 16px;">
+                                                    {{ str_repeat('⭐', $result->bintang) }}
+                                                </td>
+                                                <td style="padding: 10px 8px; color: #666;">{{ $result->waktu_detik }} detik</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="6" style="padding: 20px; text-align: center; color: #888;">Belum ada hasil kuis yang tercatat. Selesaikan kuis pertama sekarang!</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         {{-- Progress per kategori --}}
