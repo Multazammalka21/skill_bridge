@@ -552,9 +552,9 @@
 
         {{-- Topbar --}}
         <header class="topbar">
-            <div class="topbar-brand">
-                <h1>🗺️ Dashboard Orang Tua</h1>
-                <span class="brand-badge">Pinteria</span>
+            <div class="topbar-brand" style="display: flex; align-items: center; gap: 12px;">
+                <img src="{{ asset('images/logo.png') }}" alt="Pinteria Logo" style="height: 38px; width: auto; object-fit: contain;">
+                <h1 style="font-size: 1.4rem; color: var(--text-dark); margin: 0;">Dashboard Orang Tua</h1>
             </div>
             <div class="topbar-right">
                 <div class="avatar" aria-label="Avatar {{ $user->name }}">

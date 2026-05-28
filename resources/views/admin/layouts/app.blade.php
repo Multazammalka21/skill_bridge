@@ -493,12 +493,9 @@
 
     <!-- Sidebar -->
     <aside class="admin-sidebar" id="adminSidebar">
-        <div class="sidebar-brand">
-            <div class="sidebar-brand-logo">P</div>
-            <div>
-                <div class="sidebar-brand-text">Pinteria</div>
-                <div class="sidebar-brand-badge">Admin Panel</div>
-            </div>
+        <div class="sidebar-brand" style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; padding: 20px;">
+            <img src="{{ asset('images/logo.png') }}" alt="Pinteria Logo" style="height: 30px; width: auto; max-width: 140px; object-fit: contain; filter: brightness(0) invert(1);">
+            <span class="sidebar-brand-badge">Admin</span>
         </div>
 
         <nav class="sidebar-nav">

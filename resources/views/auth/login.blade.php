@@ -305,6 +305,9 @@
     <div class="login-wrapper">
         <div class="login-card">
             
+            <div class="brand-logo" style="margin-bottom: 20px; display: flex; justify-content: center;">
+                <img src="{{ asset('images/logo.png') }}" alt="Pinteria Logo" style="height: 55px; width: auto; object-fit: contain;">
+            </div>
             <h1 class="title">Halo, Petualang Kecil!</h1>
             <p class="subtitle">Ayo mulai petualangan belajarmu hari ini</p>
 

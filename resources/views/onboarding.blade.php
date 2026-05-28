@@ -378,10 +378,13 @@
             <div class="slides-container">
                 <!-- Slide 1: Welcome -->
                 <div class="slide slide-1 active">
-                    <div class="illus-wrapper">
-                        <div id="mascot-welcome" class="mascot-lottie"></div>
+                    <div class="brand-logo" style="margin-bottom: 20px;">
+                        <img src="{{ asset('images/logo.png') }}" alt="Pinteria Logo" style="height: 60px; width: auto; object-fit: contain;">
                     </div>
-                    <h1 class="title">Selamat Datang di Pinteria</h1>
+                    <div class="illus-wrapper" style="height: 180px; margin-bottom: 20px;">
+                        <div id="mascot-welcome" class="mascot-lottie" style="width: 180px; height: 180px;"></div>
+                    </div>
+                    <h1 class="title">Selamat Datang!</h1>
                     <p class="subtitle">Belajar sambil bermain dengan seru!</p>
                 </div>
 
