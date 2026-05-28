@@ -11,6 +11,7 @@ class Lesson extends Model
         'judul',
         'deskripsi',
         'tipe_dunia',
+        'kategori_usia',
         'urutan',
         'gambar',
         'animasi_lottie',
@@ -77,12 +78,20 @@ class Lesson extends Model
     }
 
     /**
+     * Scope: filter by age category.
+     */
+    public function scopeForAge($query, string $kategoriUsia)
+    {
+        return $query->where('kategori_usia', $kategoriUsia);
+    }
+
+    /**
      * Return only non-media fields for listing (lazy load support).
      */
     public function scopeListing($query)
     {
         return $query->select([
-            'id', 'judul', 'deskripsi', 'tipe_dunia',
+            'id', 'judul', 'deskripsi', 'tipe_dunia', 'kategori_usia',
             'urutan', 'durasi_menit', 'aktif',
             'created_at', 'updated_at',
         ]);

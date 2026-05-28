@@ -77,7 +77,7 @@ class AuthController extends Controller
         if (! $email || ! $password) {
             return response()->json([
                 'message' => 'Basic Auth credentials diperlukan.',
-            ], 401)->header('WWW-Authenticate', 'Basic realm="Skill Bridge API"');
+            ], 401)->header('WWW-Authenticate', 'Basic realm="Pinteria API"');
         }
 
         $token = auth('api')->attempt([
@@ -88,7 +88,7 @@ class AuthController extends Controller
         if (! $token) {
             return response()->json([
                 'message' => 'Email atau kata sandi salah.',
-            ], 401)->header('WWW-Authenticate', 'Basic realm="Skill Bridge API"');
+            ], 401)->header('WWW-Authenticate', 'Basic realm="Pinteria API"');
         }
 
         return $this->respondWithToken($token);

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes — Skill Bridge (SDG #4 Quality Education)
+| API Routes — Pinteria (SDG #4 Quality Education)
 |--------------------------------------------------------------------------
 |
 | Tiga metode autentikasi tersedia:

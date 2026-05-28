@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Dashboard Progress Orang Tua - Skill Bridge. Pantau kemajuan belajar anak Anda.">
-    <title>Dashboard Orang Tua — Skill Bridge</title>
+    <meta name="description" content="Dashboard Progress Orang Tua - Pinteria. Pantau kemajuan belajar anak Anda.">
+    <title>Dashboard Orang Tua — Pinteria</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -554,7 +554,7 @@
         <header class="topbar">
             <div class="topbar-brand">
                 <h1>🗺️ Dashboard Orang Tua</h1>
-                <span class="brand-badge">Skill Bridge</span>
+                <span class="brand-badge">Pinteria</span>
             </div>
             <div class="topbar-right">
                 <div class="avatar" aria-label="Avatar {{ $user->name }}">

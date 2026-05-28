@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Masuk ke Skill Bridge - Dunia Petualangan Belajar">
-    <title>Masuk - Skill Bridge</title>
+    <meta name="description" content="Masuk ke Pinteria - Dunia Petualangan Belajar">
+    <title>Masuk - Pinteria</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

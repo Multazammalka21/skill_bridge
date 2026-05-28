@@ -18,12 +18,14 @@ class ChildContentRepository
 
         $tipe = $tipeDunia === 'tunanetra' ? 'audio' : 'visual';
 
-        // Filter berdasarkan tipe dunia dan aktif
-        $query = Lesson::active()->forWorld($tipe)->orderBy('urutan');
+        // Tentukan kategori usia berdasarkan umur anak
+        $kategoriUsia = ($usia >= 5 && $usia <= 7) ? '5-7' : '8-10';
 
-        // Jika ada filter usia di masa depan (opsional karena struktur db saat ini belum ada min_usia/max_usia, 
-        // tapi repository pattern memungkinkan kita menambahkan filter kompleks ini di satu tempat).
-        // $query->where('min_usia', '<=', $usia)->where('max_usia', '>=', $usia);
+        // Filter berdasarkan tipe dunia, kategori usia, dan aktif
+        $query = Lesson::active()
+            ->forWorld($tipe)
+            ->forAge($kategoriUsia)
+            ->orderBy('urutan');
 
         return $query->get();
     }

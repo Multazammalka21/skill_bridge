@@ -19,6 +19,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // ─── Create admin user ─────────────────────────────────────
+        User::create([
+            'name' => 'Admin Pinteria',
+            'email' => 'admin@pinteria.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
+
         // ─── Create parent user ───────────────────────────────────
         $parent = User::create([
             'name' => 'Orang Tua Demo',
@@ -28,28 +36,32 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // ─── Create children ─────────────────────────────────────
+        // Aira: lahir 2019 (umur 7 tahun di 2026), tunanetra (Audio World)
         $childAudio = Child::create([
             'user_id' => $parent->id,
             'nama_panggilan' => 'Aira',
-            'tanggal_lahir' => '2018-03-15',
+            'tanggal_lahir' => '2019-03-15',
             'jenis_disabilitas' => 'tunanetra',
         ]);
 
+        // Bima: lahir 2017 (umur 9 tahun di 2026), tunarungu (Visual World)
         $childVisual = Child::create([
             'user_id' => $parent->id,
             'nama_panggilan' => 'Bima',
-            'tanggal_lahir' => '2019-07-22',
+            'tanggal_lahir' => '2017-07-22',
             'jenis_disabilitas' => 'tunarungu',
         ]);
 
         // ─── Audio World Lessons ─────────────────────────────────
         $audioLessons = [];
         $audioTopics = [
-            ['Mengenal Angka 1-5', 'Belajar angka satu sampai lima melalui cerita.'],
-            ['Mengenal Warna', 'Belajar warna melalui deskripsi suara.'],
-            ['Hewan Peliharaan', 'Mengenal suara dan nama hewan peliharaan.'],
-            ['Buah-buahan', 'Belajar nama buah melalui deskripsi.'],
-            ['Anggota Tubuh', 'Mengenal anggota tubuh melalui narasi.'],
+            // Age 5-7
+            ['Mengenal Angka 1-5', 'Belajar angka satu sampai lima melalui cerita.', '5-7'],
+            ['Mengenal Warna', 'Belajar warna melalui deskripsi suara.', '5-7'],
+            ['Hewan Peliharaan', 'Mengenal suara dan nama hewan peliharaan.', '5-7'],
+            // Age 8-10
+            ['Buah-buahan', 'Belajar nama buah melalui deskripsi.', '8-10'],
+            ['Anggota Tubuh', 'Mengenal anggota tubuh melalui narasi.', '8-10'],
         ];
 
         foreach ($audioTopics as $i => $topic) {
@@ -57,6 +69,7 @@ class DatabaseSeeder extends Seeder
                 'judul' => $topic[0],
                 'deskripsi' => $topic[1],
                 'tipe_dunia' => 'audio',
+                'kategori_usia' => $topic[2],
                 'urutan' => $i + 1,
                 'teks_narasi' => $topic[1],
                 'teks_keterangan' => $topic[1],
@@ -68,11 +81,13 @@ class DatabaseSeeder extends Seeder
         // ─── Visual World Lessons ────────────────────────────────
         $visualLessons = [];
         $visualTopics = [
-            ['Bentuk Geometri', 'Belajar bentuk dasar: lingkaran, segitiga, kotak.'],
-            ['Warna Pelangi', 'Mengenal tujuh warna pelangi.'],
-            ['Huruf A-E', 'Belajar huruf awal alfabet dengan gambar.'],
-            ['Angka 1-10', 'Mengenal angka dengan ilustrasi visual.'],
-            ['Ekspresi Wajah', 'Mengenal emosi melalui ekspresi wajah.'],
+            // Age 5-7
+            ['Bentuk Geometri', 'Belajar bentuk dasar: lingkaran, segitiga, kotak.', '5-7'],
+            ['Warna Pelangi', 'Mengenal tujuh warna pelangi.', '5-7'],
+            ['Huruf A-E', 'Belajar huruf awal alfabet dengan gambar.', '5-7'],
+            // Age 8-10
+            ['Angka 1-10', 'Mengenal angka dengan ilustrasi visual.', '8-10'],
+            ['Ekspresi Wajah', 'Mengenal emosi melalui ekspresi wajah.', '8-10'],
         ];
 
         foreach ($visualTopics as $i => $topic) {
@@ -80,6 +95,7 @@ class DatabaseSeeder extends Seeder
                 'judul' => $topic[0],
                 'deskripsi' => $topic[1],
                 'tipe_dunia' => 'visual',
+                'kategori_usia' => $topic[2],
                 'urutan' => $i + 1,
                 'teks_keterangan' => $topic[1],
                 'durasi_menit' => rand(3, 8),
@@ -93,6 +109,7 @@ class DatabaseSeeder extends Seeder
                 'lesson_id' => $lesson->id,
                 'pertanyaan' => 'Sebutkan apa yang kamu pelajari di pelajaran ' . $lesson->judul . '?',
                 'jawaban_benar' => strtolower(explode(' ', $lesson->judul)[1] ?? 'jawaban'),
+                'pilihan' => ['Angka', 'Warna', 'Hewan', 'Buah', 'Tubuh'],
                 'tipe' => 'voice',
             ]);
         }
@@ -101,12 +118,12 @@ class DatabaseSeeder extends Seeder
             QuizQuestion::create([
                 'lesson_id' => $lesson->id,
                 'pertanyaan' => 'Pilih gambar yang sesuai dengan ' . $lesson->judul,
-                'jawaban_benar' => 'benar',
+                'jawaban_benar' => 'Pilihan A',
                 'pilihan' => [
-                    ['label' => 'Pilihan A', 'gambar' => '/images/placeholder.png', 'benar' => true],
-                    ['label' => 'Pilihan B', 'gambar' => '/images/placeholder.png', 'benar' => false],
-                    ['label' => 'Pilihan C', 'gambar' => '/images/placeholder.png', 'benar' => false],
-                    ['label' => 'Pilihan D', 'gambar' => '/images/placeholder.png', 'benar' => false],
+                    'Pilihan A',
+                    'Pilihan B',
+                    'Pilihan C',
+                    'Pilihan D',
                 ],
                 'tipe' => 'image',
             ]);
@@ -141,7 +158,7 @@ class DatabaseSeeder extends Seeder
                         'child_id' => $childAudio->id,
                         'lesson_id' => $q->lesson_id,
                         'quiz_question_id' => $q->id,
-                        'jawaban_anak' => 'jawaban',
+                        'jawaban_anak' => 'Angka',
                         'benar' => rand(0, 1),
                         'skor' => rand(40, 100),
                         'percobaan' => rand(1, 3),
@@ -171,7 +188,7 @@ class DatabaseSeeder extends Seeder
                         'child_id' => $childVisual->id,
                         'lesson_id' => $q->lesson_id,
                         'quiz_question_id' => $q->id,
-                        'jawaban_anak' => 'benar',
+                        'jawaban_anak' => 'Pilihan A',
                         'benar' => rand(0, 1),
                         'skor' => rand(50, 100),
                         'percobaan' => rand(1, 2),

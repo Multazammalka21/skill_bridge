@@ -16,7 +16,7 @@ class WebAuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return $this->redirectByRole(Auth::user());
         }
         return view('auth.login');
     }
@@ -34,7 +34,7 @@ class WebAuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('dashboard'));
+            return $this->redirectByRole(Auth::user());
         }
 
         throw ValidationException::withMessages([
@@ -48,7 +48,7 @@ class WebAuthController extends Controller
     public function showRegisterForm()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return $this->redirectByRole(Auth::user());
         }
         return view('auth.register');
     }
@@ -73,7 +73,7 @@ class WebAuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('dashboard');
+        return $this->redirectByRole($user);
     }
 
     /**
@@ -87,5 +87,16 @@ class WebAuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    /**
+     * Redirect user to the appropriate dashboard based on their role.
+     */
+    protected function redirectByRole(User $user)
+    {
+        return match ($user->role) {
+            'admin'  => redirect()->route('admin.dashboard'),
+            default  => redirect()->route('dashboard'),
+        };
     }
 }
