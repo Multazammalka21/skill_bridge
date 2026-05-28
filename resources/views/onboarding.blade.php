@@ -37,6 +37,11 @@
             justify-content: center;
             overflow: hidden;
             position: relative;
+            transition: opacity 0.5s ease-in-out, background 0.5s ease-in-out;
+        }
+
+        body.exit-active {
+            background: linear-gradient(180deg, #5ba8d8 0%, #87CEEB 30%, #b8e8f7 55%, #c8eea0 75%, #7ec850 100%) !important;
         }
 
         /* Ambient elements */
@@ -75,6 +80,12 @@
             max-width: 500px;
             padding: 20px;
             box-sizing: border-box;
+            transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .onboarding-container.exit {
+            opacity: 0;
+            transform: translateY(40px) scale(0.92);
         }
 
         .onboarding-card {
@@ -379,7 +390,7 @@
                 <!-- Slide 1: Welcome -->
                 <div class="slide slide-1 active">
                     <div class="brand-logo" style="margin-bottom: 20px;">
-                        <img src="{{ asset('images/logo.png') }}" alt="Pinteria Logo" style="height: 60px; width: auto; object-fit: contain;">
+                        <img src="{{ asset('images/Logo_pinteria (1).png') }}" alt="Pinteria Logo" style="height: 90px; width: auto; object-fit: contain;">
                     </div>
                     <div class="illus-wrapper" style="height: 180px; margin-bottom: 20px;">
                         <div id="mascot-welcome" class="mascot-lottie" style="width: 180px; height: 180px;"></div>
@@ -504,8 +515,14 @@
         function finishOnboarding() {
             // Mark onboarding as seen in localStorage
             localStorage.setItem('pinteria_onboarding_seen', 'true');
-            // Redirect to login screen
-            window.location.href = "{{ route('login') }}";
+            
+            // Trigger smooth exit transition
+            document.querySelector('.onboarding-container').classList.add('exit');
+            document.body.classList.add('exit-active');
+            
+            setTimeout(() => {
+                window.location.href = "{{ route('login') }}";
+            }, 500);
         }
 
         // Check if user has already seen onboarding (optional routing could handle this, but client-side check is robust)

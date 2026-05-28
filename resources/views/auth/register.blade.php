@@ -24,6 +24,8 @@
             justify-content: center;
             overflow: hidden;
             position: relative;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
 
         /* Sun */
@@ -150,7 +152,41 @@
             max-width: 400px;
             padding: 20px;
             box-sizing: border-box;
-            /* margin removed for better center alignment */
+            opacity: 0;
+            transform: translateY(-50px) scale(0.92);
+            animation: loginEntrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation-delay: 0.15s;
+        }
+
+        .mascots-entrance {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 6;
+            opacity: 0;
+            animation: mascotEntrance 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation-delay: 0.3s;
+        }
+
+        @keyframes loginEntrance {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes mascotEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .login-card {
@@ -295,9 +331,11 @@
     <div class="flower f-3">🌸</div>
     <div class="flower f-4">🌼</div>
 
-    <div class="mascots">
-        <div class="mascot-emoji" title="Wulan">🦉</div>
-        <div class="mascot-emoji" title="Sinar">🦜</div>
+    <div class="mascots-entrance">
+        <div class="mascots">
+            <div class="mascot-emoji" title="Wulan">🦉</div>
+            <div class="mascot-emoji" title="Sinar">🦜</div>
+        </div>
     </div>
     
     <div class="ground"></div>
@@ -307,8 +345,8 @@
         <div class="login-card">
             
             <div class="brand-logo" style="margin-bottom: 20px; display: flex; justify-content: center;">
-                <img src="{{ asset('images/logo.png') }}" alt="Pinteria Logo" style="height: 55px; width: auto; object-fit: contain;">
-            </div>
+                 <img src="{{ asset('images/Logo_pinteria (1).png') }}" alt="Pinteria Logo" style="height: 80px; width: auto; object-fit: contain;">
+             </div>
             <h1 class="title">Halo, Teman Baru!</h1>
             <p class="subtitle">Buat akun untuk memulai petualanganmu</p>
 
@@ -353,5 +391,12 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 50);
+        });
+    </script>
 </body>
 </html>

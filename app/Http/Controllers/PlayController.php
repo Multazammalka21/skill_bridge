@@ -52,11 +52,15 @@ class PlayController extends Controller
             ->get();
 
         // Start a study session log
-        StudySession::create([
-            'child_id' => $child->id,
-            'started_at' => Carbon::now(),
-            'durasi_detik' => 0, // Will update later
-        ]);
+        $firstLesson = $lessons->first();
+        if ($firstLesson) {
+            StudySession::create([
+                'child_id' => $child->id,
+                'lesson_id' => $firstLesson->id,
+                'started_at' => Carbon::now(),
+                'durasi_detik' => 0,
+            ]);
+        }
 
         return view('play.tunanetra', compact('child', 'lessons'));
     }
@@ -79,11 +83,15 @@ class PlayController extends Controller
             ->get();
 
         // Start a study session log
-        StudySession::create([
-            'child_id' => $child->id,
-            'started_at' => Carbon::now(),
-            'durasi_detik' => 0, // Will update later
-        ]);
+        $firstLesson = $lessons->first();
+        if ($firstLesson) {
+            StudySession::create([
+                'child_id' => $child->id,
+                'lesson_id' => $firstLesson->id,
+                'started_at' => Carbon::now(),
+                'durasi_detik' => 0,
+            ]);
+        }
 
         return view('play.tunarungu', compact('child', 'lessons'));
     }
@@ -123,17 +131,23 @@ class PlayController extends Controller
             ]);
         }
 
-        // Update active study session duration
+        // Find or create active study session for this child and lesson
         $activeSession = StudySession::where('child_id', $child->id)
-            ->whereNull('ended_at')
-            ->orWhere('started_at', '>=', Carbon::now()->subMinutes(30))
+            ->where('lesson_id', $validated['lesson_id'])
             ->latest()
             ->first();
 
-        if ($activeSession) {
-            $activeSession->increment('durasi_detik', $validated['waktu_detik']);
-            $activeSession->update(['ended_at' => Carbon::now()]);
+        if (!$activeSession) {
+            $activeSession = StudySession::create([
+                'child_id' => $child->id,
+                'lesson_id' => $validated['lesson_id'],
+                'started_at' => Carbon::now()->subSeconds($validated['waktu_detik']),
+                'durasi_detik' => 0,
+            ]);
         }
+
+        $activeSession->increment('durasi_detik', $validated['waktu_detik']);
+        $activeSession->update(['ended_at' => Carbon::now()]);
 
         // Award and check badges
         $newBadges = GamificationService::checkAndAwardBadges($child);
