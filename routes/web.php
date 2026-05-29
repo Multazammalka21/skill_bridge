@@ -3,6 +3,10 @@
 use App\Http\Controllers\ParentDashboardWebController;
 use App\Http\Controllers\WebAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\LessonController;
+use App\Http\Controllers\Admin\LearningPathController;
+use App\Http\Controllers\Admin\MediaAssetController;
 use App\Http\Controllers\Admin\QuizManagementController;
 use App\Http\Controllers\Admin\BadgeManagementController;
 use App\Http\Controllers\PlayController;
@@ -32,14 +36,28 @@ Route::post('/logout', [WebAuthController::class, 'logout'])->name('logout');
 // ─── Protected Admin Routes ──────────────────────────────────────────
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    
-    // Quiz Monitoring Dashboard
+
+    // ── Kategori Pembelajaran ─────────────────────────────────────────
+    Route::resource('categories', CategoryController::class)->except(['show']);
+
+    // ── Materi Pembelajaran (Lessons) ─────────────────────────────────
+    Route::post('lessons/reorder', [LessonController::class, 'reorder'])->name('lessons.reorder');
+    Route::resource('lessons', LessonController::class)->except(['show']);
+
+    // ── Library Media Asset ───────────────────────────────────────────
+    Route::get('media', [MediaAssetController::class, 'index'])->name('media.index');
+    Route::post('media', [MediaAssetController::class, 'store'])->name('media.store');
+    Route::delete('media/{asset}', [MediaAssetController::class, 'destroy'])->name('media.destroy');
+
+    // ── Learning Path (Urutan Belajar) ────────────────────────────────
+    Route::get('learning-path', [LearningPathController::class, 'index'])->name('learning-path.index');
+    Route::put('learning-path', [LearningPathController::class, 'update'])->name('learning-path.update');
+
+    // ── Quiz Management ───────────────────────────────────────────────
     Route::get('/quiz/monitoring', [QuizManagementController::class, 'monitoring'])->name('quiz.monitoring');
-    
-    // Quiz Management CRUD
     Route::resource('quiz', QuizManagementController::class)->except(['show']);
 
-    // Badge Management CRUD
+    // ── Badge Management ──────────────────────────────────────────────
     Route::resource('badges', BadgeManagementController::class)->except(['show']);
 });
 

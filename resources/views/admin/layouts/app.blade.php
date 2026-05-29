@@ -507,19 +507,47 @@
                 <span>Dashboard</span>
             </a>
 
-            <a href="{{ route('admin.quiz.monitoring') }}"
-               class="sidebar-link {{ request()->routeIs('admin.quiz.monitoring') ? 'active' : '' }}">
-                <span class="link-icon">📈</span>
-                <span>Kuis Monitoring</span>
+            <div class="sidebar-section-title">Manajemen Konten</div>
+
+            <a href="{{ route('admin.categories.index') }}"
+               class="sidebar-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                <span class="link-icon">🗂️</span>
+                <span>Kategori Pembelajaran</span>
             </a>
 
-            <div class="sidebar-section-title">Manajemen Konten</div>
+            <a href="{{ route('admin.lessons.index') }}"
+               class="sidebar-link {{ request()->routeIs('admin.lessons.*') ? 'active' : '' }}">
+                <span class="link-icon">📚</span>
+                <span>Materi Pembelajaran</span>
+            </a>
+
+            <a href="{{ route('admin.media.index') }}"
+               class="sidebar-link {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
+                <span class="link-icon">🖼️</span>
+                <span>Library Media</span>
+            </a>
+
+            <a href="{{ route('admin.learning-path.index') }}"
+               class="sidebar-link {{ request()->routeIs('admin.learning-path.*') ? 'active' : '' }}">
+                <span class="link-icon">🗺️</span>
+                <span>Learning Path</span>
+            </a>
+
+            <div class="sidebar-section-title">Quiz & Evaluasi</div>
 
             <a href="{{ route('admin.quiz.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.quiz.index') || request()->routeIs('admin.quiz.create') || request()->routeIs('admin.quiz.edit') ? 'active' : '' }}">
                 <span class="link-icon">❓</span>
                 <span>Kelola Quiz</span>
             </a>
+
+            <a href="{{ route('admin.quiz.monitoring') }}"
+               class="sidebar-link {{ request()->routeIs('admin.quiz.monitoring') ? 'active' : '' }}">
+                <span class="link-icon">📈</span>
+                <span>Monitoring Quiz</span>
+            </a>
+
+            <div class="sidebar-section-title">Gamifikasi</div>
 
             <a href="{{ route('admin.badges.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.badges.*') ? 'active' : '' }}">

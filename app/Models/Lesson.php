@@ -3,21 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Lesson extends Model
 {
     protected $fillable = [
+        'category_id',
         'judul',
         'deskripsi',
         'tipe_dunia',
         'kategori_usia',
         'urutan',
+        'prerequisite_lesson_id',
         'gambar',
         'animasi_lottie',
         'efek_suara',
         'teks_narasi',
         'teks_keterangan',
+        'konten_tipe',
+        'audio_story_url',
         'durasi_menit',
         'aktif',
     ];
@@ -27,6 +32,30 @@ class Lesson extends Model
         return [
             'aktif' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the category this lesson belongs to.
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the prerequisite lesson (for learning path unlock).
+     */
+    public function prerequisite(): BelongsTo
+    {
+        return $this->belongsTo(Lesson::class, 'prerequisite_lesson_id');
+    }
+
+    /**
+     * Lessons that require THIS lesson as prerequisite.
+     */
+    public function dependents(): HasMany
+    {
+        return $this->hasMany(Lesson::class, 'prerequisite_lesson_id');
     }
 
     /**
