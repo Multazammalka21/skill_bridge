@@ -66,6 +66,7 @@
             display: flex;
             flex-direction: column;
             transition: transform var(--admin-transition);
+            overflow-y: auto;
         }
 
         .sidebar-brand {
@@ -571,9 +572,17 @@
     <div class="admin-main">
         <header class="admin-topbar">
             <h1>@yield('page-title', 'Dashboard')</h1>
-            <div class="topbar-user">
-                <div class="topbar-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
-                <span class="topbar-user-name">{{ auth()->user()->name }}</span>
+            <div class="topbar-user" style="display: flex; align-items: center; gap: 16px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="topbar-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                    <span class="topbar-user-name">{{ auth()->user()->name }}</span>
+                </div>
+                <form action="{{ route('logout') }}" method="POST" style="margin: 0; display: inline;">
+                    @csrf
+                    <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" style="display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; background: var(--admin-danger); color: #fff; border: none; cursor: pointer;">
+                        🚪 Keluar
+                    </button>
+                </form>
             </div>
         </header>
 
