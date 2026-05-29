@@ -74,8 +74,8 @@
                 <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; width: 100%; margin-top: 1rem;">
                     <template x-for="(opt, idx) in currentQuestion.pilihan" :key="idx">
                         <div
-                            class="card lesson-card cursor-pointer"
-                            style="text-align: center; padding: 20px; border: 3px solid rgba(255,255,255,0.1); border-radius: 16px; background: rgba(255, 255, 255, 0.03); transition: all 0.3s; position: relative;"
+                            class="card lesson-card choice-card cursor-pointer"
+                            style="text-align: center; padding: 20px; position: relative;"
                             :style="getSelectedCardStyle(idx)"
                             @click="selectOption(idx, opt)"
                         >
@@ -370,6 +370,17 @@
     </script>
 
     <style>
+        .choice-card {
+            border: 3px solid rgba(255, 255, 255, 0.1) !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s, background-color 0.2s !important;
+            border-radius: 20px !important;
+        }
+        .choice-card:hover {
+            transform: translateY(-5px) scale(1.03) !important;
+            border-color: #ff6b35 !important;
+            box-shadow: 0 10px 20px rgba(255, 107, 53, 0.15) !important;
+        }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-6px); }

@@ -152,17 +152,53 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        $visualQuestionsData = [
+            'Bentuk Geometri' => [
+                'pertanyaan' => 'Lihat gambar bentuk-bentuk lucu ini. Bentuk apakah matahari yang tersenyum?',
+                'jawaban_benar' => 'Lingkaran',
+                'pilihan' => ['Lingkaran', 'Kotak', 'Segitiga', 'Bintang'],
+                'gambar' => '/images/quiz/geometri.png'
+            ],
+            'Pelangi Warna-Warni' => [
+                'pertanyaan' => 'Lihat pelangi indah di langit. Manakah warna yang paling atas?',
+                'jawaban_benar' => 'Merah',
+                'pilihan' => ['Merah', 'Hijau', 'Kuning', 'Biru'],
+                'gambar' => '/images/quiz/pelangi.png'
+            ],
+            'Petualangan Huruf A-E' => [
+                'pertanyaan' => 'Lihat huruf merah besar A di samping. Gambar buah apakah itu?',
+                'jawaban_benar' => 'Apel',
+                'pilihan' => ['Apel', 'Bebek', 'Ceri', 'Domba'],
+                'gambar' => '/images/quiz/huruf_apel.png'
+            ],
+            'Berhitung 1-10' => [
+                'pertanyaan' => 'Bantu Pak Tani menghitung buah apel di keranjang. Ada berapa jumlahnya?',
+                'jawaban_benar' => '3',
+                'pilihan' => ['3', '5', '7', '9'],
+                'gambar' => '/images/quiz/berhitung_tiga.png'
+            ],
+            'Ekspresi Emosi' => [
+                'pertanyaan' => 'Ada empat ekspresi wajah anak. Wajah yang manakah yang menggambarkan perasaan "Senang"?',
+                'jawaban_benar' => 'Senang',
+                'pilihan' => ['Senang', 'Sedih', 'Marah', 'Terkejut'],
+                'gambar' => '/images/quiz/ekspresi_emosi.png'
+            ]
+        ];
+
         foreach ($visualLessons as $lesson) {
-            QuizQuestion::create([
-                'lesson_id' => $lesson->id,
+            $data = $visualQuestionsData[$lesson->judul] ?? [
                 'pertanyaan' => 'Manakah gambar yang mewakili ' . $lesson->judul . '?',
                 'jawaban_benar' => 'Pilihan A',
-                'pilihan' => [
-                    'Pilihan A',
-                    'Pilihan B',
-                    'Pilihan C',
-                    'Pilihan D',
-                ],
+                'pilihan' => ['Pilihan A', 'Pilihan B', 'Pilihan C', 'Pilihan D'],
+                'gambar' => null
+            ];
+
+            QuizQuestion::create([
+                'lesson_id' => $lesson->id,
+                'pertanyaan' => $data['pertanyaan'],
+                'jawaban_benar' => $data['jawaban_benar'],
+                'pilihan' => $data['pilihan'],
+                'gambar' => $data['gambar'],
                 'tipe' => 'image',
                 'poin' => 20,
             ]);
@@ -199,7 +235,7 @@ class DatabaseSeeder extends Seeder
                         'child_id' => $childAudio->id,
                         'lesson_id' => $q->lesson_id,
                         'quiz_question_id' => $q->id,
-                        'jawaban_anak' => 'Gajah',
+                        'jawaban_anak' => $skor >= 70 ? $q->jawaban_benar : 'Salah',
                         'benar' => $skor >= 70 ? 1 : 0,
                         'skor' => $skor,
                         'bintang' => $bintang,
@@ -234,7 +270,7 @@ class DatabaseSeeder extends Seeder
                         'child_id' => $childVisual->id,
                         'lesson_id' => $q->lesson_id,
                         'quiz_question_id' => $q->id,
-                        'jawaban_anak' => 'Pilihan A',
+                        'jawaban_anak' => $skor >= 70 ? $q->jawaban_benar : 'Salah',
                         'benar' => $skor >= 70 ? 1 : 0,
                         'skor' => $skor,
                         'bintang' => $bintang,

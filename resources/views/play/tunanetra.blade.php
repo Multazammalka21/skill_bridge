@@ -65,6 +65,24 @@
 
                 <p class="status-text" style="font-size: 1.5rem; color: #ffeb3b; font-weight: bold; text-align: center; min-height: 2.5rem;" x-text="quizStatus"></p>
 
+                <!-- Fallback Multiple Choice Options (Visible for mentor/parent help) -->
+                <div x-show="!quizFinished" style="width: 100%; max-width: 500px; margin-top: 1rem;">
+                    <p style="font-size: 1.1rem; color: #b48fff; margin-bottom: 0.8rem; text-align: center; font-weight: bold;">
+                        💡 Pilihan Jawaban (Pendamping dapat mengklik tombol ini jika mikrofon bermasalah):
+                    </p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%;">
+                        <template x-for="(opt, idx) in currentQuestion.pilihan" :key="idx">
+                            <button
+                                class="btn"
+                                style="min-height: 60px; font-size: 1.2rem; background: rgba(155, 114, 247, 0.15); border: 2px solid rgba(155, 114, 247, 0.3); color: #fffffe; border-radius: 15px; padding: 10px; box-shadow: none;"
+                                @click="selectOptionFallback(opt)"
+                            >
+                                <span x-text="opt"></span>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
                 <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;">
                     <button
                         class="btn btn-repeat"
@@ -229,7 +247,16 @@
                     this.speakAndListen();
                 },
 
+                recognizer: null,
+
                 async speakAndListen() {
+                    // Stop any existing recognizer session before starting a new one
+                    if (this.recognizer) {
+                        try {
+                            this.recognizer.abort();
+                        } catch(e) {}
+                    }
+
                     this.quizStatus = 'Membacakan pertanyaan...';
                     await this.speakTTS(this.currentQuestion.pertanyaan);
                     
@@ -242,21 +269,30 @@
                         return;
                     }
 
-                    const recognizer = new SpeechRec();
-                    recognizer.lang = 'id-ID';
-                    recognizer.interimResults = false;
-                    recognizer.maxAlternatives = 1;
+                    this.recognizer = new SpeechRec();
+                    this.recognizer.lang = 'id-ID';
+                    this.recognizer.interimResults = false;
+                    this.recognizer.maxAlternatives = 1;
 
-                    recognizer.onstart = () => {
+                    this.recognizer.onstart = () => {
                         this.listening = true;
                         this.quizStatus = 'Mendengarkan suaramu...';
                     };
 
-                    recognizer.onend = () => {
+                    this.recognizer.onend = () => {
                         this.listening = false;
                     };
 
-                    recognizer.onerror = async () => {
+                    this.recognizer.onerror = async (e) => {
+                        console.error('Speech Recognition Error:', e.error);
+                        this.listening = false;
+                        
+                        if (e.error === 'not-allowed') {
+                            this.quizStatus = '⚠️ Akses mikrofon ditolak atau diblokir browser (perlu SSL/HTTPS/localhost).';
+                            await this.speakTTS("Akses mikrofon ditolak atau diblokir. Pendamping dapat membantu mengeklik pilihan jawaban di bawah.");
+                            return; // Stop retrying to prevent loops!
+                        }
+
                         this.attemptsForCurrentQuestion++;
                         if (this.attemptsForCurrentQuestion < 3) {
                             this.quizStatus = 'Suara kurang terdengar. Mari coba lagi!';
@@ -268,7 +304,7 @@
                         }
                     };
 
-                    recognizer.onresult = async (e) => {
+                    this.recognizer.onresult = async (e) => {
                         const transcript = e.results[0][0].transcript;
                         const cleanAns = this.normalize(transcript);
                         const cleanCorrect = this.normalize(this.currentQuestion.jawaban_benar);
@@ -293,7 +329,41 @@
                         }
                     };
 
-                    recognizer.start();
+                    try {
+                        this.recognizer.start();
+                    } catch(err) {
+                        console.error('Error starting recognition:', err);
+                    }
+                },
+
+                async selectOptionFallback(opt) {
+                    if (this.recognizer) {
+                        try {
+                            this.recognizer.abort();
+                        } catch(e) {}
+                    }
+                    this.listening = false;
+
+                    const cleanAns = this.normalize(opt);
+                    const cleanCorrect = this.normalize(this.currentQuestion.jawaban_benar);
+
+                    if (cleanAns === cleanCorrect) {
+                        this.totalCorrect++;
+                        this.correctCountForCurrentLesson++;
+                        this.quizStatus = 'Hebat! Jawabanmu benar! 🎉';
+                        await this.speakTTS("Hebat! Jawabanmu benar!");
+                        this.submitQuizAnswer(opt, true);
+                    } else {
+                        this.attemptsForCurrentQuestion++;
+                        if (this.attemptsForCurrentQuestion < 3) {
+                            this.quizStatus = `Jawabannya hampir benar! Coba lagi ya!`;
+                            await this.speakTTS("Jawabannya hampir benar! Coba lagi ya!");
+                        } else {
+                            this.quizStatus = `Salah. Jawaban benar adalah ${this.currentQuestion.jawaban_benar}.`;
+                            await this.speakTTS(`Salah. Jawaban yang benar adalah ${this.currentQuestion.jawaban_benar}.`);
+                            this.submitQuizAnswer(opt, false);
+                        }
+                    }
                 },
 
                 normalize(text) {
