@@ -46,20 +46,29 @@ class PlayController extends Controller
         // Get audio lessons for this age category
         $lessons = Lesson::where('tipe_dunia', 'audio')
             ->where('kategori_usia', $kategoriUsia)
+            ->where('aktif', true)
             ->with(['quizQuestions' => function($query) {
                 $query->where('tipe', 'voice');
             }])
+            ->orderBy('urutan')
             ->get();
 
-        // Start a study session log
+        // Start a study session HANYA jika belum ada sesi aktif dalam 30 menit terakhir
         $firstLesson = $lessons->first();
         if ($firstLesson) {
-            StudySession::create([
-                'child_id' => $child->id,
-                'lesson_id' => $firstLesson->id,
-                'started_at' => Carbon::now(),
-                'durasi_detik' => 0,
-            ]);
+            $recentSession = StudySession::where('child_id', $child->id)
+                ->where('lesson_id', $firstLesson->id)
+                ->where('started_at', '>=', Carbon::now()->subMinutes(30))
+                ->exists();
+
+            if (!$recentSession) {
+                StudySession::create([
+                    'child_id'     => $child->id,
+                    'lesson_id'    => $firstLesson->id,
+                    'started_at'   => Carbon::now(),
+                    'durasi_detik' => 0,
+                ]);
+            }
         }
 
         return view('play.tunanetra', compact('child', 'lessons'));
@@ -77,20 +86,29 @@ class PlayController extends Controller
         // Get visual lessons for this age category
         $lessons = Lesson::where('tipe_dunia', 'visual')
             ->where('kategori_usia', $kategoriUsia)
+            ->where('aktif', true)
             ->with(['quizQuestions' => function($query) {
                 $query->where('tipe', 'image');
             }])
+            ->orderBy('urutan')
             ->get();
 
-        // Start a study session log
+        // Start a study session HANYA jika belum ada sesi aktif dalam 30 menit terakhir
         $firstLesson = $lessons->first();
         if ($firstLesson) {
-            StudySession::create([
-                'child_id' => $child->id,
-                'lesson_id' => $firstLesson->id,
-                'started_at' => Carbon::now(),
-                'durasi_detik' => 0,
-            ]);
+            $recentSession = StudySession::where('child_id', $child->id)
+                ->where('lesson_id', $firstLesson->id)
+                ->where('started_at', '>=', Carbon::now()->subMinutes(30))
+                ->exists();
+
+            if (!$recentSession) {
+                StudySession::create([
+                    'child_id'     => $child->id,
+                    'lesson_id'    => $firstLesson->id,
+                    'started_at'   => Carbon::now(),
+                    'durasi_detik' => 0,
+                ]);
+            }
         }
 
         return view('play.tunarungu', compact('child', 'lessons'));

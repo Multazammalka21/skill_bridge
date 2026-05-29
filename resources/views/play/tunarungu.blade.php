@@ -291,7 +291,13 @@
 
                 submitQuizAnswer(userAnswer, isCorrect) {
                     const elapsed = Math.round((Date.now() - this.timerStart) / 1000);
-                    const calculatedScore = isCorrect ? 100 : 0;
+                    // Skor bertahap: percobaan ke-1=100, ke-2=70, ke-3+=40, gagal=0
+                    let calculatedScore = 0;
+                    if (isCorrect) {
+                        if (this.attemptsForCurrentQuestion <= 1) calculatedScore = 100;
+                        else if (this.attemptsForCurrentQuestion === 2) calculatedScore = 70;
+                        else calculatedScore = 40;
+                    }
                     this.totalQuestions++;
 
                     fetch('{{ route('play.quiz.submit') }}', {

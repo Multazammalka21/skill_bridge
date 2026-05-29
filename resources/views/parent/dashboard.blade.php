@@ -753,22 +753,27 @@
                             </div>
                         </div>
 
-                        {{-- Progress per kategori --}}
+                        {{-- Progress per kategori (DINAMIS dari DB) --}}
                         <div class="chart-card animate-in d4">
                             <h3><span class="dot" style="background:#29b6f6"></span> Progress Kategori</h3>
                             <div class="progress-list">
-                                <div>
-                                    <div class="progress-label"><span>Literasi</span><span>75%</span></div>
-                                    <div class="progress-track"><div class="progress-fill pf-1" style="width:75%"></div></div>
-                                </div>
-                                <div>
-                                    <div class="progress-label"><span>Numerasi</span><span>60%</span></div>
-                                    <div class="progress-track"><div class="progress-fill pf-2" style="width:60%"></div></div>
-                                </div>
-                                <div>
-                                    <div class="progress-label"><span>Lingkungan</span><span>90%</span></div>
-                                    <div class="progress-track"><div class="progress-fill pf-3" style="width:90%"></div></div>
-                                </div>
+                                @php $pfColors = ['pf-1','pf-2','pf-3','pf-1','pf-2']; @endphp
+                                @forelse($child->progressKategori as $idx => $katData)
+                                    <div>
+                                        <div class="progress-label">
+                                            <span>{{ $katData['nama'] }}</span>
+                                            <span>{{ $katData['persen'] }}%</span>
+                                        </div>
+                                        <div class="progress-track">
+                                            <div class="progress-fill {{ $pfColors[$idx % count($pfColors)] }}"
+                                                 style="width:{{ $katData['persen'] }}%"></div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <p style="color:#888;font-size:14px;text-align:center;padding:16px 0;">
+                                        Belum ada kategori pembelajaran yang tersedia.
+                                    </p>
+                                @endforelse
                             </div>
                         </div>
 

@@ -62,7 +62,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 // ─── Protected Parent & Child Routes ─────────────────────────────────
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:parent'])->group(function () {
     Route::get('/dashboard', [ParentDashboardWebController::class, 'index'])->name('dashboard');
 
     // Dynamic Play Views (With active child profile context)

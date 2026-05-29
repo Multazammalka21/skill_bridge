@@ -82,6 +82,14 @@ class LessonController extends Controller
 
         $validated['aktif'] = $request->boolean('aktif', true);
 
+        // Cek circular prerequisite sebelum menyimpan
+        if (!empty($validated['prerequisite_lesson_id'])) {
+            // Lesson baru belum punya id, cukup pastikan prerequisite tidak membentuk loop dari sisi rantainya
+            if ($this->detectCircularPrerequisite(null, (int) $validated['prerequisite_lesson_id'])) {
+                return back()->withErrors(['prerequisite_lesson_id' => 'Prerequisite ini membentuk loop sirkular. Pilih lesson lain.'])->withInput();
+            }
+        }
+
         // Remove file keys (not real columns)
         unset($validated['gambar_file'], $validated['efek_suara_file']);
 
@@ -161,6 +169,13 @@ class LessonController extends Controller
         $validated['aktif'] = $request->boolean('aktif');
         unset($validated['gambar_file'], $validated['efek_suara_file']);
 
+        // Cek circular prerequisite sebelum menyimpan
+        if (!empty($validated['prerequisite_lesson_id'])) {
+            if ($this->detectCircularPrerequisite($lesson->id, (int) $validated['prerequisite_lesson_id'])) {
+                return back()->withErrors(['prerequisite_lesson_id' => 'Prerequisite ini membentuk loop sirkular. Pilih lesson lain untuk menghindari alur belajar yang rusak.'])->withInput();
+            }
+        }
+
         $lesson->update($validated);
 
         return redirect()->route('admin.lessons.index')
@@ -201,5 +216,45 @@ class LessonController extends Controller
         }
 
         return response()->json(['message' => 'Urutan berhasil disimpan.']);
+    }
+
+    /**
+     * Deteksi apakah prerequisite akan membentuk circular dependency.
+     *
+     * Algoritma: Telusuri rantai prerequisite dari $prerequisiteId ke atas.
+     * Jika $lessonId ditemukan dalam rantai tersebut, berarti ada loop.
+     *
+     * @param int|null $lessonId        ID lesson yang sedang diedit (null jika baru)
+     * @param int      $prerequisiteId  ID prerequisite yang dipilih
+     */
+    private function detectCircularPrerequisite(?int $lessonId, int $prerequisiteId): bool
+    {
+        // Jika lesson baru (belum ada id), tidak mungkin circular dari dirinya sendiri
+        if ($lessonId === null) {
+            return false;
+        }
+
+        $visited = [];
+        $currentId = $prerequisiteId;
+
+        while ($currentId !== null) {
+            // Jika menemukan dirinya sendiri → circular
+            if ($currentId === $lessonId) {
+                return true;
+            }
+
+            // Cegah infinite loop karena data korup
+            if (in_array($currentId, $visited)) {
+                return true;
+            }
+            $visited[] = $currentId;
+
+            // Telusuri ke atas
+            $parent = Lesson::select('prerequisite_lesson_id')
+                ->find($currentId);
+            $currentId = $parent?->prerequisite_lesson_id;
+        }
+
+        return false;
     }
 }

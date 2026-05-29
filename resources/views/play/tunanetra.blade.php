@@ -200,9 +200,10 @@
 
                 async playNarration() {
                     this.narrationStatus = 'Memutar cerita...';
-                    if (this.currentLesson.efek_suara_url) {
+                    // Mainkan efek suara jika ada (field 'efek_suara' di DB)
+                    if (this.currentLesson.efek_suara) {
                         try {
-                            const audio = new Audio(this.currentLesson.efek_suara_url);
+                            const audio = new Audio(this.currentLesson.efek_suara);
                             await audio.play().catch(() => {});
                         } catch (e) {}
                     }
@@ -232,10 +233,11 @@
                     this.quizStatus = 'Membacakan pertanyaan...';
                     await this.speakTTS(this.currentQuestion.pertanyaan);
                     
-                    // Activate Mic Speech Recognition
+                    // Activate Mic Speech Recognition (hanya didukung Chrome & Edge)
                     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
                     if (!SpeechRec) {
-                        this.quizStatus = 'API pengenalan suara tidak didukung browser ini.';
+                        this.quizStatus = '⚠️ Browser ini belum mendukung kuis suara. Gunakan Google Chrome atau Microsoft Edge untuk pengalaman terbaik!';
+                        await this.speakTTS('Browser ini tidak mendukung kuis suara. Silakan gunakan Google Chrome untuk pengalaman belajar terbaik.');
                         this.quizFinished = true;
                         return;
                     }
@@ -305,7 +307,13 @@
 
                 submitQuizAnswer(userAnswer, isCorrect) {
                     const elapsed = Math.round((Date.now() - this.timerStart) / 1000);
-                    const calculatedScore = isCorrect ? 100 : 0;
+                    // Skor bertahap: percobaan ke-1=100, ke-2=70, ke-3=40, gagal=0
+                    let calculatedScore = 0;
+                    if (isCorrect) {
+                        if (this.attemptsForCurrentQuestion <= 1) calculatedScore = 100;
+                        else if (this.attemptsForCurrentQuestion === 2) calculatedScore = 70;
+                        else calculatedScore = 40;
+                    }
                     this.totalQuestions++;
 
                     fetch('{{ route('play.quiz.submit') }}', {
