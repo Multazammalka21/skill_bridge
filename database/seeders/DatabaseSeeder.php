@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Child;
 use App\Models\Lesson;
 use App\Models\LessonCompletion;
+use App\Models\MediaAsset;
 use App\Models\QuizQuestion;
 use App\Models\QuizResult;
 use App\Models\StudySession;
@@ -89,54 +91,155 @@ class DatabaseSeeder extends Seeder
             Badge::create($badge);
         }
 
+        // ─── Seed Kategori Pembelajaran ──────────────────────────
+        $kategoris = [
+            ['nama' => 'Literasi',             'deskripsi' => 'Belajar membaca, menulis, dan mengenal huruf alfabet.',           'ikon' => '📖', 'warna' => '#3b82f6', 'urutan' => 1],
+            ['nama' => 'Numerasi',             'deskripsi' => 'Belajar angka, berhitung, dan konsep matematika dasar.',          'ikon' => '🔢', 'warna' => '#10b981', 'urutan' => 2],
+            ['nama' => 'Pengenalan Lingkungan','deskripsi' => 'Mengenal hewan, tumbuhan, dan alam sekitar.',                    'ikon' => '🌿', 'warna' => '#22c55e', 'urutan' => 3],
+            ['nama' => 'Seni & Kreativitas',   'deskripsi' => 'Mengekspresikan diri melalui warna, bentuk, dan musik.',         'ikon' => '🎨', 'warna' => '#f59e0b', 'urutan' => 4],
+            ['nama' => 'Sosial & Emosi',       'deskripsi' => 'Belajar mengenali emosi, berteman, dan berinteraksi sosial.',    'ikon' => '💛', 'warna' => '#ec4899', 'urutan' => 5],
+            ['nama' => 'Kesehatan & Tubuh',    'deskripsi' => 'Mengenal anggota tubuh, kebersihan diri, dan pola hidup sehat.', 'ikon' => '🏃', 'warna' => '#8b5cf6', 'urutan' => 6],
+        ];
+
+        $categoryMap = [];
+        foreach ($kategoris as $kat) {
+            $categoryMap[$kat['nama']] = Category::create($kat);
+        }
+
+        // ─── Seed Sample Media Assets ────────────────────────────
+        // (Demo entries — URL merujuk ke placeholder publik agar terlihat di library)
+        $adminUser = User::where('role', 'admin')->first();
+        $sampleMedia = [
+            [
+                'nama'         => 'Suara Gajah Hutan',
+                'tipe'         => 'audio',
+                'path'         => 'media/audio/suara_gajah.mp3',
+                'url'          => '/storage/media/audio/suara_gajah.mp3',
+                'ukuran_bytes' => 204800,
+                'mime_type'    => 'audio/mpeg',
+                'keterangan'   => 'Efek suara gajah untuk pelajaran Suara Hewan Hutan',
+            ],
+            [
+                'nama'         => 'Suara Burung Kicau',
+                'tipe'         => 'audio',
+                'path'         => 'media/audio/suara_burung.mp3',
+                'url'          => '/storage/media/audio/suara_burung.mp3',
+                'ukuran_bytes' => 153600,
+                'mime_type'    => 'audio/mpeg',
+                'keterangan'   => 'Kicauan burung untuk pelajaran Mengenal Warna Suara',
+            ],
+            [
+                'nama'         => 'Musik Tema Pinteria',
+                'tipe'         => 'audio',
+                'path'         => 'media/audio/tema_pinteria.mp3',
+                'url'          => '/storage/media/audio/tema_pinteria.mp3',
+                'ukuran_bytes' => 512000,
+                'mime_type'    => 'audio/mpeg',
+                'keterangan'   => 'Musik latar untuk layar pembuka Pinteria',
+            ],
+            [
+                'nama'         => 'Gambar Bentuk Geometri',
+                'tipe'         => 'image',
+                'path'         => 'media/image/geometri.png',
+                'url'          => '/storage/media/image/geometri.png',
+                'ukuran_bytes' => 87040,
+                'mime_type'    => 'image/png',
+                'keterangan'   => 'Ilustrasi bentuk-bentuk geometri untuk kuis visual',
+            ],
+            [
+                'nama'         => 'Gambar Pelangi Warna-Warni',
+                'tipe'         => 'image',
+                'path'         => 'media/image/pelangi.png',
+                'url'          => '/storage/media/image/pelangi.png',
+                'ukuran_bytes' => 112640,
+                'mime_type'    => 'image/png',
+                'keterangan'   => 'Ilustrasi pelangi untuk pelajaran Pelangi Warna-Warni',
+            ],
+            [
+                'nama'         => 'Gambar Ekspresi Emosi Anak',
+                'tipe'         => 'image',
+                'path'         => 'media/image/ekspresi_emosi.png',
+                'url'          => '/storage/media/image/ekspresi_emosi.png',
+                'ukuran_bytes' => 98304,
+                'mime_type'    => 'image/png',
+                'keterangan'   => 'Empat ekspresi wajah anak untuk pelajaran Ekspresi Emosi',
+            ],
+            [
+                'nama'         => 'GIF Bintang Berkedip',
+                'tipe'         => 'gif',
+                'path'         => 'media/gif/bintang.gif',
+                'url'          => '/storage/media/gif/bintang.gif',
+                'ukuran_bytes' => 245760,
+                'mime_type'    => 'image/gif',
+                'keterangan'   => 'Animasi bintang berkedip untuk efek reward kuis',
+            ],
+            [
+                'nama'         => 'Animasi Konfeti Lottie',
+                'tipe'         => 'lottie',
+                'path'         => 'media/lottie/konfeti.json',
+                'url'          => '/storage/media/lottie/konfeti.json',
+                'ukuran_bytes' => 32768,
+                'mime_type'    => 'application/json',
+                'keterangan'   => 'Animasi konfeti Lottie JSON untuk layar kemenangan',
+            ],
+        ];
+
+        foreach ($sampleMedia as $media) {
+            MediaAsset::create(array_merge($media, ['uploaded_by' => $adminUser->id]));
+        }
+
         // ─── Audio World Lessons ─────────────────────────────────
         $audioLessons = [];
+        // [judul, deskripsi, usia, category_key]
         $audioTopics = [
             // Age 5-7
-            ['Mengenal Angka 1-5', 'Belajar angka satu sampai lima melalui cerita petualangan kelinci cerdik di hutan.', '5-7'],
-            ['Mengenal Warna Suara', 'Mengenali warna primer merah, kuning, biru melalui suara kicauan burung.', '5-7'],
-            ['Suara Hewan Hutan', 'Mengenal suara gajah, monyet, dan harimau di tengah rimba.', '5-7'],
+            ['Mengenal Angka 1-5',   'Belajar angka satu sampai lima melalui cerita petualangan kelinci cerdik di hutan.', '5-7',  'Numerasi'],
+            ['Mengenal Warna Suara', 'Mengenali warna primer merah, kuning, biru melalui suara kicauan burung.',           '5-7',  'Seni & Kreativitas'],
+            ['Suara Hewan Hutan',    'Mengenal suara gajah, monyet, dan harimau di tengah rimba.',                         '5-7',  'Pengenalan Lingkungan'],
             // Age 8-10
-            ['Misteri Buah Manis', 'Mendengar teka-teki buah apel, mangga, dan melon yang menyehatkan.', '8-10'],
-            ['Anggota Tubuh Kita', 'Cerita tentang fungsi mata, telinga, tangan, dan kaki yang ajaib.', '8-10'],
+            ['Misteri Buah Manis',   'Mendengar teka-teki buah apel, mangga, dan melon yang menyehatkan.',                 '8-10', 'Pengenalan Lingkungan'],
+            ['Anggota Tubuh Kita',   'Cerita tentang fungsi mata, telinga, tangan, dan kaki yang ajaib.',                  '8-10', 'Kesehatan & Tubuh'],
         ];
 
         foreach ($audioTopics as $i => $topic) {
             $audioLessons[] = Lesson::create([
-                'judul' => $topic[0],
-                'deskripsi' => $topic[1],
-                'tipe_dunia' => 'audio',
-                'kategori_usia' => $topic[2],
-                'urutan' => $i + 1,
-                'teks_narasi' => $topic[1],
+                'category_id'     => $categoryMap[$topic[3]]->id,
+                'judul'           => $topic[0],
+                'deskripsi'       => $topic[1],
+                'tipe_dunia'      => 'audio',
+                'kategori_usia'   => $topic[2],
+                'urutan'          => $i + 1,
+                'teks_narasi'     => $topic[1],
                 'teks_keterangan' => $topic[1],
-                'durasi_menit' => rand(3, 8),
-                'aktif' => true,
+                'durasi_menit'    => rand(3, 8),
+                'aktif'           => true,
             ]);
         }
 
         // ─── Visual World Lessons ────────────────────────────────
         $visualLessons = [];
+        // [judul, deskripsi, usia, category_key]
         $visualTopics = [
             // Age 5-7
-            ['Bentuk Geometri', 'Menemukan bentuk lingkaran matahari, kotak rumah, dan segitiga atap.', '5-7'],
-            ['Pelangi Warna-Warni', 'Melihat keindahan pelangi dan mencocokkan setiap warnanya.', '5-7'],
-            ['Petualangan Huruf A-E', 'Membaca dan mencocokkan huruf awal buah apel, bebek, ceri, dan domba.', '5-7'],
+            ['Bentuk Geometri',       'Menemukan bentuk lingkaran matahari, kotak rumah, dan segitiga atap.',          '5-7',  'Seni & Kreativitas'],
+            ['Pelangi Warna-Warni',   'Melihat keindahan pelangi dan mencocokkan setiap warnanya.',                    '5-7',  'Seni & Kreativitas'],
+            ['Petualangan Huruf A-E', 'Membaca dan mencocokkan huruf awal buah apel, bebek, ceri, dan domba.',         '5-7',  'Literasi'],
             // Age 8-10
-            ['Berhitung 1-10', 'Menghitung jumlah apel dan wortel di kebun pak tani secara visual.', '8-10'],
-            ['Ekspresi Emosi', 'Belajar mengenali ekspresi senang, sedih, marah, dan terkejut.', '8-10'],
+            ['Berhitung 1-10',        'Menghitung jumlah apel dan wortel di kebun pak tani secara visual.',            '8-10', 'Numerasi'],
+            ['Ekspresi Emosi',        'Belajar mengenali ekspresi senang, sedih, marah, dan terkejut.',                '8-10', 'Sosial & Emosi'],
         ];
 
         foreach ($visualTopics as $i => $topic) {
             $visualLessons[] = Lesson::create([
-                'judul' => $topic[0],
-                'deskripsi' => $topic[1],
-                'tipe_dunia' => 'visual',
-                'kategori_usia' => $topic[2],
-                'urutan' => $i + 1,
+                'category_id'     => $categoryMap[$topic[3]]->id,
+                'judul'           => $topic[0],
+                'deskripsi'       => $topic[1],
+                'tipe_dunia'      => 'visual',
+                'kategori_usia'   => $topic[2],
+                'urutan'          => $i + 1,
                 'teks_keterangan' => $topic[1],
-                'durasi_menit' => rand(3, 8),
-                'aktif' => true,
+                'durasi_menit'    => rand(3, 8),
+                'aktif'           => true,
             ]);
         }
 
