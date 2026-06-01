@@ -346,8 +346,8 @@
             <div class="brand-logo" style="margin-bottom: 20px; display: flex; justify-content: center;">
                  <img src="{{ asset('images/Logo_pinteria (1).png') }}" alt="Pinteria Logo" style="height: 80px; width: auto; object-fit: contain;">
              </div>
-            <h1 class="title">Halo, Petualang Kecil!</h1>
-            <p class="subtitle">Ayo mulai petualangan belajarmu hari ini</p>
+            <h1 class="title">Selamat Datang Kembali! 👋</h1>
+            <p class="subtitle">Masuk sebagai Orang Tua atau Admin untuk mengelola pembelajaran anak</p>
 
             @if ($errors->any())
                 <div class="error-message">
@@ -358,23 +358,23 @@
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="form-group">
-                    <label for="email" class="form-label">Email Petualang</label>
-                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="ketik email..." class="form-input">
+                    <label for="email" class="form-label">Alamat Email</label>
+                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="Masukkan email Anda..." class="form-input">
                 </div>
 
                 <div class="form-group">
-                    <label for="password" class="form-label">Kata Sandi Rahasia</label>
-                    <input id="password" type="password" name="password" required autocomplete="current-password" placeholder="ketik kata sandi..." class="form-input">
+                    <label for="password" class="form-label">Kata Sandi</label>
+                    <input id="password" type="password" name="password" required autocomplete="current-password" placeholder="Masukkan kata sandi..." class="form-input">
                 </div>
 
                 <input type="hidden" name="remember" value="on">
 
                 <button type="submit" class="btn btn-child">
-                    Masuk Sekarang!
+                    Masuk
                 </button>
                 
                 <a href="{{ route('register') }}" class="btn btn-parent" style="margin-top: 15px;">
-                    Daftar Akun Baru
+                    Belum punya akun? Daftar di sini
                 </a>
             </form>
 

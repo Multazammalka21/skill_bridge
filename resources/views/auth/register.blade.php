@@ -347,8 +347,8 @@
             <div class="brand-logo" style="margin-bottom: 20px; display: flex; justify-content: center;">
                  <img src="{{ asset('images/Logo_pinteria (1).png') }}" alt="Pinteria Logo" style="height: 80px; width: auto; object-fit: contain;">
              </div>
-            <h1 class="title">Halo, Teman Baru!</h1>
-            <p class="subtitle">Buat akun untuk memulai petualanganmu</p>
+            <h1 class="title">Daftar Akun Orang Tua 👨‍👩‍👧</h1>
+            <p class="subtitle">Buat akun untuk memantau dan mengelola perkembangan belajar anak Anda</p>
 
             @if ($errors->any())
                 <div class="error-message">
@@ -360,31 +360,31 @@
                 @csrf
                 
                 <div class="form-group">
-                    <label for="name" class="form-label">Nama Lengkap</label>
-                    <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" placeholder="Ketik namamu..." class="form-input">
+                    <label for="name" class="form-label">Nama Lengkap Orang Tua</label>
+                    <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" placeholder="Masukkan nama lengkap Anda..." class="form-input">
                 </div>
                 
                 <div class="form-group">
-                    <label for="email" class="form-label">Email Petualang</label>
-                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="Ketik emailmu..." class="form-input">
+                    <label for="email" class="form-label">Alamat Email</label>
+                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="Masukkan alamat email Anda..." class="form-input">
                 </div>
 
                 <div class="form-group">
-                    <label for="password" class="form-label">Kata Sandi Rahasia</label>
-                    <input id="password" type="password" name="password" required autocomplete="new-password" placeholder="Buat kata sandi..." class="form-input">
+                    <label for="password" class="form-label">Kata Sandi</label>
+                    <input id="password" type="password" name="password" required autocomplete="new-password" placeholder="Buat kata sandi yang kuat..." class="form-input">
                 </div>
                 
                 <div class="form-group">
-                    <label for="password_confirmation" class="form-label">Ulangi Kata Sandi</label>
-                    <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Ketik ulang kata sandi..." class="form-input">
+                    <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi</label>
+                    <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Masukkan ulang kata sandi..." class="form-input">
                 </div>
 
                 <button type="submit" class="btn btn-child" style="margin-top: 20px;">
-                    Daftar Sekarang!
+                    Daftar Sekarang
                 </button>
                 
                 <a href="{{ route('login') }}" class="btn btn-parent">
-                    Sudah Punya Akun? Masuk
+                    Sudah punya akun? Masuk di sini
                 </a>
             </form>
 
