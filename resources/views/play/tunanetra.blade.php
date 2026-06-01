@@ -172,6 +172,7 @@
                 quizStatus: '',
                 listening: false,
                 quizFinished: false,
+                activeAudio: null,
 
                 // Quiz session metrics
                 totalCorrect: 0,
@@ -216,21 +217,49 @@
                     this.playNarration();
                 },
 
-                async playNarration() {
-                    this.narrationStatus = 'Memutar cerita...';
-                    // Mainkan efek suara jika ada (field 'efek_suara' di DB)
-                    if (this.currentLesson.efek_suara) {
+                stopActiveAudio() {
+                    if (this.activeAudio) {
                         try {
-                            const audio = new Audio(this.currentLesson.efek_suara);
-                            await audio.play().catch(() => {});
-                        } catch (e) {}
+                            this.activeAudio.pause();
+                            this.activeAudio.currentTime = 0;
+                        } catch(e) {}
                     }
-                    await this.speakTTS(this.currentLesson.deskripsi);
+                },
+
+                async playNarration() {
+                    this.stopActiveAudio();
+                    this.narrationStatus = 'Memutar cerita...';
+                    
+                    // Check if lesson has a high-quality pre-recorded audio file
+                    if (this.currentLesson.audio_story_url) {
+                        try {
+                            this.activeAudio = new Audio(this.currentLesson.audio_story_url);
+                            await new Promise((resolve, reject) => {
+                                this.activeAudio.onended = resolve;
+                                this.activeAudio.onerror = reject;
+                                this.activeAudio.play().catch(reject);
+                            });
+                        } catch (e) {
+                            console.error("Audio playback error, falling back to TTS:", e);
+                            await this.speakTTS(this.currentLesson.deskripsi);
+                        }
+                    } else {
+                        // Play sound effects if present
+                        if (this.currentLesson.efek_suara) {
+                            try {
+                                const audio = new Audio(this.currentLesson.efek_suara);
+                                await audio.play().catch(() => {});
+                            } catch (e) {}
+                        }
+                        await this.speakTTS(this.currentLesson.deskripsi);
+                    }
+
                     this.narrationStatus = 'Cerita selesai. Tekan kuis untuk mulai kuis!';
-                    this.speakTTS("Cerita selesai. Tekan tombol kuis di kanan bawah untuk mulai menjawab kuis!");
+                    await this.speakTTS("Cerita selesai. Silakan tekan tombol kuis di kanan bawah untuk mulai menjawab kuis!");
                 },
 
                 startQuiz() {
+                    this.stopActiveAudio();
                     if (this.questionsList.length === 0) {
                         this.nextLessonOrFinish();
                         return;
@@ -239,17 +268,21 @@
                     this.loadQuestion();
                 },
 
-                loadQuestion() {
+                async loadQuestion() {
                     this.currentQuestion = this.questionsList[this.questionIndex];
                     this.attemptsForCurrentQuestion = 0;
                     this.quizFinished = false;
                     this.timerStart = Date.now();
-                    this.speakAndListen();
+                    
+                    this.quizStatus = 'Membacakan pertanyaan...';
+                    await this.speakTTS(this.currentQuestion.pertanyaan);
+                    
+                    this.startListeningSession();
                 },
 
                 recognizer: null,
 
-                async speakAndListen() {
+                async startListeningSession() {
                     // Stop any existing recognizer session before starting a new one
                     if (this.recognizer) {
                         try {
@@ -257,9 +290,6 @@
                         } catch(e) {}
                     }
 
-                    this.quizStatus = 'Membacakan pertanyaan...';
-                    await this.speakTTS(this.currentQuestion.pertanyaan);
-                    
                     // Activate Mic Speech Recognition (hanya didukung Chrome & Edge)
                     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
                     if (!SpeechRec) {
@@ -296,10 +326,11 @@
                         this.attemptsForCurrentQuestion++;
                         if (this.attemptsForCurrentQuestion < 3) {
                             this.quizStatus = 'Suara kurang terdengar. Mari coba lagi!';
-                            await this.speakTTS("Suara kurang terdengar. Mari coba lagi!");
-                            this.speakAndListen();
+                            await this.speakTTS("Suara kurang terdengar. Coba katakan sekali lagi.");
+                            this.startListeningSession();
                         } else {
                             this.quizStatus = 'Kesalahan kuis. Lanjut ke soal berikutnya.';
+                            await this.speakTTS("Waktu menjawab habis. Mari lanjut ke pertanyaan berikutnya.");
                             this.submitQuizAnswer(this.currentQuestion.pilihan[0] || 'Tidak ada', false);
                         }
                     };
@@ -319,11 +350,11 @@
                             this.attemptsForCurrentQuestion++;
                             if (this.attemptsForCurrentQuestion < 3) {
                                 this.quizStatus = `Jawabannya hampir benar! Coba lagi ya!`;
-                                await this.speakTTS("Jawabannya hampir benar! Coba lagi ya!");
-                                this.speakAndListen();
+                                await this.speakTTS("Hampir tepat. Coba katakan sekali lagi.");
+                                this.startListeningSession();
                             } else {
                                 this.quizStatus = `Salah. Jawaban benar adalah ${this.currentQuestion.jawaban_benar}.`;
-                                await this.speakTTS(`Salah. Jawaban yang benar adalah ${this.currentQuestion.jawaban_benar}.`);
+                                await this.speakTTS(`Belum tepat. Jawaban yang benar adalah ${this.currentQuestion.jawaban_benar}.`);
                                 this.submitQuizAnswer(transcript, false);
                             }
                         }
@@ -357,10 +388,10 @@
                         this.attemptsForCurrentQuestion++;
                         if (this.attemptsForCurrentQuestion < 3) {
                             this.quizStatus = `Jawabannya hampir benar! Coba lagi ya!`;
-                            await this.speakTTS("Jawabannya hampir benar! Coba lagi ya!");
+                            await this.speakTTS("Belum tepat. Mari coba pilih lagi.");
                         } else {
                             this.quizStatus = `Salah. Jawaban benar adalah ${this.currentQuestion.jawaban_benar}.`;
-                            await this.speakTTS(`Salah. Jawaban yang benar adalah ${this.currentQuestion.jawaban_benar}.`);
+                            await this.speakTTS(`Belum tepat. Jawaban yang benar adalah ${this.currentQuestion.jawaban_benar}.`);
                             this.submitQuizAnswer(opt, false);
                         }
                     }
@@ -415,6 +446,7 @@
                 },
 
                 nextSlide() {
+                    this.stopActiveAudio();
                     this.questionIndex++;
                     if (this.questionIndex < this.questionsList.length) {
                         this.loadQuestion();
@@ -424,6 +456,7 @@
                 },
 
                 nextLessonOrFinish() {
+                    this.stopActiveAudio();
                     this.lessonIndex++;
                     if (this.lessonIndex < this.lessons.length) {
                         this.currentState = 'narrator';
@@ -434,6 +467,7 @@
                 },
 
                 finishAdventure() {
+                    this.stopActiveAudio();
                     this.currentState = 'victory';
                     this.totalScore = this.totalQuestions > 0 ? Math.round((this.totalCorrect / this.totalQuestions) * 100) : 0;
                     

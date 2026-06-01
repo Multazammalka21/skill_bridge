@@ -76,6 +76,7 @@
                         <div
                             class="card lesson-card choice-card cursor-pointer"
                             style="text-align: center; padding: 20px; position: relative;"
+                            :class="shakingIndex === idx ? 'animate-shake' : ''"
                             :style="getSelectedCardStyle(idx)"
                             @click="selectOption(idx, opt)"
                         >
@@ -171,6 +172,8 @@
 
                 // Quiz selection states
                 selectedOptionIndex: null,
+                wrongOptions: [],
+                shakingIndex: null,
                 isAnswerCorrect: false,
                 feedbackMsg: '',
                 quizFinished: false,
@@ -227,6 +230,8 @@
                 loadQuestion() {
                     this.currentQuestion = this.questionsList[this.questionIndex];
                     this.selectedOptionIndex = null;
+                    this.wrongOptions = [];
+                    this.shakingIndex = null;
                     this.isAnswerCorrect = false;
                     this.feedbackMsg = '';
                     this.quizFinished = false;
@@ -236,12 +241,13 @@
 
                 selectOption(idx, optionLabel) {
                     if (this.quizFinished) return;
+                    if (this.wrongOptions.includes(idx) || this.selectedOptionIndex === idx) return;
                     
-                    this.selectedOptionIndex = idx;
                     const correctAns = this.currentQuestion.jawaban_benar.toLowerCase().trim();
                     const cleanOpt = optionLabel.toLowerCase().trim();
                     
                     if (cleanOpt === correctAns) {
+                        this.selectedOptionIndex = idx;
                         this.isAnswerCorrect = true;
                         this.totalCorrect++;
                         this.correctCountForCurrentLesson++;
@@ -259,13 +265,19 @@
                         
                         this.submitQuizAnswer(optionLabel, true);
                     } else {
-                        this.isAnswerCorrect = false;
+                        this.wrongOptions.push(idx);
                         this.attemptsForCurrentQuestion++;
                         
+                        // Trigger shake animation
+                        this.shakingIndex = idx;
+                        setTimeout(() => {
+                            this.shakingIndex = null;
+                        }, 500);
+
                         if (this.attemptsForCurrentQuestion < 3) {
                             this.feedbackMsg = '❌ Coba lagi! Pasti kamu bisa!';
                         } else {
-                            this.feedbackMsg = `❌ Salah. Jawaban benar adalah: ${this.currentQuestion.jawaban_benar}`;
+                            this.feedbackMsg = `❌ Belum tepat. Jawaban benar adalah: ${this.currentQuestion.jawaban_benar}`;
                             this.submitQuizAnswer(optionLabel, false);
                         }
                     }
@@ -275,16 +287,20 @@
                     if (this.selectedOptionIndex === idx) {
                         if (this.isAnswerCorrect) {
                             return 'border-color: #4caf50; background: rgba(76,175,80,0.1); box-shadow: 0 0 20px rgba(76,175,80,0.4);';
-                        } else {
-                            return 'border-color: #ff5252; background: rgba(255,82,82,0.1); animation: shake 0.5s;';
                         }
+                    }
+                    if (this.wrongOptions.includes(idx)) {
+                        return 'border-color: #ff5252; background: rgba(255,82,82,0.15); opacity: 0.8; pointer-events: none;';
                     }
                     return '';
                 },
 
                 getFeedbackSymbol(idx) {
-                    if (this.selectedOptionIndex === idx) {
-                        return this.isAnswerCorrect ? '🟢' : '🔴';
+                    if (this.selectedOptionIndex === idx && this.isAnswerCorrect) {
+                        return '🟢';
+                    }
+                    if (this.wrongOptions.includes(idx)) {
+                        return '🔴';
                     }
                     return '';
                 },
@@ -380,6 +396,9 @@
             transform: translateY(-5px) scale(1.03) !important;
             border-color: #ff6b35 !important;
             box-shadow: 0 10px 20px rgba(255, 107, 53, 0.15) !important;
+        }
+        .animate-shake {
+            animation: shake 0.5s ease-in-out;
         }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }

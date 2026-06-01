@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
         // ─── Create admin user ─────────────────────────────────────
         User::create([
             'name' => 'Admin Pinteria',
-            'email' => 'admin@pinteria.com',
+            'email' => 'admin@pinteria.test',
             'password' => bcrypt('password'),
             'role' => 'admin',
         ]);
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
         // ─── Create parent user ───────────────────────────────────
         $parent = User::create([
             'name' => 'Orang Tua Demo',
-            'email' => 'parent@skillbridge.test',
+            'email' => 'parent@pinteria.test',
             'password' => bcrypt('password'),
             'role' => 'parent',
         ]);
@@ -190,15 +190,16 @@ class DatabaseSeeder extends Seeder
 
         // ─── Audio World Lessons ─────────────────────────────────
         $audioLessons = [];
-        // [judul, deskripsi, usia, category_key]
+        // [judul, deskripsi, usia, category_key, audio_story_url]
         $audioTopics = [
             // Age 5-7
-            ['Mengenal Angka 1-5',   'Belajar angka satu sampai lima melalui cerita petualangan kelinci cerdik di hutan.', '5-7',  'Numerasi'],
-            ['Mengenal Warna Suara', 'Mengenali warna primer merah, kuning, biru melalui suara kicauan burung.',           '5-7',  'Seni & Kreativitas'],
-            ['Suara Hewan Hutan',    'Mengenal suara gajah, monyet, dan harimau di tengah rimba.',                         '5-7',  'Pengenalan Lingkungan'],
+            ['Mengenal Angka 1-5',   'Belajar angka satu sampai lima melalui cerita petualangan kelinci cerdik di hutan.', '5-7',  'Numerasi', null],
+            ['Mengenal Warna Suara', 'Mengenali warna primer merah, kuning, biru melalui suara kicauan burung.',           '5-7',  'Seni & Kreativitas', null],
+            ['Suara Hewan Hutan',    'Mengenal suara gajah, monyet, dan harimau di tengah rimba.',                         '5-7',  'Pengenalan Lingkungan', null],
+            ['Dongeng Singa dan Tikus', 'Dengarkan cerita tentang seekor Tikus kecil yang menyelamatkan Raja Hutan, si Singa yang perkasa.', '5-7', 'Literasi', '/audio/Singa dan Tikus.mp3'],
             // Age 8-10
-            ['Misteri Buah Manis',   'Mendengar teka-teki buah apel, mangga, dan melon yang menyehatkan.',                 '8-10', 'Pengenalan Lingkungan'],
-            ['Anggota Tubuh Kita',   'Cerita tentang fungsi mata, telinga, tangan, dan kaki yang ajaib.',                  '8-10', 'Kesehatan & Tubuh'],
+            ['Misteri Buah Manis',   'Mendengar teka-teki buah apel, mangga, dan melon yang menyehatkan.',                 '8-10', 'Pengenalan Lingkungan', null],
+            ['Anggota Tubuh Kita',   'Cerita tentang fungsi mata, telinga, tangan, dan kaki yang ajaib.',                  '8-10', 'Kesehatan & Tubuh', null],
         ];
 
         foreach ($audioTopics as $i => $topic) {
@@ -211,6 +212,7 @@ class DatabaseSeeder extends Seeder
                 'urutan'          => $i + 1,
                 'teks_narasi'     => $topic[1],
                 'teks_keterangan' => $topic[1],
+                'audio_story_url' => $topic[4],
                 'durasi_menit'    => rand(3, 8),
                 'aktif'           => true,
             ]);
@@ -218,15 +220,15 @@ class DatabaseSeeder extends Seeder
 
         // ─── Visual World Lessons ────────────────────────────────
         $visualLessons = [];
-        // [judul, deskripsi, usia, category_key]
+        // [judul, deskripsi, usia, category_key, gambar]
         $visualTopics = [
             // Age 5-7
-            ['Bentuk Geometri',       'Menemukan bentuk lingkaran matahari, kotak rumah, dan segitiga atap.',          '5-7',  'Seni & Kreativitas'],
-            ['Pelangi Warna-Warni',   'Melihat keindahan pelangi dan mencocokkan setiap warnanya.',                    '5-7',  'Seni & Kreativitas'],
-            ['Petualangan Huruf A-E', 'Membaca dan mencocokkan huruf awal buah apel, bebek, ceri, dan domba.',         '5-7',  'Literasi'],
+            ['Bentuk Geometri',       'Menemukan bentuk lingkaran matahari, kotak rumah, dan segitiga atap.',          '5-7',  'Seni & Kreativitas', '/images/quiz/geometri.png'],
+            ['Pelangi Warna-Warni',   'Melihat keindahan pelangi dan mencocokkan setiap warnanya.',                    '5-7',  'Seni & Kreativitas', '/images/quiz/pelangi.png'],
+            ['Petualangan Huruf A-E', 'Membaca dan mencocokkan huruf awal buah apel, bebek, ceri, dan domba.',         '5-7',  'Literasi',           '/images/quiz/huruf_apel.png'],
             // Age 8-10
-            ['Berhitung 1-10',        'Menghitung jumlah apel dan wortel di kebun pak tani secara visual.',            '8-10', 'Numerasi'],
-            ['Ekspresi Emosi',        'Belajar mengenali ekspresi senang, sedih, marah, dan terkejut.',                '8-10', 'Sosial & Emosi'],
+            ['Berhitung 1-10',        'Menghitung jumlah apel dan wortel di kebun pak tani secara visual.',            '8-10', 'Numerasi',           '/images/quiz/berhitung_tiga.png'],
+            ['Ekspresi Emosi',        'Belajar mengenali ekspresi senang, sedih, marah, dan terkejut.',                '8-10', 'Sosial & Emosi',     '/images/quiz/ekspresi_emosi.png'],
         ];
 
         foreach ($visualTopics as $i => $topic) {
@@ -238,6 +240,7 @@ class DatabaseSeeder extends Seeder
                 'kategori_usia'   => $topic[2],
                 'urutan'          => $i + 1,
                 'teks_keterangan' => $topic[1],
+                'gambar'          => $topic[4],
                 'durasi_menit'    => rand(3, 8),
                 'aktif'           => true,
             ]);
@@ -245,14 +248,25 @@ class DatabaseSeeder extends Seeder
 
         // ─── Quiz Questions ──────────────────────────────────────
         foreach ($audioLessons as $lesson) {
-            QuizQuestion::create([
-                'lesson_id' => $lesson->id,
-                'pertanyaan' => 'Hewan apa yang sering mengeluarkan suara petualangan di pelajaran ' . $lesson->judul . '?',
-                'jawaban_benar' => 'Gajah',
-                'pilihan' => ['Gajah', 'Kucing', 'Singa', 'Burung'],
-                'tipe' => 'voice',
-                'poin' => 15,
-            ]);
+            if ($lesson->judul === 'Dongeng Singa dan Tikus') {
+                QuizQuestion::create([
+                    'lesson_id' => $lesson->id,
+                    'pertanyaan' => 'Siapa yang menyelamatkan Singa saat terjebak di jaring pemburu?',
+                    'jawaban_benar' => 'Tikus',
+                    'pilihan' => ['Tikus', 'Kelinci', 'Monyet', 'Gajah'],
+                    'tipe' => 'voice',
+                    'poin' => 20,
+                ]);
+            } else {
+                QuizQuestion::create([
+                    'lesson_id' => $lesson->id,
+                    'pertanyaan' => 'Hewan apa yang sering mengeluarkan suara petualangan di pelajaran ' . $lesson->judul . '?',
+                    'jawaban_benar' => 'Gajah',
+                    'pilihan' => ['Gajah', 'Kucing', 'Singa', 'Burung'],
+                    'tipe' => 'voice',
+                    'poin' => 15,
+                ]);
+            }
         }
 
         $visualQuestionsData = [
