@@ -346,8 +346,8 @@
             <div class="brand-logo" style="margin-bottom: 20px; display: flex; justify-content: center;">
                  <img src="{{ asset('images/Logo_pinteria (1).png') }}" alt="Pinteria Logo" style="height: 80px; width: auto; object-fit: contain;">
              </div>
-            <h1 class="title">Selamat Datang Kembali! 👋</h1>
-            <p class="subtitle">Masuk sebagai Orang Tua atau Admin untuk mengelola pembelajaran anak</p>
+            <h1 class="title">Selamat Datang Kembali</h1>
+            <p class="subtitle">Masuk untuk melanjutkan ke Pinteria</p>
 
             @if ($errors->any())
                 <div class="error-message">

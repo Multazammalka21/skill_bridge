@@ -347,8 +347,8 @@
             <div class="brand-logo" style="margin-bottom: 20px; display: flex; justify-content: center;">
                  <img src="{{ asset('images/Logo_pinteria (1).png') }}" alt="Pinteria Logo" style="height: 80px; width: auto; object-fit: contain;">
              </div>
-            <h1 class="title">Daftar Akun Orang Tua 👨‍👩‍👧</h1>
-            <p class="subtitle">Buat akun untuk memantau dan mengelola perkembangan belajar anak Anda</p>
+            <h1 class="title">Daftar Akun Baru</h1>
+            <p class="subtitle">Buat akun untuk memantau perkembangan belajar anak Anda</p>
 
             @if ($errors->any())
                 <div class="error-message">
