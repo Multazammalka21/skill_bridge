@@ -189,10 +189,39 @@
                 </div>
 
                 <div class="admin-form-group" style="margin-bottom:0;">
-                    <label class="admin-form-label">🎙️ URL Audio Storytelling</label>
-                    <input type="text" name="audio_story_url" class="admin-form-input"
-                           value="{{ old('audio_story_url', $lesson->audio_story_url) }}"
-                           placeholder="https://... atau /storage/media/audio/story.mp3">
+                    <label class="admin-form-label">🎙️ Audio Cerita (Storytelling)</label>
+
+                    @if($lesson->audio_story_url)
+                        <div style="margin-bottom:10px; padding:12px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0;">
+                            <div style="font-size:0.78rem; color:#166534; font-weight:600; margin-bottom:6px;">✅ Audio storytelling terpasang:</div>
+                            <audio controls style="width:100%; height:36px; margin-bottom:8px;">
+                                <source src="{{ $lesson->audio_story_url }}">
+                                Browser Anda tidak mendukung audio player.
+                            </audio>
+                            <div style="font-size:0.72rem; color:#166534;">{{ $lesson->audio_story_url }}</div>
+                        </div>
+                    @else
+                        <div style="margin-bottom:10px; padding:10px; background:#fef9c3; border-radius:8px; border:1px solid #fde68a;">
+                            <div style="font-size:0.78rem; color:#92400e;">⚠️ Belum ada audio storytelling. Mode Tunanetra akan menggunakan Text-to-Speech sebagai fallback.</div>
+                        </div>
+                    @endif
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div>
+                            <label style="font-size:0.78rem; color:var(--admin-text-muted); display:block; margin-bottom:4px;">Upload file audio (MP3/WAV):</label>
+                            <input type="file" name="audio_story_file" class="admin-form-input" accept=".mp3,.wav,.ogg,.m4a"
+                                   style="padding:6px; font-size:0.85rem;">
+                            <div style="font-size:0.72rem; color:var(--admin-text-muted); margin-top:4px;">MP3, WAV, OGG • Maks 20MB</div>
+                            @error('audio_story_file') <div style="color:var(--admin-danger); font-size:0.78rem; margin-top:4px;">{{ $message }}</div> @enderror
+                        </div>
+                        <div>
+                            <label style="font-size:0.78rem; color:var(--admin-text-muted); display:block; margin-bottom:4px;">Atau masukkan URL manual:</label>
+                            <input type="text" name="audio_story_url" class="admin-form-input"
+                                   value="{{ old('audio_story_url', $lesson->audio_story_url) }}"
+                                   placeholder="/audio/nama-cerita.mp3 atau https://...">
+                            <div style="font-size:0.72rem; color:var(--admin-text-muted); margin-top:4px;">URL manual akan dipakai jika tidak ada file yang diupload.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

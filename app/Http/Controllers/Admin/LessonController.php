@@ -132,6 +132,7 @@ class LessonController extends Controller
             'aktif'                   => 'boolean',
             'gambar_file'             => 'nullable|image|max:3072',
             'efek_suara_file'         => 'nullable|mimes:mp3,wav,ogg,m4a|max:10240',
+            'audio_story_file'        => 'nullable|mimes:mp3,wav,ogg,m4a|max:20480',
         ]);
 
         // Handle image upload (replace old)

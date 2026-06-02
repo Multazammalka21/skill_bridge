@@ -75,33 +75,88 @@
             <div class="image-quiz lesson-card animate-slide-up" style="display: flex; flex-direction: column; align-items: center; gap: 2rem; width: 100%;">
                 <div class="question" style="font-size: 2.2rem; font-weight: 800; color: var(--text); text-align: center;" x-text="currentQuestion.pertanyaan"></div>
 
-                <!-- Display question image if available -->
-                <template x-if="currentQuestion.gambar">
-                    <div style="width: 100%; max-width: 300px; margin: 0 auto; border-radius: 16px; overflow: hidden; background: rgba(255, 255, 255, 0.05); padding: 10px; border: 1px solid rgba(255,255,255,0.1);">
-                        <img :src="currentQuestion.gambar" alt="Gambar Soal" style="width: 100%; max-height: 200px; object-fit: contain;">
+                <!-- Ekspresi Emosi: show full image (draggable) + text option cards as drop targets -->
+                <template x-if="currentQuestion.gambar && currentQuestion.gambar.includes('ekspresi_emosi')">
+                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+                        <!-- Instruction -->
+                        <p style="font-size: 1.2rem; color: #ff6b35; font-weight: bold; text-align: center; background: rgba(255,107,53,0.08); padding: 10px 20px; border-radius: 12px; border: 1px dashed rgba(255,107,53,0.3);">
+                            👆 Tap kartu kata yang cocok, atau seret gambar ke kartu yang sesuai
+                        </p>
+
+                        <!-- Full draggable image -->
+                        <div style="position: relative; cursor: grab; user-select: none;"
+                             draggable="true"
+                             @dragstart="draggedEmotion = currentQuestion.jawaban_benar"
+                             title="Seret gambar ini ke kotak kata yang menggambarkan ekspresi wajah yang diminta!"
+                        >
+                            <img
+                                :src="currentQuestion.gambar"
+                                alt="Gambar Ekspresi Wajah"
+                                style="max-width: 300px; width: 100%; border-radius: 16px; border: 3px solid rgba(255,107,53,0.4); box-shadow: 0 8px 24px rgba(0,0,0,0.3); pointer-events: none;"
+                            />
+                            <div style="position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); background: #ff6b35; color: white; font-size: 0.85rem; font-weight: bold; padding: 4px 14px; border-radius: 20px; white-space: nowrap;">
+                                &#8597; Seret ke kotak kata
+                            </div>
+                        </div>
+
+                        <!-- Drop Target / Grid Options -->
+                        <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; width: 100%; margin-top: 1.5rem;">
+                            <template x-for="(opt, idx) in currentQuestion.pilihan" :key="idx">
+                                <div
+                                    class="card lesson-card choice-card cursor-pointer"
+                                    style="text-align: center; padding: 20px; position: relative; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border: 2px dashed rgba(255,107,53,0.3);"
+                                    :class="shakingIndex === idx ? 'animate-shake' : ''"
+                                    :style="[getSelectedCardStyle(idx), dragOverIndex === idx ? 'border: 2px solid #ff6b35 !important; background: rgba(255,107,53,0.15) !important; transform: scale(1.03);' : '']"
+                                    @dragover.prevent="dragOverIndex = idx"
+                                    @dragleave="dragOverIndex = null"
+                                    @drop.prevent="dragOverIndex = null; selectOption(idx, opt)"
+                                    @click="selectOption(idx, opt)"
+                                >
+                                    <!-- Feedback symbols -->
+                                    <div
+                                        style="position: absolute; top: 10px; right: 10px; font-size: 24px;"
+                                        x-html="getFeedbackSymbol(idx)"
+                                    ></div>
+
+                                    <div style="font-size: 1.6rem; font-weight: bold; color: var(--text);" x-text="opt"></div>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                 </template>
 
-                <!-- Grid of Multiple Choice Option Cards -->
-                <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; width: 100%; margin-top: 1rem;">
-                    <template x-for="(opt, idx) in currentQuestion.pilihan" :key="idx">
-                        <div
-                            class="card lesson-card choice-card cursor-pointer"
-                            style="text-align: center; padding: 20px; position: relative;"
-                            :class="shakingIndex === idx ? 'animate-shake' : ''"
-                            :style="getSelectedCardStyle(idx)"
-                            @click="selectOption(idx, opt)"
-                        >
-                            <!-- Feedback symbols -->
-                            <div 
-                                style="position: absolute; top: 10px; right: 10px; font-size: 24px;"
-                                x-html="getFeedbackSymbol(idx)"
-                            ></div>
+                <!-- Otherwise (standard questions), show normal image and choice cards -->
+                <template x-if="!currentQuestion.gambar || !currentQuestion.gambar.includes('ekspresi_emosi')">
+                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2rem;">
+                        <!-- Display question image if available -->
+                        <template x-if="currentQuestion.gambar">
+                            <div style="width: 100%; max-width: 300px; margin: 0 auto; border-radius: 16px; overflow: hidden; background: rgba(255, 255, 255, 0.05); padding: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                                <img :src="currentQuestion.gambar" alt="Gambar Soal" style="width: 100%; max-height: 200px; object-fit: contain;">
+                            </div>
+                        </template>
 
-                            <div style="font-size: 1.6rem; font-weight: bold; color: var(--text); padding: 15px 5px;" x-text="opt"></div>
+                        <!-- Grid of Multiple Choice Option Cards -->
+                        <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; width: 100%; margin-top: 1rem;">
+                            <template x-for="(opt, idx) in currentQuestion.pilihan" :key="idx">
+                                <div
+                                    class="card lesson-card choice-card cursor-pointer"
+                                    style="text-align: center; padding: 20px; position: relative;"
+                                    :class="shakingIndex === idx ? 'animate-shake' : ''"
+                                    :style="getSelectedCardStyle(idx)"
+                                    @click="selectOption(idx, opt)"
+                                >
+                                    <!-- Feedback symbols -->
+                                    <div
+                                        style="position: absolute; top: 10px; right: 10px; font-size: 24px;"
+                                        x-html="getFeedbackSymbol(idx)"
+                                    ></div>
+
+                                    <div style="font-size: 1.6rem; font-weight: bold; color: var(--text); padding: 15px 5px;" x-text="opt"></div>
+                                </div>
+                            </template>
                         </div>
-                    </template>
-                </div>
+                    </div>
+                </template>
 
                 <p class="feedback" style="font-size: 1.8rem; font-weight: 800; min-height: 2.5rem; text-align: center;" :style="isAnswerCorrect ? 'color: #4caf50;' : 'color: #ff5252;'" x-text="feedbackMsg"></p>
 
@@ -190,6 +245,12 @@
                 feedbackMsg: '',
                 quizFinished: false,
 
+                // Drag & drop selection states
+                draggedEmotion: null,
+                selectedEmotionClick: null,
+                dragOverIndex: null,
+                matchedEmotions: {},
+
                 // Quiz session metrics
                 totalCorrect: 0,
                 totalQuestions: 0,
@@ -256,6 +317,12 @@
                     this.quizFinished = false;
                     this.attemptsForCurrentQuestion = 0;
                     this.timerStart = Date.now();
+                    
+                    // Reset drag and drop properties
+                    this.draggedEmotion = null;
+                    this.selectedEmotionClick = null;
+                    this.dragOverIndex = null;
+                    this.matchedEmotions = {};
                 },
 
                 selectOption(idx, optionLabel) {
@@ -301,6 +368,74 @@
                             this.submitQuizAnswer(optionLabel, false);
                         }
                     }
+                },
+
+                handleDrop(idx, opt) {
+                    this.dragOverIndex = null;
+                    if (this.quizFinished) return;
+                    
+                    const dragged = this.draggedEmotion;
+                    if (!dragged) return;
+
+                    this.processMatch(idx, opt, dragged);
+                },
+
+                handleTargetClick(idx, opt) {
+                    if (this.quizFinished) return;
+                    const clicked = this.selectedEmotionClick;
+                    if (!clicked) {
+                        // Fallback: if no face is selected, treat it as a tap on the option directly
+                        this.selectOption(idx, opt);
+                        return;
+                    }
+                    this.processMatch(idx, opt, clicked);
+                    this.selectedEmotionClick = null; // reset
+                },
+
+                processMatch(idx, opt, emotion) {
+                    if (emotion === opt) {
+                        // Correct match!
+                        this.matchedEmotions[opt] = true;
+                        
+                        // Since the question is "Wajah yang manakah yang menggambarkan perasaan 'Senang'?",
+                        // if they correctly matched 'Senang', they have solved the quiz question!
+                        if (opt === this.currentQuestion.jawaban_benar) {
+                            this.selectOption(idx, opt);
+                        } else {
+                            // Show custom feedback for minor match
+                            if (window.confetti) {
+                                confetti({
+                                    particleCount: 50,
+                                    spread: 40,
+                                    origin: { y: 0.8 }
+                                });
+                            }
+                            this.feedbackMsg = `😊 Cocok! Gambar ${emotion} pas dengan teksnya!`;
+                        }
+                    } else {
+                        // Wrong match!
+                        this.shakingIndex = idx;
+                        setTimeout(() => {
+                            this.shakingIndex = null;
+                        }, 500);
+                        
+                        if (opt === this.currentQuestion.jawaban_benar) {
+                            // If they tried to drop a wrong face onto 'Senang'
+                            this.selectOption(idx, emotion);
+                        } else {
+                            this.feedbackMsg = `❌ Gambar ${emotion} tidak cocok dengan teks ${opt}. Coba lagi!`;
+                        }
+                    }
+                },
+
+                getEmotionPosition(opt) {
+                    const map = {
+                        'Senang': '0% 0%',
+                        'Sedih': '100% 0%',
+                        'Marah': '0% 100%',
+                        'Terkejut': '100% 100%'
+                    };
+                    return map[opt] || '0% 0%';
                 },
 
                 getSelectedCardStyle(idx) {
