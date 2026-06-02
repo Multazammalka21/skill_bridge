@@ -35,6 +35,20 @@ class PlayController extends Controller
     }
 
     /**
+     * Auto-redirect to the appropriate world based on the child's disability.
+     */
+    public function autoPlay(Child $child)
+    {
+        $this->authorizeChild($child);
+
+        if ($child->isAudioWorld()) {
+            return redirect()->route('play.tunanetra', $child->id);
+        }
+
+        return redirect()->route('play.tunarungu', $child->id);
+    }
+
+    /**
      * Show mode selection screen for the child.
      */
     public function chooseMode(Child $child)
@@ -74,7 +88,7 @@ class PlayController extends Controller
         
         $kategoriUsia = $this->getAgeCategory($child);
 
-        // Get audio lessons for this age category
+        // Get audio lessons for this age category; fallback to ALL audio lessons if none found
         $lessons = Lesson::where('tipe_dunia', 'audio')
             ->where('kategori_usia', $kategoriUsia)
             ->where('aktif', true)
@@ -83,6 +97,17 @@ class PlayController extends Controller
             }])
             ->orderBy('urutan')
             ->get();
+
+        // Fallback: if no age-specific lessons exist, show all active audio lessons
+        if ($lessons->isEmpty()) {
+            $lessons = Lesson::where('tipe_dunia', 'audio')
+                ->where('aktif', true)
+                ->with(['quizQuestions' => function($query) {
+                    $query->where('tipe', 'voice');
+                }])
+                ->orderBy('urutan')
+                ->get();
+        }
 
         // Start a study session HANYA jika belum ada sesi aktif dalam 30 menit terakhir
         $firstLesson = $lessons->first();
@@ -114,7 +139,7 @@ class PlayController extends Controller
         
         $kategoriUsia = $this->getAgeCategory($child);
 
-        // Get visual lessons for this age category
+        // Get visual lessons for this age category; fallback to ALL visual lessons if none found
         $lessons = Lesson::where('tipe_dunia', 'visual')
             ->where('kategori_usia', $kategoriUsia)
             ->where('aktif', true)
@@ -123,6 +148,17 @@ class PlayController extends Controller
             }])
             ->orderBy('urutan')
             ->get();
+
+        // Fallback: if no age-specific lessons exist, show all active visual lessons
+        if ($lessons->isEmpty()) {
+            $lessons = Lesson::where('tipe_dunia', 'visual')
+                ->where('aktif', true)
+                ->with(['quizQuestions' => function($query) {
+                    $query->where('tipe', 'image');
+                }])
+                ->orderBy('urutan')
+                ->get();
+        }
 
         // Start a study session HANYA jika belum ada sesi aktif dalam 30 menit terakhir
         $firstLesson = $lessons->first();

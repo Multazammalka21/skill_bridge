@@ -256,61 +256,123 @@
         <div class="header-section">
             <img src="{{ asset('images/Logo_pinteria (1).png') }}" alt="Pinteria Logo" style="height: 70px; width: auto; object-fit: contain; margin-bottom: 15px;">
             <h1>Pilih Mode Petualangan</h1>
-            <p>Pilih mode bermain yang sesuai untuk petualangan belajar {{ $child->nama_panggilan ?? 'anak Anda' }}!</p>
+            <p>
+                Halo <strong>{{ $child->nama_panggilan ?? 'Petualang' }}</strong>! 
+                @if($child->isAudioWorld())
+                    Mode <span style="color:#9b72f7; font-weight:900;">🎧 Audio</span> direkomendasikan untukmu.
+                @else
+                    Mode <span style="color:#ff7043; font-weight:900;">👁️ Visual</span> direkomendasikan untukmu.
+                @endif
+            </p>
         </div>
 
         <div class="cards-grid">
-            <!-- Mode Tunanetra (Audio World) -->
-            <a href="{{ route('play.tunanetra', $child->id) }}" class="mode-card audio-world">
-                <div class="mascot-avatar">
-                    <!-- Cute Owl with Headphones SVG -->
-                    <svg width="90" height="90" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="32" cy="32" r="30" fill="#E3F2FD" />
-                        <ellipse cx="32" cy="34" rx="16" ry="18" fill="#FFB74D" />
-                        <ellipse cx="32" cy="37" rx="11" ry="12" fill="#FFE082" />
-                        <polygon points="18,22 25,18 24,26" fill="#F57C00" />
-                        <polygon points="46,22 39,18 40,26" fill="#F57C00" />
-                        <path d="M22,30 Q26,34 30,30" stroke="#E65100" stroke-width="3" stroke-linecap="round" fill="none" />
-                        <path d="M34,30 Q38,34 42,30" stroke="#E65100" stroke-width="3" stroke-linecap="round" fill="none" />
-                        <polygon points="32,31 29,35 35,35" fill="#FF8F00" />
-                        <path d="M16,34 Q10,38 15,44 Q18,44 17,37" fill="#E65100" />
-                        <path d="M48,34 Q54,38 49,44 Q46,44 47,37" fill="#E65100" />
-                        <path d="M17,32 A16,16 0 0,1 47,32" stroke="#1E88E5" stroke-width="5" stroke-linecap="round" fill="none" />
-                        <rect x="12" y="28" width="7" height="12" rx="3" fill="#1E88E5" />
-                        <rect x="45" y="28" width="7" height="12" rx="3" fill="#1E88E5" />
-                        <path d="M8,26 Q5,23 9,20" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" fill="none" />
-                        <path d="M56,26 Q59,23 55,20" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" fill="none" />
-                    </svg>
-                </div>
-                <h2>Dunia Audio</h2>
-                <p class="mode-desc">Mode Tunanetra (Aira): Belajar secara interaktif menggunakan suara, instruksi audio, dan input ucapan (Speech-to-Text).</p>
-                <div class="btn-start">Mulai Main 🎧</div>
-            </a>
+            @php $isAudio = $child->isAudioWorld(); @endphp
 
-            <!-- Mode Tunarungu (Visual World) -->
-            <a href="{{ route('play.tunarungu', $child->id) }}" class="mode-card visual-world">
-                <div class="mascot-avatar">
-                    <!-- Cute Parrot Mascot SVG (Sinar the Parrot) -->
-                    <svg width="90" height="90" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="32" cy="32" r="30" fill="#E8F5E9" />
-                        <ellipse cx="32" cy="36" rx="15" ry="17" fill="#4CAF50" />
-                        <ellipse cx="32" cy="39" rx="10" ry="11" fill="#FFEB3B" />
-                        <ellipse cx="26" cy="28" rx="7" ry="7" fill="#FFFFFF" />
-                        <ellipse cx="38" cy="28" rx="7" ry="7" fill="#FFFFFF" />
-                        <circle cx="26" cy="28" r="4.5" fill="#263238" />
-                        <circle cx="38" cy="28" r="4.5" fill="#263238" />
-                        <circle cx="24.5" cy="26.5" r="1.5" fill="#FFFFFF" />
-                        <circle cx="36.5" cy="26.5" r="1.5" fill="#FFFFFF" />
-                        <path d="M32,31 C35,31 35,37 32,41 C29,37 29,31 32,31 Z" fill="#FF9100" />
-                        <path d="M17,35 Q12,38 14,44 Q17,45 18,39" fill="#29B6F6" />
-                        <path d="M47,35 Q52,38 50,44 Q47,45 46,39" fill="#29B6F6" />
-                        <path d="M32,19 C31,14 34,13 34,13 C34,13 36,15 34,19 Z" fill="#4CAF50" />
-                    </svg>
-                </div>
-                <h2>Dunia Visual</h2>
-                <p class="mode-desc">Mode Tunarungu (Bima): Belajar dengan konten visual interaktif, gambar menarik, animasi cerita, dan kuis pilihan ganda.</p>
-                <div class="btn-start">Mulai Main 🦜</div>
-            </a>
+            {{-- Recommended world always first --}}
+            @if($isAudio)
+                {{-- Audio World (Recommended) --}}
+                <a href="{{ route('play.tunanetra', $child->id) }}" class="mode-card audio-world" style="position: relative; border-color: var(--accent-audio);">
+                    <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--accent-audio); color: white; font-size: 0.8rem; font-weight: 900; padding: 4px 16px; border-radius: 20px; white-space: nowrap; box-shadow: 0 4px 12px rgba(155,114,247,0.4);">
+                        ⭐ Direkomendasikan
+                    </div>
+                    <div class="mascot-avatar">
+                        <svg width="90" height="90" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="32" cy="32" r="30" fill="#E3F2FD" />
+                            <ellipse cx="32" cy="34" rx="16" ry="18" fill="#FFB74D" />
+                            <ellipse cx="32" cy="37" rx="11" ry="12" fill="#FFE082" />
+                            <polygon points="18,22 25,18 24,26" fill="#F57C00" />
+                            <polygon points="46,22 39,18 40,26" fill="#F57C00" />
+                            <path d="M22,30 Q26,34 30,30" stroke="#E65100" stroke-width="3" stroke-linecap="round" fill="none" />
+                            <path d="M34,30 Q38,34 42,30" stroke="#E65100" stroke-width="3" stroke-linecap="round" fill="none" />
+                            <polygon points="32,31 29,35 35,35" fill="#FF8F00" />
+                            <path d="M16,34 Q10,38 15,44 Q18,44 17,37" fill="#E65100" />
+                            <path d="M48,34 Q54,38 49,44 Q46,44 47,37" fill="#E65100" />
+                            <path d="M17,32 A16,16 0 0,1 47,32" stroke="#1E88E5" stroke-width="5" stroke-linecap="round" fill="none" />
+                            <rect x="12" y="28" width="7" height="12" rx="3" fill="#1E88E5" />
+                            <rect x="45" y="28" width="7" height="12" rx="3" fill="#1E88E5" />
+                        </svg>
+                    </div>
+                    <h2>Dunia Audio</h2>
+                    <p class="mode-desc">Mode Tunanetra: Belajar menggunakan cerita audio, narasi suara, dan menjawab kuis dengan ucapan (mikrofon).</p>
+                    <div class="btn-start">Mulai Main 🎧</div>
+                </a>
+
+                {{-- Visual World (Alternative) --}}
+                <a href="{{ route('play.tunarungu', $child->id) }}" class="mode-card visual-world" style="opacity: 0.75;">
+                    <div class="mascot-avatar">
+                        <svg width="90" height="90" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="32" cy="32" r="30" fill="#E8F5E9" />
+                            <ellipse cx="32" cy="36" rx="15" ry="17" fill="#4CAF50" />
+                            <ellipse cx="32" cy="39" rx="10" ry="11" fill="#FFEB3B" />
+                            <ellipse cx="26" cy="28" rx="7" ry="7" fill="#FFFFFF" />
+                            <ellipse cx="38" cy="28" rx="7" ry="7" fill="#FFFFFF" />
+                            <circle cx="26" cy="28" r="4.5" fill="#263238" />
+                            <circle cx="38" cy="28" r="4.5" fill="#263238" />
+                            <circle cx="24.5" cy="26.5" r="1.5" fill="#FFFFFF" />
+                            <circle cx="36.5" cy="26.5" r="1.5" fill="#FFFFFF" />
+                            <path d="M32,31 C35,31 35,37 32,41 C29,37 29,31 32,31 Z" fill="#FF9100" />
+                            <path d="M17,35 Q12,38 14,44 Q17,45 18,39" fill="#29B6F6" />
+                            <path d="M47,35 Q52,38 50,44 Q47,45 46,39" fill="#29B6F6" />
+                        </svg>
+                    </div>
+                    <h2>Dunia Visual</h2>
+                    <p class="mode-desc">Mode Tunarungu: Belajar dengan gambar interaktif, animasi visual, dan kuis pilihan bergambar.</p>
+                    <div class="btn-start">Coba Mode Ini 🦜</div>
+                </a>
+
+            @else
+                {{-- Visual World (Recommended) --}}
+                <a href="{{ route('play.tunarungu', $child->id) }}" class="mode-card visual-world" style="position: relative; border-color: var(--accent-visual);">
+                    <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--accent-visual); color: white; font-size: 0.8rem; font-weight: 900; padding: 4px 16px; border-radius: 20px; white-space: nowrap; box-shadow: 0 4px 12px rgba(255,112,67,0.4);">
+                        ⭐ Direkomendasikan
+                    </div>
+                    <div class="mascot-avatar">
+                        <svg width="90" height="90" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="32" cy="32" r="30" fill="#E8F5E9" />
+                            <ellipse cx="32" cy="36" rx="15" ry="17" fill="#4CAF50" />
+                            <ellipse cx="32" cy="39" rx="10" ry="11" fill="#FFEB3B" />
+                            <ellipse cx="26" cy="28" rx="7" ry="7" fill="#FFFFFF" />
+                            <ellipse cx="38" cy="28" rx="7" ry="7" fill="#FFFFFF" />
+                            <circle cx="26" cy="28" r="4.5" fill="#263238" />
+                            <circle cx="38" cy="28" r="4.5" fill="#263238" />
+                            <circle cx="24.5" cy="26.5" r="1.5" fill="#FFFFFF" />
+                            <circle cx="36.5" cy="26.5" r="1.5" fill="#FFFFFF" />
+                            <path d="M32,31 C35,31 35,37 32,41 C29,37 29,31 32,31 Z" fill="#FF9100" />
+                            <path d="M17,35 Q12,38 14,44 Q17,45 18,39" fill="#29B6F6" />
+                            <path d="M47,35 Q52,38 50,44 Q47,45 46,39" fill="#29B6F6" />
+                            <path d="M32,19 C31,14 34,13 34,13 C34,13 36,15 34,19 Z" fill="#4CAF50" />
+                        </svg>
+                    </div>
+                    <h2>Dunia Visual</h2>
+                    <p class="mode-desc">Mode Tunarungu: Belajar dengan gambar interaktif, animasi cerita, dan kuis pilihan bergambar yang seru!</p>
+                    <div class="btn-start">Mulai Main 🦜</div>
+                </a>
+
+                {{-- Audio World (Alternative) --}}
+                <a href="{{ route('play.tunanetra', $child->id) }}" class="mode-card audio-world" style="opacity: 0.75;">
+                    <div class="mascot-avatar">
+                        <svg width="90" height="90" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="32" cy="32" r="30" fill="#E3F2FD" />
+                            <ellipse cx="32" cy="34" rx="16" ry="18" fill="#FFB74D" />
+                            <ellipse cx="32" cy="37" rx="11" ry="12" fill="#FFE082" />
+                            <polygon points="18,22 25,18 24,26" fill="#F57C00" />
+                            <polygon points="46,22 39,18 40,26" fill="#F57C00" />
+                            <path d="M22,30 Q26,34 30,30" stroke="#E65100" stroke-width="3" stroke-linecap="round" fill="none" />
+                            <path d="M34,30 Q38,34 42,30" stroke="#E65100" stroke-width="3" stroke-linecap="round" fill="none" />
+                            <polygon points="32,31 29,35 35,35" fill="#FF8F00" />
+                            <path d="M16,34 Q10,38 15,44 Q18,44 17,37" fill="#E65100" />
+                            <path d="M48,34 Q54,38 49,44 Q46,44 47,37" fill="#E65100" />
+                            <path d="M17,32 A16,16 0 0,1 47,32" stroke="#1E88E5" stroke-width="5" stroke-linecap="round" fill="none" />
+                            <rect x="12" y="28" width="7" height="12" rx="3" fill="#1E88E5" />
+                            <rect x="45" y="28" width="7" height="12" rx="3" fill="#1E88E5" />
+                        </svg>
+                    </div>
+                    <h2>Dunia Audio</h2>
+                    <p class="mode-desc">Mode Tunanetra: Belajar menggunakan cerita audio dan menjawab kuis dengan ucapan suara (mikrofon).</p>
+                    <div class="btn-start">Coba Mode Ini 🎧</div>
+                </a>
+            @endif
         </div>
 
         <a href="{{ route('dashboard') }}" class="back-link">

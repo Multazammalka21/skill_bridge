@@ -75,28 +75,45 @@
             <div class="image-quiz lesson-card animate-slide-up" style="display: flex; flex-direction: column; align-items: center; gap: 2rem; width: 100%;">
                 <div class="question" style="font-size: 2.2rem; font-weight: 800; color: var(--text); text-align: center;" x-text="currentQuestion.pertanyaan"></div>
 
-                <!-- Ekspresi Emosi: show full image (draggable) + text option cards as drop targets -->
+                <!-- Ekspresi Emosi: show separate circle faces (draggable) + text option cards as drop targets -->
                 <template x-if="currentQuestion.gambar && currentQuestion.gambar.includes('ekspresi_emosi')">
                     <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
                         <!-- Instruction -->
                         <p style="font-size: 1.2rem; color: #ff6b35; font-weight: bold; text-align: center; background: rgba(255,107,53,0.08); padding: 10px 20px; border-radius: 12px; border: 1px dashed rgba(255,107,53,0.3);">
-                            👆 Tap kartu kata yang cocok, atau seret gambar ke kartu yang sesuai
+                            👆 Ketuk gambar wajah lalu ketuk kata yang cocok, atau seret gambar wajah ke kotak kata yang sesuai!
                         </p>
 
-                        <!-- Full draggable image -->
-                        <div style="position: relative; cursor: grab; user-select: none;"
-                             draggable="true"
-                             @dragstart="draggedEmotion = currentQuestion.jawaban_benar"
-                             title="Seret gambar ini ke kotak kata yang menggambarkan ekspresi wajah yang diminta!"
-                        >
-                            <img
-                                :src="currentQuestion.gambar"
-                                alt="Gambar Ekspresi Wajah"
-                                style="max-width: 300px; width: 100%; border-radius: 16px; border: 3px solid rgba(255,107,53,0.4); box-shadow: 0 8px 24px rgba(0,0,0,0.3); pointer-events: none;"
-                            />
-                            <div style="position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); background: #ff6b35; color: white; font-size: 0.85rem; font-weight: bold; padding: 4px 14px; border-radius: 20px; white-space: nowrap;">
-                                &#8597; Seret ke kotak kata
-                            </div>
+                        <!-- 4 Separate Draggable Expression Faces -->
+                        <div style="display: flex; gap: 2rem; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 2rem; width: 100%;">
+                            <template x-for="emotion in ['Senang', 'Sedih', 'Marah', 'Terkejut']" :key="emotion">
+                                <div 
+                                    style="display: flex; flex-direction: column; align-items: center; gap: 0.8rem; position: relative;"
+                                >
+                                    <!-- Draggable Cropped Face Card -->
+                                    <div 
+                                        draggable="true"
+                                        @dragstart="draggedEmotion = emotion"
+                                        @click="selectedEmotionClick = (selectedEmotionClick === emotion ? null : emotion)"
+                                        style="width: 120px; height: 120px; border-radius: 50%; cursor: grab; transition: all 0.3s; position: relative; overflow: hidden; background-size: 200% 200%; border: 4px solid rgba(255,107,53,0.25); box-shadow: 0 8px 20px rgba(0,0,0,0.15);"
+                                        :style="'background-image: url(' + currentQuestion.gambar + '); background-position: ' + getEmotionPosition(emotion) + '; border-color: ' + (selectedEmotionClick === emotion ? '#ff6b35' : (matchedEmotions[emotion] ? '#4caf50' : 'rgba(255,107,53,0.25)')) + '; box-shadow: ' + (selectedEmotionClick === emotion ? '0 0 15px rgba(255,107,53,0.6)' : '0 8px 20px rgba(0,0,0,0.15)')"
+                                        :class="selectedEmotionClick === emotion ? 'animate-pulse' : ''"
+                                        :title="'Seret wajah ' + emotion + ' ke kata yang sesuai!'"
+                                    >
+                                        <!-- Checked Overlay for matched faces -->
+                                        <div 
+                                            x-show="matchedEmotions[emotion]" 
+                                            style="position: absolute; inset: 0; background: rgba(76,175,80,0.4); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: white;"
+                                        >
+                                            ✅
+                                        </div>
+                                    </div>
+                                    <div 
+                                        style="font-size: 1rem; font-weight: 800;" 
+                                        :style="selectedEmotionClick === emotion ? 'color: #ff6b35;' : (matchedEmotions[emotion] ? 'color: #4caf50;' : 'color: #888;')"
+                                        x-text="selectedEmotionClick === emotion ? '👉 Terpilih' : (matchedEmotions[emotion] ? 'Cocok!' : 'Seret saya')"
+                                    ></div>
+                                </div>
+                            </template>
                         </div>
 
                         <!-- Drop Target / Grid Options -->
@@ -109,8 +126,8 @@
                                     :style="[getSelectedCardStyle(idx), dragOverIndex === idx ? 'border: 2px solid #ff6b35 !important; background: rgba(255,107,53,0.15) !important; transform: scale(1.03);' : '']"
                                     @dragover.prevent="dragOverIndex = idx"
                                     @dragleave="dragOverIndex = null"
-                                    @drop.prevent="dragOverIndex = null; selectOption(idx, opt)"
-                                    @click="selectOption(idx, opt)"
+                                    @drop.prevent="handleDrop(idx, opt)"
+                                    @click="handleTargetClick(idx, opt)"
                                 >
                                     <!-- Feedback symbols -->
                                     <div

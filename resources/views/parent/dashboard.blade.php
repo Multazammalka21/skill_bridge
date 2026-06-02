@@ -703,18 +703,27 @@
                         role="tabpanel"
                         aria-labelledby="tab-child-{{ $child->id }}"
                     >
-                        {{-- Start banner --}}
                         <div class="chart-card chart-card--full banner-card">
                             <div>
                                 <h3>🎮 Mulai Petualangan!</h3>
-                                <p>Temani {{ $child->nama_panggilan ?? 'Anak' }} belajar hari ini</p>
+                                <p>Temani {{ $child->nama_panggilan ?? 'Anak' }} belajar hari ini dengan dunia {{ $child->isAudioWorld() ? '🎧 Audio' : '👁️ Visual' }}</p>
                             </div>
-                            <a
-                                href="{{ route('play.choose-mode', $child->id) }}"
-                                class="btn-play"
-                            >
-                                Mulai Bermain 🚀
-                            </a>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                <a
+                                    href="{{ route('play.auto', $child->id) }}"
+                                    class="btn-play"
+                                    style="background: {{ $child->isAudioWorld() ? 'linear-gradient(135deg,#9b72f7,#b48fff)' : 'linear-gradient(135deg,#ff6b35,#ff8c5a)' }}; color: white;"
+                                >
+                                    {{ $child->isAudioWorld() ? '🎧 Mulai Bermain Audio' : '👁️ Mulai Bermain Visual' }}
+                                </a>
+                                <a
+                                    href="{{ route('play.choose-mode', $child->id) }}"
+                                    class="btn-play"
+                                    style="background: rgba(0,0,0,0.08); color: #444; font-size: 0.9rem;"
+                                >
+                                    🔄 Ganti Mode
+                                </a>
+                            </div>
                         </div>
 
                         {{-- Gamification Badges --}}

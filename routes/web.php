@@ -67,6 +67,7 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
     Route::post('/children', [ParentDashboardWebController::class, 'storeChild'])->name('parent.children.store');
 
     // Dynamic Play Views (With active child profile context)
+    Route::get('/play/start/{child}', [PlayController::class, 'autoPlay'])->name('play.auto');
     Route::get('/play/choose-mode/{child}', [PlayController::class, 'chooseMode'])->name('play.choose-mode');
     Route::get('/play/tunanetra/{child}', [PlayController::class, 'tunanetra'])->name('play.tunanetra');
     Route::get('/play/tunarungu/{child}', [PlayController::class, 'tunarungu'])->name('play.tunarungu');
