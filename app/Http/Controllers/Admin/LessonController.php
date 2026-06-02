@@ -66,6 +66,7 @@ class LessonController extends Controller
             // File uploads
             'gambar_file'             => 'nullable|image|max:3072',
             'efek_suara_file'         => 'nullable|mimes:mp3,wav,ogg,m4a|max:10240',
+            'audio_story_file'        => 'nullable|mimes:mp3,wav,ogg,m4a|max:20480',
         ]);
 
         // Handle image upload
@@ -80,6 +81,12 @@ class LessonController extends Controller
             $validated['efek_suara'] = '/storage/' . $path;
         }
 
+        // Handle audio story upload
+        if ($request->hasFile('audio_story_file')) {
+            $path = $request->file('audio_story_file')->store('lessons/audio_story', 'public');
+            $validated['audio_story_url'] = '/storage/' . $path;
+        }
+
         $validated['aktif'] = $request->boolean('aktif', true);
 
         // Cek circular prerequisite sebelum menyimpan
@@ -91,7 +98,7 @@ class LessonController extends Controller
         }
 
         // Remove file keys (not real columns)
-        unset($validated['gambar_file'], $validated['efek_suara_file']);
+        unset($validated['gambar_file'], $validated['efek_suara_file'], $validated['audio_story_file']);
 
         Lesson::create($validated);
 
@@ -157,6 +164,21 @@ class LessonController extends Controller
             $validated['efek_suara'] = $lesson->efek_suara;
         }
 
+        // Handle audio story file upload (replace old)
+        if ($request->hasFile('audio_story_file')) {
+            if ($lesson->audio_story_url && str_starts_with($lesson->audio_story_url, '/storage/')) {
+                Storage::disk('public')->delete(ltrim(str_replace('/storage/', '', $lesson->audio_story_url), '/'));
+            }
+            $path = $request->file('audio_story_file')->store('lessons/audio_story', 'public');
+            $validated['audio_story_url'] = '/storage/' . $path;
+        } elseif (empty($validated['audio_story_url'])) {
+            // Delete old file if the manual text field was cleared by the user
+            if ($lesson->audio_story_url && str_starts_with($lesson->audio_story_url, '/storage/')) {
+                Storage::disk('public')->delete(ltrim(str_replace('/storage/', '', $lesson->audio_story_url), '/'));
+            }
+            $validated['audio_story_url'] = null;
+        }
+
         // Handle clear media flags
         if ($request->boolean('hapus_gambar') && $lesson->gambar) {
             Storage::disk('public')->delete(ltrim(str_replace('/storage/', '', $lesson->gambar), '/'));
@@ -168,7 +190,7 @@ class LessonController extends Controller
         }
 
         $validated['aktif'] = $request->boolean('aktif');
-        unset($validated['gambar_file'], $validated['efek_suara_file']);
+        unset($validated['gambar_file'], $validated['efek_suara_file'], $validated['audio_story_file']);
 
         // Cek circular prerequisite sebelum menyimpan
         if (!empty($validated['prerequisite_lesson_id'])) {
@@ -194,6 +216,9 @@ class LessonController extends Controller
         }
         if ($lesson->efek_suara) {
             Storage::disk('public')->delete(ltrim(str_replace('/storage/', '', $lesson->efek_suara), '/'));
+        }
+        if ($lesson->audio_story_url && str_starts_with($lesson->audio_story_url, '/storage/')) {
+            Storage::disk('public')->delete(ltrim(str_replace('/storage/', '', $lesson->audio_story_url), '/'));
         }
 
         $lesson->delete();

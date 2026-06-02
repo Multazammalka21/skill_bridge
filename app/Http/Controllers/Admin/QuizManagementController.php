@@ -118,7 +118,7 @@ class QuizManagementController extends Controller
         if ($request->hasFile('gambar_file')) {
             // Delete old file
             if ($quiz->gambar) {
-                Storage::disk('public')->delete(str_replace('/storage/', '', $quiz->gambar));
+                Storage::disk('public')->delete(ltrim(str_replace('/storage/', '', $quiz->gambar), '/'));
             }
             $path = $request->file('gambar_file')->store('quiz', 'public');
             $validated['gambar'] = '/storage/' . $path;
@@ -127,7 +127,7 @@ class QuizManagementController extends Controller
         if ($request->hasFile('audio_file')) {
             // Delete old file
             if ($quiz->audio_url) {
-                Storage::disk('public')->delete(str_replace('/storage/', '', $quiz->audio_url));
+                Storage::disk('public')->delete(ltrim(str_replace('/storage/', '', $quiz->audio_url), '/'));
             }
             $path = $request->file('audio_file')->store('quiz', 'public');
             $validated['audio_url'] = '/storage/' . $path;
@@ -147,10 +147,10 @@ class QuizManagementController extends Controller
         $quiz = $this->quizRepo->findById($id);
 
         if ($quiz->gambar) {
-            Storage::disk('public')->delete(str_replace('/storage/', '', $quiz->gambar));
+            Storage::disk('public')->delete(ltrim(str_replace('/storage/', '', $quiz->gambar), '/'));
         }
         if ($quiz->audio_url) {
-            Storage::disk('public')->delete(str_replace('/storage/', '', $quiz->audio_url));
+            Storage::disk('public')->delete(ltrim(str_replace('/storage/', '', $quiz->audio_url), '/'));
         }
 
         $this->quizRepo->delete($id);
