@@ -247,26 +247,61 @@ class DatabaseSeeder extends Seeder
         }
 
         // ─── Quiz Questions ──────────────────────────────────────
+        // Hanya "Dongeng Singa dan Tikus" yang memiliki soal kuis audio.
+        // Semua soal berfokus pada pemahaman isi cerita yang didengarkan.
         foreach ($audioLessons as $lesson) {
             if ($lesson->judul === 'Dongeng Singa dan Tikus') {
-                QuizQuestion::create([
-                    'lesson_id' => $lesson->id,
-                    'pertanyaan' => 'Siapa yang menyelamatkan Singa saat terjebak di jaring pemburu?',
-                    'jawaban_benar' => 'Tikus',
-                    'pilihan' => ['Tikus', 'Kelinci', 'Monyet', 'Gajah'],
-                    'tipe' => 'voice',
-                    'poin' => 20,
-                ]);
-            } else {
-                QuizQuestion::create([
-                    'lesson_id' => $lesson->id,
-                    'pertanyaan' => 'Hewan apa yang sering mengeluarkan suara petualangan di pelajaran ' . $lesson->judul . '?',
-                    'jawaban_benar' => 'Gajah',
-                    'pilihan' => ['Gajah', 'Kucing', 'Singa', 'Burung'],
-                    'tipe' => 'voice',
-                    'poin' => 15,
-                ]);
+                $singatikusQuestions = [
+                    [
+                        'pertanyaan'    => 'Di dalam cerita, apa yang dilakukan Tikus kecil saat pertama kali bertemu dengan Singa?',
+                        'jawaban_benar' => 'Membangunkan Singa',
+                        'pilihan'       => ['Membangunkan Singa', 'Menggigit Singa', 'Bersembunyi', 'Berlari menjauh'],
+                        'audio_url'     => '/audio/Singa dan Tikus.mp3',
+                        'poin'          => 20,
+                    ],
+                    [
+                        'pertanyaan'    => 'Apa yang terjadi pada Singa setelah para pemburu datang ke hutan?',
+                        'jawaban_benar' => 'Terjebak di jaring',
+                        'pilihan'       => ['Terjebak di jaring', 'Melarikan diri', 'Tertidur', 'Ditangkap sangkar'],
+                        'audio_url'     => '/audio/Singa dan Tikus.mp3',
+                        'poin'          => 20,
+                    ],
+                    [
+                        'pertanyaan'    => 'Bagaimana cara Tikus menolong Singa yang terjebak?',
+                        'jawaban_benar' => 'Menggigit tali jaring',
+                        'pilihan'       => ['Menggigit tali jaring', 'Memanggil hewan lain', 'Mendorong jaring', 'Meminta tolong pemburu'],
+                        'audio_url'     => '/audio/Singa dan Tikus.mp3',
+                        'poin'          => 20,
+                    ],
+                    [
+                        'pertanyaan'    => 'Apa pelajaran moral yang bisa kita ambil dari dongeng Singa dan Tikus?',
+                        'jawaban_benar' => 'Kebaikan akan dibalas kebaikan',
+                        'pilihan'       => ['Kebaikan akan dibalas kebaikan', 'Jadilah yang terkuat', 'Jangan percaya siapapun', 'Singa selalu menang'],
+                        'audio_url'     => '/audio/Singa dan Tikus.mp3',
+                        'poin'          => 25,
+                    ],
+                    [
+                        'pertanyaan'    => 'Siapakah tokoh utama dalam dongeng yang baru kamu dengar?',
+                        'jawaban_benar' => 'Singa dan Tikus',
+                        'pilihan'       => ['Singa dan Tikus', 'Kelinci dan Kura-kura', 'Monyet dan Gajah', 'Harimau dan Rusa'],
+                        'audio_url'     => '/audio/Singa dan Tikus.mp3',
+                        'poin'          => 15,
+                    ],
+                ];
+
+                foreach ($singatikusQuestions as $q) {
+                    QuizQuestion::create([
+                        'lesson_id'     => $lesson->id,
+                        'pertanyaan'    => $q['pertanyaan'],
+                        'jawaban_benar' => $q['jawaban_benar'],
+                        'pilihan'       => $q['pilihan'],
+                        'tipe'          => 'voice',
+                        'audio_url'     => $q['audio_url'],
+                        'poin'          => $q['poin'],
+                    ]);
+                }
             }
+            // Lesson audio lainnya tidak memiliki soal kuis — hanya narasi cerita.
         }
 
         $visualQuestionsData = [

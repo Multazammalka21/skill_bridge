@@ -70,8 +70,23 @@
         <template x-if="currentState === 'quiz'">
             <div class="surface-card animate-slide-up" style="display: flex; flex-direction: column; align-items: center; gap: 2rem; padding: 2rem;">
                 <h2 style="font-size: 1.8rem; font-family: 'Nunito', sans-serif; color: #d8c4ff;">Pertanyaan Kuis</h2>
-                
+
+                <!-- Question counter -->
+                <div style="font-size: 1.1rem; color: #b48fff; font-weight: 600;" x-text="'Soal ' + (questionIndex + 1) + ' dari ' + questionsList.length"></div>
+
                 <div class="story-box" x-text="currentQuestion.pertanyaan" style="background: rgba(155, 114, 247, 0.08); border: 1px solid rgba(155, 114, 247, 0.2); font-size: 1.8rem; color: #fffffe; padding: 2rem; border-radius: 18px;"></div>
+
+                <!-- Replay story audio button (shown when question has audio_url) -->
+                <template x-if="currentQuestion.audio_url">
+                    <button
+                        class="btn btn-repeat"
+                        @click="replayQuestionAudio()"
+                        aria-label="Dengarkan cerita lagi untuk membantu menjawab"
+                        style="min-height: 64px; font-size: 1.3rem; background: rgba(255,214,0,0.12); border-color: #ffd600; color: #ffd600;"
+                    >
+                        🎧 Dengar Cerita Lagi
+                    </button>
+                </template>
 
                 <!-- Mic indicator -->
                 <div x-show="listening" class="mic-indicator" style="display: flex; align-items: center; justify-content: center; gap: 15px; margin: 10px 0; padding: 15px 30px; background: rgba(155, 114, 247, 0.15); border-radius: 50px; border: 1px solid rgba(155,114,247,0.3);">
@@ -103,7 +118,7 @@
                     <button
                         class="btn btn-repeat"
                         x-show="!listening && !quizFinished"
-                        @click="speakAndListen()"
+                        @click="startListeningSession()"
                         aria-label="Ulangi mendengarkan jawaban suara"
                         style="min-height: 80px;"
                     >
@@ -243,6 +258,31 @@
                         } catch(e) {}
                     }
                 },
+
+                async replayQuestionAudio() {
+                    if (!this.currentQuestion.audio_url) return;
+                    // Pause any active speech recognition while audio plays
+                    if (this.recognizer) {
+                        try { this.recognizer.abort(); } catch(e) {}
+                    }
+                    this.stopActiveAudio();
+                    this.quizStatus = '🎧 Memutar cerita...';
+                    try {
+                        this.activeAudio = new Audio(encodeURI(this.currentQuestion.audio_url));
+                        await new Promise((resolve) => {
+                            this.activeAudio.onended = resolve;
+                            this.activeAudio.onerror = resolve;
+                            this.activeAudio.play().catch(resolve);
+                        });
+                    } catch(e) {}
+                    this.quizStatus = 'Cerita selesai. Jawab pertanyaan di atas!';
+                    // Resume listening session after replay
+                    if (!this.quizFinished) {
+                        await this.speakTTS('Sekarang jawab pertanyaan tadi dengan suaramu!');
+                        this.startListeningSession();
+                    }
+                },
+
 
                 async playNarration() {
                     this.stopActiveAudio();
