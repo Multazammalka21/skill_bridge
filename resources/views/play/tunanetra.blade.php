@@ -20,6 +20,22 @@
             </div>
         </template>
 
+        <!-- 1b. Next Lesson Prompt Screen -->
+        <template x-if="currentState === 'next_lesson_prompt'">
+            <div class="surface-card animate-slide-up" style="display: flex; flex-direction: column; align-items: center; gap: 2rem; padding: 3rem;">
+                <h1 style="font-size: 2.5rem; color: #fffffe; font-family: 'Fredoka', sans-serif;">📖 Cerita Selanjutnya</h1>
+                <p style="font-size: 1.5rem; color: #d8c4ff; text-align: center; max-width: 600px; font-weight: bold;" x-text="'Mulai pelajaran: ' + lessons[lessonIndex].judul"></p>
+                <button 
+                    class="btn btn-next animate-pulse" 
+                    @click="currentState = 'narrator'; loadLesson();"
+                    aria-label="Tekan tombol besar ini untuk memulai cerita berikutnya!"
+                    style="font-size: 2.2rem; min-height: 100px; padding: 0 50px;"
+                >
+                    🚀 MULAI CERITA!
+                </button>
+            </div>
+        </template>
+
         <!-- 2. Narration Stage -->
         <template x-if="currentState === 'narrator'">
             <div class="surface-card animate-slide-up" style="display: flex; flex-direction: column; align-items: center; gap: 2rem; padding: 2rem;">
@@ -235,7 +251,7 @@
                     // Check if lesson has a high-quality pre-recorded audio file
                     if (this.currentLesson.audio_story_url) {
                         try {
-                            this.activeAudio = new Audio(this.currentLesson.audio_story_url);
+                            this.activeAudio = new Audio(encodeURI(this.currentLesson.audio_story_url));
                             await new Promise((resolve, reject) => {
                                 this.activeAudio.onended = resolve;
                                 this.activeAudio.onerror = reject;
@@ -249,7 +265,7 @@
                         // Play sound effects if present
                         if (this.currentLesson.efek_suara) {
                             try {
-                                const audio = new Audio(this.currentLesson.efek_suara);
+                                const audio = new Audio(encodeURI(this.currentLesson.efek_suara));
                                 await audio.play().catch(() => {});
                             } catch (e) {}
                         }
@@ -472,8 +488,8 @@
                     this.stopActiveAudio();
                     this.lessonIndex++;
                     if (this.lessonIndex < this.lessons.length) {
-                        this.currentState = 'narrator';
-                        this.loadLesson();
+                        this.currentState = 'next_lesson_prompt';
+                        this.speakTTS("Pelajaran berikutnya sudah siap. Silakan tekan tombol besar di tengah layar untuk memulai cerita berikutnya.");
                     } else {
                         this.finishAdventure();
                     }
