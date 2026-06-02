@@ -150,7 +150,7 @@
                         <label class="admin-form-label">🖼️ Gambar Utama</label>
                         @if($lesson->gambar)
                             <div style="margin-bottom:10px; padding:10px; background:#f8fafc; border-radius:8px; border:1px solid var(--admin-border);">
-                                <img src="{{ $lesson->gambar }}" style="max-height:80px; border-radius:6px; max-width:100%; display:block; margin-bottom:8px;">
+                                <img src="{{ asset($lesson->gambar) }}" style="max-height:80px; border-radius:6px; max-width:100%; display:block; margin-bottom:8px;">
                                 <label style="display:flex; align-items:center; gap:6px; font-size:0.78rem; cursor:pointer; color:var(--admin-danger);">
                                     <input type="checkbox" name="hapus_gambar" value="1"> Hapus gambar saat ini
                                 </label>
@@ -168,7 +168,7 @@
                         @if($lesson->efek_suara)
                             <div style="margin-bottom:10px; padding:10px; background:#f8fafc; border-radius:8px; border:1px solid var(--admin-border);">
                                 <audio controls style="width:100%; height:32px; margin-bottom:8px;">
-                                    <source src="{{ $lesson->efek_suara }}">
+                                    <source src="{{ asset($lesson->efek_suara) }}">
                                 </audio>
                                 <label style="display:flex; align-items:center; gap:6px; font-size:0.78rem; cursor:pointer; color:var(--admin-danger);">
                                     <input type="checkbox" name="hapus_audio" value="1"> Hapus audio saat ini
@@ -195,7 +195,7 @@
                         <div style="margin-bottom:10px; padding:12px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0;">
                             <div style="font-size:0.78rem; color:#166534; font-weight:600; margin-bottom:6px;">✅ Audio storytelling terpasang:</div>
                             <audio controls style="width:100%; height:36px; margin-bottom:8px;">
-                                <source src="{{ $lesson->audio_story_url }}">
+                                <source src="{{ asset($lesson->audio_story_url) }}">
                                 Browser Anda tidak mendukung audio player.
                             </audio>
                             <div style="font-size:0.72rem; color:#166534;">{{ $lesson->audio_story_url }}</div>

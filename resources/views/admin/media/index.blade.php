@@ -108,13 +108,13 @@
             {{-- Preview area --}}
             <div style="height:130px; background:#f8fafc; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
                 @if($asset->tipe === 'image' || $asset->tipe === 'gif')
-                    <img src="{{ $asset->url }}" alt="{{ $asset->nama }}"
+                    <img src="{{ asset($asset->url) }}" alt="{{ $asset->nama }}"
                          style="max-width:100%; max-height:130px; object-fit:cover;">
                 @elseif($asset->tipe === 'audio')
                     <div style="text-align:center; padding:16px;">
                         <div style="font-size:2.5rem; margin-bottom:6px;">🎵</div>
                         <audio controls style="width:100%; height:28px;" preload="none">
-                            <source src="{{ $asset->url }}">
+                            <source src="{{ asset($asset->url) }}">
                         </audio>
                     </div>
                 @else
@@ -141,8 +141,8 @@
 
                 {{-- URL copy box --}}
                 <div style="margin-top:10px; background:#f1f5f9; border-radius:6px; padding:6px 8px; display:flex; align-items:center; gap:6px;">
-                    <code style="font-size:0.65rem; color:var(--admin-text-secondary); flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">{{ $asset->url }}</code>
-                    <button onclick="copyUrl('{{ $asset->url }}', this)"
+                    <code style="font-size:0.65rem; color:var(--admin-text-secondary); flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">{{ asset($asset->url) }}</code>
+                    <button onclick="copyUrl('{{ asset($asset->url) }}', this)"
                             style="background:none; border:none; cursor:pointer; font-size:0.9rem; padding:0; flex-shrink:0;"
                             title="Salin URL">📋</button>
                 </div>

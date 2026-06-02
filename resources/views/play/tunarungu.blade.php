@@ -40,7 +40,7 @@
                 <!-- Render media -->
                 <div class="media" style="width: 100%; max-height: 45vh; display: flex; align-items: center; justify-content: center; border-radius: 16px; overflow: hidden; background: rgba(255, 107, 53, 0.05); border: 2px solid rgba(255, 107, 53, 0.15);">
                     <img 
-                        :src="currentLesson.gambar || '/images/placeholder.png'" 
+                        :src="getAssetUrl(currentLesson.gambar || '/images/placeholder.png')" 
                         :alt="currentLesson.judul" 
                         style="max-width: 100%; max-height: 350px; object-fit: contain; padding: 10px;"
                     />
@@ -95,7 +95,7 @@
                                         @dragstart="draggedEmotion = emotion"
                                         @click="selectedEmotionClick = (selectedEmotionClick === emotion ? null : emotion)"
                                         style="width: 120px; height: 120px; border-radius: 50%; cursor: grab; transition: all 0.3s; position: relative; overflow: hidden; background-size: 200% 200%; border: 4px solid rgba(255,107,53,0.25); box-shadow: 0 8px 20px rgba(0,0,0,0.15);"
-                                        :style="'background-image: url(' + currentQuestion.gambar + '); background-position: ' + getEmotionPosition(emotion) + '; border-color: ' + (selectedEmotionClick === emotion ? '#ff6b35' : (matchedEmotions[emotion] ? '#4caf50' : 'rgba(255,107,53,0.25)')) + '; box-shadow: ' + (selectedEmotionClick === emotion ? '0 0 15px rgba(255,107,53,0.6)' : '0 8px 20px rgba(0,0,0,0.15)')"
+                                        :style="'background-image: url(' + getAssetUrl(currentQuestion.gambar) + '); background-position: ' + getEmotionPosition(emotion) + '; border-color: ' + (selectedEmotionClick === emotion ? '#ff6b35' : (matchedEmotions[emotion] ? '#4caf50' : 'rgba(255,107,53,0.25)')) + '; box-shadow: ' + (selectedEmotionClick === emotion ? '0 0 15px rgba(255,107,53,0.6)' : '0 8px 20px rgba(0,0,0,0.15)')"
                                         :class="selectedEmotionClick === emotion ? 'animate-pulse' : ''"
                                         :title="'Seret wajah ' + emotion + ' ke kata yang sesuai!'"
                                     >
@@ -148,7 +148,7 @@
                         <!-- Display question image if available -->
                         <template x-if="currentQuestion.gambar">
                             <div style="width: 100%; max-width: 300px; margin: 0 auto; border-radius: 16px; overflow: hidden; background: rgba(255, 255, 255, 0.05); padding: 10px; border: 1px solid rgba(255,255,255,0.1);">
-                                <img :src="currentQuestion.gambar" alt="Gambar Soal" style="width: 100%; max-height: 200px; object-fit: contain;">
+                                <img :src="getAssetUrl(currentQuestion.gambar)" alt="Gambar Soal" style="width: 100%; max-height: 200px; object-fit: contain;">
                             </div>
                         </template>
 
@@ -287,6 +287,13 @@
                         }
                     });
                     this.totalStepsCount = total;
+                },
+
+                getAssetUrl(path) {
+                    if (!path) return '';
+                    if (path.startsWith('http') || path.startsWith('data:')) return path;
+                    const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+                    return '{{ asset('') }}' + cleanPath;
                 },
 
                 startAdventure() {

@@ -85,7 +85,7 @@
                         <label class="admin-form-label">Gambar Soal (Opsional)</label>
                         @if($quiz->gambar)
                             <div style="margin-bottom: 8px;">
-                                <img src="{{ $quiz->gambar }}" alt="Gambar kuis" style="max-height: 100px; border-radius: 8px; border: 1px solid #ddd;">
+                                <img src="{{ asset($quiz->gambar) }}" alt="Gambar kuis" style="max-height: 100px; border-radius: 8px; border: 1px solid #ddd;">
                             </div>
                         @endif
                         <input type="file" name="gambar_file" class="admin-form-input" accept="image/*">
@@ -96,7 +96,7 @@
                         <label class="admin-form-label">Audio Narasi Soal (Opsional)</label>
                         @if($quiz->audio_url)
                             <div style="margin-bottom: 8px;">
-                                <audio controls src="{{ $quiz->audio_url }}" style="height: 36px;"></audio>
+                                <audio controls src="{{ asset($quiz->audio_url) }}" style="height: 36px;"></audio>
                             </div>
                         @endif
                         <input type="file" name="audio_file" class="admin-form-input" accept="audio/*">
