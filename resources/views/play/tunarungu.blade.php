@@ -48,13 +48,25 @@
 
                 <p class="caption" style="font-size: 1.75rem; font-weight: 600; color: var(--text); line-height: 1.5;" x-text="currentLesson.deskripsi"></p>
 
-                <button 
-                    class="btn" 
-                    @click="startQuiz()"
-                    style="min-height: 80px; width: 220px; font-size: 1.5rem; background: #ff6b35; color: white;"
-                >
-                    Mulai Kuis ➡️
-                </button>
+                <!-- Show quiz button only if there are questions, otherwise show next lesson button -->
+                <template x-if="questionsList.length > 0">
+                    <button 
+                        class="btn" 
+                        @click="startQuiz()"
+                        style="min-height: 80px; width: 220px; font-size: 1.5rem; background: #ff6b35; color: white;"
+                    >
+                        Mulai Kuis ➡️
+                    </button>
+                </template>
+                <template x-if="questionsList.length === 0">
+                    <button 
+                        class="btn" 
+                        @click="nextLessonOrFinish()"
+                        style="min-height: 80px; width: 220px; font-size: 1.5rem; background: #ff6b35; color: white;"
+                    >
+                        Lanjut ➡️
+                    </button>
+                </template>
             </div>
         </template>
 
@@ -132,7 +144,7 @@
 
                 <div style="display: flex; gap: 1.5rem; width: 100%; justify-content: center; margin-top: 2rem;">
                     <button 
-                        @click="window.location.href='/dashboard'"
+                        @click="openParentUnlockModal($event, '/dashboard')"
                         class="btn"
                         style="min-height: 80px; background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.15); color: var(--text);"
                         aria-label="Kembali ke halaman dashboard utama"
@@ -215,9 +227,16 @@
                     this.questionsList = this.currentLesson.quiz_questions || [];
                     this.questionIndex = 0;
                     this.correctCountForCurrentLesson = 0;
+                    // Reset quiz state agar timer dari soal sebelumnya tidak ikut campur
+                    this.quizFinished = false;
+                    this.feedbackMsg = '';
+                    this.selectedOptionIndex = null;
+                    this.wrongOptions = [];
+                    this.isAnswerCorrect = false;
                 },
 
                 startQuiz() {
+                    // questionsList kosong ditangani oleh tombol di lesson card (tidak skip)
                     if (this.questionsList.length === 0) {
                         this.nextLessonOrFinish();
                         return;
@@ -264,6 +283,7 @@
                         }
                         
                         this.submitQuizAnswer(optionLabel, true);
+
                     } else {
                         this.wrongOptions.push(idx);
                         this.attemptsForCurrentQuestion++;
@@ -344,6 +364,9 @@
                 },
 
                 nextSlide() {
+                    // Guard: jika sudah tidak dalam state quiz yang selesai, abaikan panggilan
+                    if (!this.quizFinished && this.currentState === 'quiz') return;
+                    this.quizFinished = false; // reset agar timer duplikat tidak bisa masuk lagi
                     this.questionIndex++;
                     if (this.questionIndex < this.questionsList.length) {
                         this.currentState = 'quiz';

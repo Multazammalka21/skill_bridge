@@ -279,5 +279,121 @@
         @yield('content')
     </main>
 
+    <!-- Parent Password Verification Modal (Kids Mode Lock) -->
+    <div id="parentUnlockModal" class="parent-unlock-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div class="parent-unlock-content" style="background: white; color: #333; border-radius: 28px; padding: 35px 30px; width: 90%; max-width: 440px; text-align: center; border: 4px solid var(--accent); box-shadow: 0 15px 40px rgba(0,0,0,0.3); animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative;">
+            <button onclick="closeParentUnlockModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 28px; cursor: pointer; color: #888; font-family: sans-serif;">&times;</button>
+            
+            <div style="font-size: 3.5rem; margin-bottom: 15px;">🔒</div>
+            <h2 style="font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 10px; color: #1a1a2e;">Kunci Orang Tua</h2>
+            <p style="font-family: var(--font-body); font-size: 0.95rem; color: #666; margin-bottom: 24px; font-weight: bold; line-height: 1.4;">Masukkan kata sandi akun Orang Tua Anda untuk menonaktifkan Kids Mode dan kembali ke Dashboard.</p>
+            
+            <div style="margin-bottom: 20px; text-align: left;">
+                <input type="password" id="parentPasswordInput" placeholder="Masukkan kata sandi..." style="width: 100%; padding: 14px 18px; border-radius: 14px; border: 2px solid rgba(0,0,0,0.1); outline: none; font-size: 16px; font-family: var(--font-body); box-sizing: border-box; text-align: center;">
+                <div id="unlockErrorMessage" style="color: #ef4444; font-size: 0.9rem; margin-top: 8px; text-align: center; display: none; font-weight: bold;"></div>
+            </div>
+            
+            <div style="display: flex; gap: 12px;">
+                <button onclick="closeParentUnlockModal()" style="flex: 1; min-height: 55px; font-size: 16px; padding: 10px; background: #eceff1; color: #455a64; border-radius: 50px; border: none; cursor: pointer; font-weight: 700; box-shadow: none;">Batal</button>
+                <button id="btnSubmitUnlock" onclick="submitParentUnlock()" style="flex: 1; min-height: 55px; font-size: 16px; padding: 10px; background: var(--btn-primary); color: white; border-radius: 50px; border: none; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                    Verifikasi 🔓
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .parent-unlock-overlay {
+            display: none;
+        }
+        .parent-unlock-overlay.active {
+            display: flex !important;
+        }
+    </style>
+
+    <script>
+        let pendingRedirectUrl = '/dashboard';
+
+        window.openParentUnlockModal = function(event, redirectUrl = '/dashboard') {
+            if (event) {
+                event.preventDefault();
+            }
+            pendingRedirectUrl = redirectUrl;
+            document.getElementById('parentPasswordInput').value = '';
+            document.getElementById('unlockErrorMessage').style.display = 'none';
+            document.getElementById('parentUnlockModal').classList.add('active');
+            
+            setTimeout(() => {
+                const input = document.getElementById('parentPasswordInput');
+                if (input) input.focus();
+            }, 100);
+        };
+
+        window.closeParentUnlockModal = function() {
+            document.getElementById('parentUnlockModal').classList.remove('active');
+        };
+
+        window.submitParentUnlock = function() {
+            const password = document.getElementById('parentPasswordInput').value;
+            const errMsg = document.getElementById('unlockErrorMessage');
+            const btn = document.getElementById('btnSubmitUnlock');
+
+            if (!password) {
+                errMsg.textContent = 'Kata sandi tidak boleh kosong!';
+                errMsg.style.display = 'block';
+                return;
+            }
+
+            errMsg.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = 'Memverifikasi...';
+
+            fetch('/play/verify-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ password: password })
+            })
+            .then(async (res) => {
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    window.location.href = pendingRedirectUrl;
+                } else {
+                    throw new Error(data.message || 'Verifikasi gagal');
+                }
+            })
+            .catch(err => {
+                errMsg.textContent = err.message;
+                errMsg.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Verifikasi 🔓';
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const pwdInput = document.getElementById('parentPasswordInput');
+            if (pwdInput) {
+                pwdInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        submitParentUnlock();
+                    }
+                });
+            }
+
+            // Intercept all topbar dashboard/back links/buttons
+            const kembaliBtns = document.querySelectorAll('.topbar a[href="/dashboard"], .topbar a[href*="dashboard"]');
+            kembaliBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    window.openParentUnlockModal(e, btn.getAttribute('href'));
+                });
+            });
+        });
+    </script>
 </body>
 </html>

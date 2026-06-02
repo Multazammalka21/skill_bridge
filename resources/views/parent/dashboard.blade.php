@@ -575,7 +575,8 @@
                 <div class="empty-state animate-in d1">
                     <span class="emoji">👶</span>
                     <h2>Belum ada data anak</h2>
-                    <p>Tambahkan anak Anda untuk mulai memantau progress petualangan belajar mereka.</p>
+                    <p style="margin-bottom: 24px;">Tambahkan anak Anda untuk mulai memantau progress petualangan belajar mereka.</p>
+                    <button onclick="openAddChildModal()" class="btn-play" style="border: none; cursor: pointer;">+ Tambah Profil Anak 👶</button>
                 </div>
 
             @else
@@ -606,7 +607,10 @@
                 </div>
 
                 {{-- Child selector tabs --}}
-                <p class="section-heading animate-in d3">🧒 Pilih Petualang</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;" class="animate-in d3">
+                    <p class="section-heading" style="margin-bottom: 0;">🧒 Pilih Petualang</p>
+                    <button onclick="openAddChildModal()" class="btn-play" style="border: none; cursor: pointer; padding: 8px 20px; font-size: 0.95rem;">+ Tambah Anak 👶</button>
+                </div>
                 <div class="child-tabs animate-in d3" role="tablist" aria-label="Pilih anak">
                     @foreach($children as $index => $child)
                         <button
@@ -706,10 +710,10 @@
                                 <p>Temani {{ $child->nama_panggilan ?? 'Anak' }} belajar hari ini</p>
                             </div>
                             <a
-                                href="{{ $child->isAudioWorld() ? route('play.tunanetra', $child->id) : route('play.tunarungu', $child->id) }}"
+                                href="{{ route('play.choose-mode', $child->id) }}"
                                 class="btn-play"
                             >
-                                Main Sekarang 🚀
+                                Mulai Bermain 🚀
                             </a>
                         </div>
 
@@ -1003,5 +1007,53 @@
     </script>
     @endif
 
+    <!-- Add Child Modal -->
+    <div id="addChildModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+        <div class="modal-content" style="background: white; border-radius: 24px; padding: 30px; width: 90%; max-width: 450px; border: 4px solid var(--accent-green2); box-shadow: 0 10px 30px rgba(0,0,0,0.15); animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative;">
+            <button onclick="closeAddChildModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: #888;">&times;</button>
+            <h2 style="font-family: var(--font-display); color: var(--text-dark); margin-bottom: 20px; text-align: center; font-size: 1.6rem;">Tambah Profil Anak</h2>
+            <form action="{{ route('parent.children.store') }}" method="POST">
+                @csrf
+                <div style="margin-bottom: 15px; text-align: left;">
+                    <label style="display: block; font-weight: 700; margin-bottom: 6px; color: var(--text-dark); font-family: var(--font-body);">Nama Panggilan</label>
+                    <input type="text" name="nama_panggilan" required placeholder="Nama panggilan anak..." style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid rgba(76,175,80,0.2); outline: none; font-family: var(--font-body); font-size: 16px; box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 15px; text-align: left;">
+                    <label style="display: block; font-weight: 700; margin-bottom: 6px; color: var(--text-dark); font-family: var(--font-body);">Tanggal Lahir</label>
+                    <input type="date" name="tanggal_lahir" required style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid rgba(76,175,80,0.2); outline: none; font-family: var(--font-body); font-size: 16px; box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 25px; text-align: left;">
+                    <label style="display: block; font-weight: 700; margin-bottom: 6px; color: var(--text-dark); font-family: var(--font-body);">Kebutuhan Khusus</label>
+                    <select name="jenis_disabilitas" required style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid rgba(76,175,80,0.2); outline: none; font-family: var(--font-body); font-size: 16px; background: white; box-sizing: border-box;">
+                        <option value="tunanetra">Tunanetra (Audio World) 🦉</option>
+                        <option value="tunarungu">Tunarungu (Visual World) 🦜</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-play" style="width: 100%; border: none; cursor: pointer; text-align: center; padding: 14px; font-size: 1.1rem; border-radius: 50px;">Simpan Profil 💾</button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-overlay {
+            display: none;
+        }
+        .modal-overlay.active {
+            display: flex !important;
+        }
+    </style>
+
+    <script>
+        function openAddChildModal() {
+            document.getElementById('addChildModal').classList.add('active');
+        }
+        function closeAddChildModal() {
+            document.getElementById('addChildModal').classList.remove('active');
+        }
+    </script>
 </body>
 </html>

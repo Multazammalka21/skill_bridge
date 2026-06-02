@@ -64,11 +64,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 // ─── Protected Parent & Child Routes ─────────────────────────────────
 Route::middleware(['auth', 'role:parent'])->group(function () {
     Route::get('/dashboard', [ParentDashboardWebController::class, 'index'])->name('dashboard');
+    Route::post('/children', [ParentDashboardWebController::class, 'storeChild'])->name('parent.children.store');
 
     // Dynamic Play Views (With active child profile context)
+    Route::get('/play/choose-mode/{child}', [PlayController::class, 'chooseMode'])->name('play.choose-mode');
     Route::get('/play/tunanetra/{child}', [PlayController::class, 'tunanetra'])->name('play.tunanetra');
     Route::get('/play/tunarungu/{child}', [PlayController::class, 'tunarungu'])->name('play.tunarungu');
     Route::post('/play/quiz/submit', [PlayController::class, 'submitResult'])->name('play.quiz.submit');
+    Route::post('/play/verify-password', [PlayController::class, 'verifyPassword'])->name('play.verify-password');
 });
 
 // Fallback old routes for safety

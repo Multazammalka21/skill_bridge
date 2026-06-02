@@ -35,6 +35,37 @@ class PlayController extends Controller
     }
 
     /**
+     * Show mode selection screen for the child.
+     */
+    public function chooseMode(Child $child)
+    {
+        $this->authorizeChild($child);
+        return view('play.choose-mode', compact('child'));
+    }
+
+    /**
+     * Verify parent password for Kids Mode unlock.
+     */
+    public function verifyPassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        if (\Illuminate\Support\Facades\Hash::check($request->password, Auth::user()->password)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Kata sandi berhasil diverifikasi.'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Kata sandi salah, silakan coba lagi!'
+        ], 422);
+    }
+
+    /**
      * Play view for blind children (Tunanetra).
      */
     public function tunanetra(Child $child)

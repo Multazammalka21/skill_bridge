@@ -134,7 +134,7 @@
 
                 <div style="display: flex; gap: 1.5rem; width: 100%; justify-content: center; margin-top: 2rem;">
                     <button 
-                        @click="window.location.href='/dashboard'"
+                        @click="openParentUnlockModal($event, '/dashboard')"
                         class="btn btn-repeat"
                         style="min-height: 80px;"
                         aria-label="Kembali ke halaman utama orang tua"
@@ -214,6 +214,8 @@
                     this.questionsList = this.currentLesson.quiz_questions || [];
                     this.questionIndex = 0;
                     this.correctCountForCurrentLesson = 0;
+                    // Reset agar timer dari soal sebelumnya tidak bisa masuk ke lesson baru
+                    this.quizFinished = false;
                     this.playNarration();
                 },
 
@@ -443,10 +445,21 @@
                     });
 
                     this.quizFinished = true;
+
+                    // Auto-advance ke soal berikutnya setelah jeda singkat
+                    const delay = isCorrect ? 2000 : 2800;
+                    setTimeout(() => {
+                        if (this.quizFinished) {
+                            this.nextSlide();
+                        }
+                    }, delay);
                 },
 
                 nextSlide() {
                     this.stopActiveAudio();
+                    // Guard: cegah double-advance dari timer otomatis + klik manual
+                    if (!this.quizFinished && this.currentState === 'quiz') return;
+                    this.quizFinished = false; // reset agar timer duplikat tidak aktif lagi
                     this.questionIndex++;
                     if (this.questionIndex < this.questionsList.length) {
                         this.loadQuestion();

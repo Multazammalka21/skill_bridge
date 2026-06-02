@@ -77,4 +77,20 @@ class ParentDashboardWebController extends Controller
 
         return view('parent.dashboard', compact('user', 'children'));
     }
+
+    /**
+     * Store a new child profile.
+     */
+    public function storeChild(Request $request)
+    {
+        $validated = $request->validate([
+            'nama_panggilan' => 'required|string|max:50',
+            'tanggal_lahir' => 'required|date|before:today',
+            'jenis_disabilitas' => 'required|in:tunanetra,tunarungu',
+        ]);
+
+        $request->user()->children()->create($validated);
+
+        return redirect()->route('dashboard')->with('success', 'Profil anak berhasil ditambahkan!');
+    }
 }
