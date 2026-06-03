@@ -6,16 +6,46 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base_url", "value": "http://skill_bridge.test/api", "type": "string" },
-    { "key": "jwt_token", "value": "", "type": "string" },
-    { "key": "api_key", "value": "skillbridge-api-key-2024-secret", "type": "string" },
-    { "key": "child_id", "value": "1", "type": "string" },
-    { "key": "lesson_id", "value": "1", "type": "string" },
-    { "key": "session_id", "value": "1", "type": "string" }
+    {
+      "key": "base_url",
+      "value": "http://pinteria.test/api",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "skillbridge-api-key-2024-secret",
+      "type": "string"
+    },
+    {
+      "key": "child_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "lesson_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "session_id",
+      "value": "1",
+      "type": "string"
+    }
   ],
   "auth": {
     "type": "bearer",
-    "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }]
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
   },
   "item": [
     {
@@ -42,11 +72,19 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -54,8 +92,12 @@
             },
             "url": {
               "raw": "{{base_url}}/register",
-              "host": ["{{base_url}}"],
-              "path": ["register"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "register"
+              ]
             },
             "description": "Mendaftarkan akun orang tua baru (role: parent). Mengembalikan JWT token di field `token` (bukan `access_token`).\n\nValidasi:\n- name: required, maks 255 karakter\n- email: required, unik\n- password: required, min 8 karakter, harus cocok dengan password_confirmation"
           }
@@ -81,11 +123,19 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -93,8 +143,12 @@
             },
             "url": {
               "raw": "{{base_url}}/login",
-              "host": ["{{base_url}}"],
-              "path": ["login"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "login"
+              ]
             },
             "description": "Login dengan email dan password. Mengembalikan JWT Bearer token di field `access_token`.\n\nGunakan token di header: Authorization: Bearer <access_token>"
           }
@@ -120,16 +174,34 @@
             "auth": {
               "type": "basic",
               "basic": [
-                { "key": "username", "value": "orangtua@example.com", "type": "string" },
-                { "key": "password", "value": "password123", "type": "string" }
+                {
+                  "key": "username",
+                  "value": "orangtua@example.com",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "password123",
+                  "type": "string"
+                }
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Accept", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}/login/basic",
-              "host": ["{{base_url}}"],
-              "path": ["login", "basic"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "login",
+                "basic"
+              ]
             },
             "description": "Login menggunakan HTTP Basic Authentication.\nKirim kredensial di header: Authorization: Basic base64(email:password)\n\nContoh: base64('user@test.com:pass123') = dXNlckB0ZXN0LmNvbTpwYXNzMTIz\nHeader: Authorization: Basic dXNlckB0ZXN0LmNvbTpwYXNzMTIz\n\nJika credentials kosong, server mengembalikan 401 + header WWW-Authenticate."
           }
@@ -154,13 +226,23 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/refresh",
-              "host": ["{{base_url}}"],
-              "path": ["refresh"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "refresh"
+              ]
             },
             "description": "Memperbarui JWT token sebelum kedaluwarsa. Token lama akan di-invalidate dan diganti token baru. Token baru otomatis tersimpan ke {{jwt_token}}."
           }
@@ -170,13 +252,23 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/me",
-              "host": ["{{base_url}}"],
-              "path": ["me"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "me"
+              ]
             },
             "description": "Mendapatkan data pengguna yang sedang login beserta daftar anak (relasi children di-eager load).\n\nResponse: { user: { id, name, email, role, children: [...] } }"
           }
@@ -186,13 +278,23 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/logout",
-              "host": ["{{base_url}}"],
-              "path": ["logout"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logout"
+              ]
             },
             "description": "Membatalkan (invalidate) JWT token aktif. Setelah ini token tidak bisa digunakan lagi."
           }
@@ -205,18 +307,36 @@
         {
           "name": "Lessons Publik (via API Key)",
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "GET",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "X-API-Key", "value": "{{api_key}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/public/lessons",
-              "host": ["{{base_url}}"],
-              "path": ["public", "lessons"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "public",
+                "lessons"
+              ],
               "query": [
-                { "key": "tipe_dunia", "value": "audio", "description": "Filter: audio (tunanetra) atau visual (tunarungu)", "disabled": true }
+                {
+                  "key": "tipe_dunia",
+                  "value": "audio",
+                  "description": "Filter: audio (tunanetra) atau visual (tunarungu)",
+                  "disabled": true
+                }
               ]
             },
             "description": "Mendapatkan daftar lesson tanpa JWT login. Hanya metadata (tanpa field media).\n\nHeader wajib: X-API-Key: skillbridge-api-key-2024-secret\nQuery opsional: ?tipe_dunia=audio|visual\n\nResponse 403 jika API Key salah."
@@ -225,18 +345,35 @@
         {
           "name": "Modules Publik (via API Key)",
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "GET",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "X-API-Key", "value": "{{api_key}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/public/modules?child_id={{child_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["public", "modules"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "public",
+                "modules"
+              ],
               "query": [
-                { "key": "child_id", "value": "{{child_id}}", "description": "ID anak (wajib)" }
+                {
+                  "key": "child_id",
+                  "value": "{{child_id}}",
+                  "description": "ID anak (wajib)"
+                }
               ]
             },
             "description": "Mendapatkan modul berdasarkan profil anak (usia & jenis disabilitas).\n\nQuery wajib: ?child_id=<id>\nResponse: { usia, jenis_disabilitas, modules: [...] }"
@@ -252,13 +389,23 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/children",
-              "host": ["{{base_url}}"],
-              "path": ["children"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "children"
+              ]
             },
             "description": "Mendapatkan semua anak milik orang tua yang sedang login.\nResponse: { children: [{id, user_id, nama_panggilan, tanggal_lahir, jenis_disabilitas, ...}] }"
           }
@@ -283,9 +430,18 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -293,8 +449,12 @@
             },
             "url": {
               "raw": "{{base_url}}/children",
-              "host": ["{{base_url}}"],
-              "path": ["children"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "children"
+              ]
             },
             "description": "Menambahkan data anak baru.\n\nValidasi:\n- nama_panggilan: required, maks 100 karakter\n- tanggal_lahir: required, format date\n- jenis_disabilitas: required, enum: tunanetra | tunarungu\n\nNilai jenis_disabilitas:\n- tunanetra → Audio World (belajar via suara)\n- tunarungu → Visual World (belajar via gambar)\n\nID anak baru otomatis tersimpan ke {{child_id}}."
           }
@@ -304,13 +464,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/children/{{child_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["children", "{{child_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "children",
+                "{{child_id}}"
+              ]
             },
             "description": "Detail satu anak beserta relasi lesson_completions dan quiz_results.\nMengembalikan 403 jika anak bukan milik orang tua yang login."
           }
@@ -320,9 +491,18 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -330,8 +510,13 @@
             },
             "url": {
               "raw": "{{base_url}}/children/{{child_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["children", "{{child_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "children",
+                "{{child_id}}"
+              ]
             },
             "description": "Memperbarui data anak. Semua field bersifat opsional (partial update menggunakan 'sometimes').\nMengembalikan 403 jika anak bukan milik orang tua yang login."
           }
@@ -341,13 +526,24 @@
           "request": {
             "method": "DELETE",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/children/{{child_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["children", "{{child_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "children",
+                "{{child_id}}"
+              ]
             },
             "description": "Menghapus data anak. Mengembalikan 403 jika anak bukan milik orang tua yang login."
           }
@@ -362,13 +558,23 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/dashboard",
-              "host": ["{{base_url}}"],
-              "path": ["dashboard"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard"
+              ]
             },
             "description": "Ringkasan aktivitas belajar semua anak.\nResponse: { children: [{id, nama_panggilan, jenis_disabilitas, total_lesson_selesai, rata_rata_skor, total_waktu_belajar_menit}] }"
           }
@@ -378,15 +584,31 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/dashboard/child/{{child_id}}?days=30",
-              "host": ["{{base_url}}"],
-              "path": ["dashboard", "child", "{{child_id}}"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "child",
+                "{{child_id}}"
+              ],
               "query": [
-                { "key": "days", "value": "30", "description": "Jumlah hari ke belakang (default: 30)" }
+                {
+                  "key": "days",
+                  "value": "30",
+                  "description": "Jumlah hari ke belakang (default: 30)"
+                }
               ]
             },
             "description": "Progress detail satu anak dalam rentang waktu tertentu.\n\nQuery opsional: ?days=30 (default 30 hari)\n\nResponse berisi:\n- summary: total lesson, rata skor, total waktu belajar\n- charts: data Chart.js-ready (labels, lessons_completed, quiz_scores, study_time_minutes)\n\nMengembalikan 403 jika anak bukan milik orang tua yang login."
@@ -402,15 +624,30 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/lessons",
-              "host": ["{{base_url}}"],
-              "path": ["lessons"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lessons"
+              ],
               "query": [
-                { "key": "tipe_dunia", "value": "audio", "description": "Filter: audio (tunanetra) atau visual (tunarungu)", "disabled": true }
+                {
+                  "key": "tipe_dunia",
+                  "value": "audio",
+                  "description": "Filter: audio (tunanetra) atau visual (tunarungu)",
+                  "disabled": true
+                }
               ]
             },
             "description": "Daftar lesson hanya metadata (tanpa field media: gambar, audio_story_url, dll) untuk efisiensi lazy loading.\n\nHanya lesson dengan aktif=true yang dikembalikan.\nUrut berdasarkan field 'urutan'."
@@ -440,13 +677,24 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/lessons/{{lesson_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["lessons", "{{lesson_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lessons",
+                "{{lesson_id}}"
+              ]
             },
             "description": "Detail lengkap satu lesson termasuk semua field media dan soal quiz.\n\nResponse berisi semua field lesson + quiz_questions[]:\n- tipe soal: pilihan_ganda, audio, drag_drop\n- pilihan: array JSON\n- audio_url, gambar, animasi_url (media per soal)\n\nID quiz_question pertama otomatis tersimpan ke {{quiz_question_id}}."
           }
@@ -456,9 +704,18 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -466,8 +723,14 @@
             },
             "url": {
               "raw": "{{base_url}}/lessons/{{lesson_id}}/complete",
-              "host": ["{{base_url}}"],
-              "path": ["lessons", "{{lesson_id}}", "complete"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lessons",
+                "{{lesson_id}}",
+                "complete"
+              ]
             },
             "description": "Menandai lesson sebagai selesai untuk anak tertentu.\nMenggunakan firstOrCreate — aman dipanggil berulang kali (idempotent)."
           }
@@ -492,9 +755,18 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -502,8 +774,14 @@
             },
             "url": {
               "raw": "{{base_url}}/lessons/{{lesson_id}}/start-session",
-              "host": ["{{base_url}}"],
-              "path": ["lessons", "{{lesson_id}}", "start-session"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lessons",
+                "{{lesson_id}}",
+                "start-session"
+              ]
             },
             "description": "Memulai sesi belajar. Dipanggil saat anak memasuki halaman lesson.\nResponse: { message, session_id }\n\nsession_id otomatis tersimpan ke {{session_id}} untuk digunakan di endpoint End Session."
           }
@@ -513,13 +791,25 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/sessions/{{session_id}}/end",
-              "host": ["{{base_url}}"],
-              "path": ["sessions", "{{session_id}}", "end"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sessions",
+                "{{session_id}}",
+                "end"
+              ]
             },
             "description": "Mengakhiri sesi belajar. Durasi dihitung otomatis dari started_at hingga sekarang.\nResponse: { message, durasi_detik }\n\nGunakan session_id dari response endpoint 'Mulai Sesi Belajar'."
           }
@@ -534,9 +824,18 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -544,8 +843,13 @@
             },
             "url": {
               "raw": "{{base_url}}/quiz/answer",
-              "host": ["{{base_url}}"],
-              "path": ["quiz", "answer"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "quiz",
+                "answer"
+              ]
             },
             "description": "Mengirimkan jawaban quiz anak. Setiap jawaban disimpan sebagai record terpisah.\n\nValidasi:\n- child_id: required, exists:children\n- lesson_id: required, exists:lessons\n- quiz_question_id: required, exists:quiz_questions\n- jawaban_anak: required, string\n- benar: required, boolean\n- skor: required, integer 0-100\n- percobaan: required, integer >= 1\n\nResponse 201: { message, result: { id, ...semua field jawaban } }"
           }
@@ -555,16 +859,35 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/quiz/results?child_id={{child_id}}&lesson_id={{lesson_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["quiz", "results"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "quiz",
+                "results"
+              ],
               "query": [
-                { "key": "child_id", "value": "{{child_id}}", "description": "ID anak (wajib)" },
-                { "key": "lesson_id", "value": "{{lesson_id}}", "description": "ID lesson (wajib)" }
+                {
+                  "key": "child_id",
+                  "value": "{{child_id}}",
+                  "description": "ID anak (wajib)"
+                },
+                {
+                  "key": "lesson_id",
+                  "value": "{{lesson_id}}",
+                  "description": "ID lesson (wajib)"
+                }
               ]
             },
             "description": "Mendapatkan semua hasil quiz anak untuk lesson tertentu.\n\nQuery wajib: ?child_id=X&lesson_id=Y\n\nResponse: { results: [{ ...quiz_result, quiz_question: { pertanyaan, jawaban_benar, pilihan, tipe, poin } }] }\n\nRelasi quiz_question di-eager load otomatis."
