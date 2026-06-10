@@ -10,7 +10,7 @@
         <p style="color:var(--admin-text-muted); font-size:0.85rem;">Kelola semua lesson dengan konten audio, gambar, animasi, dan teks</p>
     </div>
     <a href="{{ route('admin.lessons.create') }}" class="admin-btn admin-btn--primary">
-        ➕ Tambah Materi
+        <i class="ti ti-plus"></i> Tambah Materi
     </a>
 </div>
 
@@ -19,11 +19,11 @@
     <div class="admin-card__body" style="padding:16px 20px;">
         <form method="GET" action="{{ route('admin.lessons.index') }}" style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
             <div class="admin-form-group" style="margin:0; flex:1; min-width:160px;">
-                <label class="admin-form-label">🔍 Cari Judul</label>
+                <label class="admin-form-label"><i class="ti ti-search"></i> Cari Judul</label>
                 <input type="text" name="search" class="admin-form-input" placeholder="Cari materi..." value="{{ $filters['search'] ?? '' }}">
             </div>
             <div class="admin-form-group" style="margin:0; min-width:150px;">
-                <label class="admin-form-label">🗂️ Kategori</label>
+                <label class="admin-form-label"><i class="ti ti-category"></i> Kategori</label>
                 <select name="category_id" class="admin-form-select">
                     <option value="">Semua Kategori</option>
                     @foreach($categories as $cat)
@@ -32,7 +32,7 @@
                 </select>
             </div>
             <div class="admin-form-group" style="margin:0; min-width:130px;">
-                <label class="admin-form-label">👁️ Tipe Dunia</label>
+                <label class="admin-form-label"><i class="ti ti-world"></i> Tipe Dunia</label>
                 <select name="tipe_dunia" class="admin-form-select">
                     <option value="">Semua</option>
                     <option value="audio" {{ ($filters['tipe_dunia'] ?? '') == 'audio' ? 'selected' : '' }}>🎧 Audio (Tunanetra)</option>
@@ -40,7 +40,7 @@
                 </select>
             </div>
             <div class="admin-form-group" style="margin:0; min-width:120px;">
-                <label class="admin-form-label">👶 Usia</label>
+                <label class="admin-form-label"><i class="ti ti-user"></i> Usia</label>
                 <select name="kategori_usia" class="admin-form-select">
                     <option value="">Semua</option>
                     <option value="5-7" {{ ($filters['kategori_usia'] ?? '') == '5-7' ? 'selected' : '' }}>5–7 Tahun</option>
@@ -65,7 +65,7 @@
 
 <div class="admin-card">
     <div class="admin-card__header">
-        <h3 class="admin-card__title">📚 Daftar Materi</h3>
+        <h3 class="admin-card__title"><i class="ti ti-book"></i> Daftar Materi</h3>
         <span style="font-size:0.82rem; color:var(--admin-text-muted);">{{ $lessons->total() }} materi ditemukan</span>
     </div>
     <div class="admin-card__body" style="padding:0;">
@@ -136,7 +136,7 @@
                                     'teks' => '📝 Teks',
                                     'campuran' => '🎨 Campuran',
                                     default => '—',
-                                };
+                                    };
                             @endphp
                             <span style="font-size:0.78rem; color:var(--admin-text-secondary);">{{ $kontenIkon }}</span>
                         </td>
@@ -150,12 +150,12 @@
                         </td>
                         <td>
                             <div style="display:flex; gap:5px;">
-                                <a href="{{ route('admin.lessons.edit', $lesson) }}" class="admin-btn admin-btn--ghost admin-btn--sm">✏️</a>
+                                <a href="{{ route('admin.lessons.edit', $lesson) }}" class="admin-btn admin-btn--ghost admin-btn--sm" title="Edit"><i class="ti ti-edit"></i></a>
                                 <form action="{{ route('admin.lessons.destroy', $lesson) }}" method="POST"
                                       onsubmit="return confirm('Hapus materi ini? Aksi tidak bisa dibatalkan.')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm">🗑️</button>
+                                    <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" title="Hapus"><i class="ti ti-trash"></i></button>
                                 </form>
                             </div>
                         </td>

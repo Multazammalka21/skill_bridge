@@ -2,6 +2,18 @@
 
 @section('page-title', 'Kuis Monitoring & Analytics')
 
+@section('subnav')
+    <a href="{{ route('admin.dashboard') }}" class="subnav__item">
+        <i class="ti ti-home"></i> Ringkasan
+    </a>
+    <a href="#" class="subnav__item">
+        <i class="ti ti-chart-bar"></i> Statistik
+    </a>
+    <a href="{{ route('admin.quiz.monitoring') }}" class="subnav__item subnav__item--active">
+        <i class="ti ti-activity"></i> Aktivitas
+    </a>
+@endsection
+
 @section('content')
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 28px;">
