@@ -36,6 +36,7 @@ Route::post('/logout', [WebAuthController::class, 'logout'])->name('logout');
 // ─── Protected Admin Routes ──────────────────────────────────────────
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/statistik', [AdminDashboardController::class, 'statistik'])->name('dashboard.statistik');
 
     // ── Kategori Pembelajaran ─────────────────────────────────────────
     Route::resource('categories', CategoryController::class)->except(['show']);

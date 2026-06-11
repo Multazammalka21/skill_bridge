@@ -6,7 +6,7 @@
     <a href="{{ route('admin.dashboard') }}" class="subnav__item subnav__item--active">
         <i class="ti ti-home"></i> Ringkasan
     </a>
-    <a href="#" class="subnav__item">
+    <a href="{{ route('admin.dashboard.statistik') }}" class="subnav__item">
         <i class="ti ti-chart-bar"></i> Statistik
     </a>
     <a href="{{ route('admin.quiz.monitoring') }}" class="subnav__item">

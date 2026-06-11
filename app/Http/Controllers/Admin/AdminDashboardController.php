@@ -98,4 +98,110 @@ class AdminDashboardController extends Controller
             'lessonsByAge'
         ));
     }
+
+    /**
+     * Show the statistics page with extended analytics.
+     */
+    public function statistik()
+    {
+        // ── Core stats ───────────────────────────────────────────────────
+        $stats = [
+            'total_users'          => User::count(),
+            'total_parents'        => User::where('role', 'parent')->count(),
+            'total_children'       => Child::count(),
+            'total_tunanetra'      => Child::where('jenis_disabilitas', 'tunanetra')->count(),
+            'total_tunarungu'      => Child::where('jenis_disabilitas', 'tunarungu')->count(),
+            'total_lessons'        => Lesson::count(),
+            'total_active_lessons' => Lesson::where('aktif', true)->count(),
+            'total_categories'     => Category::count(),
+            'total_quizzes'        => QuizQuestion::count(),
+            'total_completions'    => LessonCompletion::count(),
+            'total_quiz_results'   => QuizResult::count(),
+            'total_media'          => class_exists(\App\Models\MediaAsset::class) ? MediaAsset::count() : 0,
+        ];
+
+        // ── Quiz analytics ────────────────────────────────────────────
+        $correctAnswers   = QuizResult::where('benar', 1)->count();
+        $incorrectAnswers = QuizResult::where('benar', 0)->count();
+        $successRate      = $stats['total_quiz_results'] > 0
+            ? round(($correctAnswers / $stats['total_quiz_results']) * 100, 1)
+            : 0;
+
+        // ── 30-day activity chart ─────────────────────────────────────
+        $last30Days = collect(range(29, 0))->map(fn($d) => Carbon::today()->subDays($d));
+
+        $completionsByDay30 = LessonCompletion::selectRaw('DATE(created_at) as date, COUNT(*) as total')
+            ->where('created_at', '>=', Carbon::today()->subDays(29)->startOfDay())
+            ->groupBy('date')
+            ->pluck('total', 'date');
+
+        $quizByDay30 = QuizResult::selectRaw('DATE(created_at) as date, COUNT(*) as total')
+            ->where('created_at', '>=', Carbon::today()->subDays(29)->startOfDay())
+            ->groupBy('date')
+            ->pluck('total', 'date');
+
+        $chart30Labels      = $last30Days->map(fn($d) => $d->format('d M'))->values()->toArray();
+        $chart30Completions = $last30Days->map(fn($d) => $completionsByDay30->get($d->toDateString(), 0))->values()->toArray();
+        $chart30Quizzes     = $last30Days->map(fn($d) => $quizByDay30->get($d->toDateString(), 0))->values()->toArray();
+
+        // ── Completions by disability type ────────────────────────────
+        $completionsByDisability = LessonCompletion::join('children', 'lesson_completions.child_id', '=', 'children.id')
+            ->selectRaw('children.jenis_disabilitas, COUNT(*) as total')
+            ->groupBy('children.jenis_disabilitas')
+            ->pluck('total', 'jenis_disabilitas');
+
+        // ── Completions by age group ──────────────────────────────────
+        $completionsByAge = LessonCompletion::join('lessons', 'lesson_completions.lesson_id', '=', 'lessons.id')
+            ->selectRaw('lessons.kategori_usia, COUNT(*) as total')
+            ->groupBy('lessons.kategori_usia')
+            ->pluck('total', 'kategori_usia');
+
+        // ── Quiz success rate per category ────────────────────────────
+        $categoryStats = Category::withCount('lessons')->ordered()->get()->map(function ($cat) {
+            $total   = QuizResult::join('quiz_questions', 'quiz_results.quiz_question_id', '=', 'quiz_questions.id')
+                ->join('lessons', 'quiz_questions.lesson_id', '=', 'lessons.id')
+                ->where('lessons.category_id', $cat->id)->count();
+            $correct = QuizResult::join('quiz_questions', 'quiz_results.quiz_question_id', '=', 'quiz_questions.id')
+                ->join('lessons', 'quiz_questions.lesson_id', '=', 'lessons.id')
+                ->where('lessons.category_id', $cat->id)->where('quiz_results.benar', 1)->count();
+            $cat->quiz_total   = $total;
+            $cat->quiz_correct = $correct;
+            $cat->quiz_rate    = $total > 0 ? round($correct / $total * 100, 1) : 0;
+            return $cat;
+        });
+
+        // ── Top 5 lessons by completions ──────────────────────────────
+        $topLessons = Lesson::withCount('completions')
+            ->with('category')
+            ->orderByDesc('completions_count')
+            ->limit(5)->get();
+
+        // ── Bottom 5 lessons (least engagement, active only) ──────────
+        $bottomLessons = Lesson::withCount('completions')
+            ->with('category')
+            ->where('aktif', true)
+            ->orderBy('completions_count')
+            ->limit(5)->get();
+
+        // ── Lessons by world type ──────────────────────────────────────
+        $lessonsByWorld = Lesson::selectRaw('tipe_dunia, COUNT(*) as total')
+            ->groupBy('tipe_dunia')
+            ->pluck('total', 'tipe_dunia');
+
+        // ── Age distribution of lessons ───────────────────────────────
+        $lessonsByAge = Lesson::selectRaw('kategori_usia, COUNT(*) as total')
+            ->groupBy('kategori_usia')
+            ->pluck('total', 'kategori_usia');
+
+        return view('admin.statistik', compact(
+            'stats',
+            'successRate', 'correctAnswers', 'incorrectAnswers',
+            'chart30Labels', 'chart30Completions', 'chart30Quizzes',
+            'completionsByDisability',
+            'completionsByAge',
+            'categoryStats',
+            'topLessons', 'bottomLessons',
+            'lessonsByWorld', 'lessonsByAge'
+        ));
+    }
 }
