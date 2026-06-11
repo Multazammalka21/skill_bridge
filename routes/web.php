@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\LearningPathController;
 use App\Http\Controllers\Admin\MediaAssetController;
 use App\Http\Controllers\Admin\QuizManagementController;
 use App\Http\Controllers\Admin\BadgeManagementController;
+use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\PlayController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +38,15 @@ Route::post('/logout', [WebAuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/statistik', [AdminDashboardController::class, 'statistik'])->name('dashboard.statistik');
+
+    // ── Admin Profile & Settings ──────────────────────────────────────
+    Route::get('/settings', [AdminProfileController::class, 'settings'])->name('settings');
+    Route::post('/settings/profile', [AdminProfileController::class, 'updateProfile'])->name('settings.profile');
+    Route::post('/settings/password', [AdminProfileController::class, 'changePassword'])->name('settings.password');
+
+    // ── Notifications API ─────────────────────────────────────────────
+    Route::get('/notifications', [AdminProfileController::class, 'notifications'])->name('notifications');
+    Route::post('/notifications/read', [AdminProfileController::class, 'markNotificationsRead'])->name('notifications.read');
 
     // ── Kategori Pembelajaran ─────────────────────────────────────────
     Route::resource('categories', CategoryController::class)->except(['show']);

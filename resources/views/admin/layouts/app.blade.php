@@ -20,6 +20,14 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')
+
+    {{-- Dark mode: apply before paint to avoid flash --}}
+    <script>
+        (function() {
+            var theme = localStorage.getItem('pinteria-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
 </head>
 <body>
 
@@ -85,16 +93,52 @@
             </a>
         </nav>
 
-        {{-- Kanan: Notif + User --}}
+        {{-- Kanan: Notif + Settings + User --}}
         <div class="topnav__right">
-            <button class="topnav__icon-btn topnav__icon-btn--notif" title="Notifikasi">
-                <i class="ti ti-bell"></i>
-            </button>
-            <button class="topnav__icon-btn" title="Pengaturan">
+
+            {{-- 🔔 Notification Bell --}}
+            <div class="notif-wrap" x-data="notifPanel()" x-init="init()" @click.outside="open = false">
+                <button class="topnav__icon-btn notif-btn" @click="toggle()" title="Notifikasi">
+                    <i class="ti ti-bell"></i>
+                    <span class="notif-count" x-show="unread > 0" x-text="unread > 9 ? '9+' : unread" style="display:none;"></span>
+                </button>
+
+                <div class="notif-panel" x-show="open" x-transition style="display:none;">
+                    <div class="notif-panel__header">
+                        <div class="notif-panel__title"><i class="ti ti-bell"></i> Notifikasi</div>
+                        <button class="notif-panel__action" @click="markRead()" x-show="unread > 0">Tandai dibaca</button>
+                    </div>
+                    <div class="notif-panel__body">
+                        <template x-if="notifications.length === 0">
+                            <div class="notif-panel__empty">
+                                <i class="ti ti-bell-off"></i>
+                                Belum ada notifikasi baru
+                            </div>
+                        </template>
+                        <template x-for="n in notifications" :key="n.id">
+                            <div class="notif-item" :class="{ 'notif-item--unread': n.is_new }">
+                                <div class="notif-item__avatar" x-text="n.name.slice(0,2).toUpperCase()"></div>
+                                <div class="notif-item__body">
+                                    <div class="notif-item__name" x-text="n.name"></div>
+                                    <div class="notif-item__desc" x-text="n.email"></div>
+                                    <div class="notif-item__time"><i class="ti ti-clock" style="font-size:10px"></i> <span x-text="n.time"></span></div>
+                                </div>
+                                <div class="notif-dot" x-show="n.is_new"></div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="notif-panel__footer">
+                        <a href="{{ route('admin.settings') }}">Lihat semua pengguna →</a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ⚙️ Settings Button --}}
+            <button class="topnav__icon-btn" title="Pengaturan" @click="$dispatch('open-settings')">
                 <i class="ti ti-settings"></i>
             </button>
 
-            {{-- User Dropdown --}}
+            {{-- 👤 User Dropdown --}}
             <div class="topnav__user" x-data="{ open: false }" @click.outside="open = false">
                 <button class="topnav__user-btn" @click="open = !open">
                     <div class="topnav__avatar">
@@ -110,10 +154,10 @@
                         <div class="topnav__dropdown-role">Super Admin</div>
                     </div>
                     <div class="topnav__dropdown-divider"></div>
-                    <a href="#" class="topnav__dropdown-item">
+                    <a href="{{ route('admin.settings') }}" class="topnav__dropdown-item">
                         <i class="ti ti-user"></i> Profil Saya
                     </a>
-                    <a href="#" class="topnav__dropdown-item">
+                    <a href="{{ route('admin.settings') }}" class="topnav__dropdown-item">
                         <i class="ti ti-settings"></i> Pengaturan
                     </a>
                     <div class="topnav__dropdown-divider"></div>
@@ -172,8 +216,152 @@
     </div>
 </main>
 
-{{-- Alpine.js untuk dropdown --}}
+{{-- ══ SETTINGS SLIDE-OVER PANEL ═══════════════════════════ --}}
+<div x-data="settingsPanel()" @open-settings.window="open = true">
+    {{-- Overlay --}}
+    <div class="settings-overlay" x-show="open" @click="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display:none;"></div>
+
+    {{-- Panel --}}
+    <div class="settings-panel" x-show="open" x-transition:enter="transition ease-out duration-250" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" style="display:none;">
+        <div class="settings-panel__header">
+            <div class="settings-panel__title"><i class="ti ti-settings"></i> Pengaturan</div>
+            <button class="settings-panel__close" @click="open = false"><i class="ti ti-x"></i></button>
+        </div>
+
+        <div class="settings-panel__body">
+
+            {{-- Flash in panel context (if redirected) --}}
+            @if(session('success'))
+            <div class="alert alert--success" style="margin-bottom:16px">
+                <i class="ti ti-circle-check"></i> {{ session('success') }}
+                <button class="alert__close" onclick="this.parentElement.remove()"><i class="ti ti-x"></i></button>
+            </div>
+            @endif
+            @if(session('error'))
+            <div class="alert alert--danger" style="margin-bottom:16px">
+                <i class="ti ti-alert-circle"></i> {{ session('error') }}
+                <button class="alert__close" onclick="this.parentElement.remove()"><i class="ti ti-x"></i></button>
+            </div>
+            @endif
+
+            {{-- ── Profil Admin ────────────────────────────── --}}
+            <div class="settings-section">
+                <div class="settings-section__title">Profil Admin</div>
+
+                {{-- Avatar preview --}}
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                    <div style="width:48px;height:48px;border-radius:50%;background:var(--teal);color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+                    </div>
+                    <div>
+                        <div style="font-size:13px;font-weight:700;color:var(--text-primary);">{{ auth()->user()->name }}</div>
+                        <div style="font-size:11px;color:var(--text-muted);">{{ auth()->user()->email }}</div>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ route('admin.settings.profile') }}">
+                    @csrf
+                    <div class="form-group">
+                        <label class="form-label">Nama Lengkap</label>
+                        <input type="text" name="name" class="form-input" value="{{ old('name', auth()->user()->name) }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-input" value="{{ old('email', auth()->user()->email) }}" required>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--sm"><i class="ti ti-check"></i> Simpan Profil</button>
+                </form>
+            </div>
+
+            {{-- ── Ganti Password ──────────────────────────── --}}
+            <div class="settings-section">
+                <div class="settings-section__title">Ganti Password</div>
+                <form method="POST" action="{{ route('admin.settings.password') }}">
+                    @csrf
+                    <div class="form-group">
+                        <label class="form-label">Password Lama</label>
+                        <input type="password" name="current_password" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password Baru</label>
+                        <input type="password" name="password" class="form-input" placeholder="Min. 8 karakter" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Konfirmasi Password Baru</label>
+                        <input type="password" name="password_confirmation" class="form-input" placeholder="Ulangi password baru" required>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--sm"><i class="ti ti-lock"></i> Ubah Password</button>
+                </form>
+            </div>
+
+            {{-- ── Tampilan ─────────────────────────────────── --}}
+            <div class="settings-section">
+                <div class="settings-section__title">Tampilan</div>
+
+                <div class="toggle-row">
+                    <div>
+                        <div class="toggle-row__label">Mode Gelap</div>
+                        <div class="toggle-row__sub">Tampilan admin menjadi dark mode</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" :checked="isDark" @change="toggleDark($event.target.checked)">
+                        <span class="toggle-switch__track"></span>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{{-- Alpine.js --}}
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<script>
+function notifPanel() {
+    return {
+        open: false,
+        notifications: [],
+        unread: 0,
+        async toggle() {
+            this.open = !this.open;
+            if (this.open) await this.fetchNotifs();
+        },
+        async fetchNotifs() {
+            try {
+                const res = await fetch('{{ route("admin.notifications") }}');
+                const data = await res.json();
+                this.notifications = data.notifications;
+                this.unread = data.unread_count;
+            } catch(e) {}
+        },
+        async markRead() {
+            try {
+                await fetch('{{ route("admin.notifications.read") }}', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                });
+                this.notifications = this.notifications.map(n => ({...n, is_new: false}));
+                this.unread = 0;
+            } catch(e) {}
+        },
+        init() { this.fetchNotifs(); }
+    };
+}
+
+function settingsPanel() {
+    return {
+        open: false,
+        isDark: localStorage.getItem('pinteria-theme') === 'dark',
+        toggleDark(val) {
+            this.isDark = val;
+            const theme = val ? 'dark' : 'light';
+            localStorage.setItem('pinteria-theme', theme);
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+    };
+}
+</script>
 
 @stack('scripts')
 </body>
