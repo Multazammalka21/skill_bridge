@@ -1,18 +1,18 @@
-@extends('admin.layouts.app')
+﻿@extends('admin.layouts.app')
 
 @section('page-title', 'Kelola Badge Pencapaian')
 
 @section('content')
 
-    <div class="admin-card">
-        <div class="admin-card__header">
-            <h3 class="admin-card__title">🏆 Daftar Badge Pencapaian</h3>
-            <a href="{{ route('admin.badges.create') }}" class="admin-btn admin-btn--primary admin-btn--sm">➕ Tambah Badge</a>
+    <div class="card">
+        <div class="card__header">
+            <h3 class="card__title">🏆 Daftar Badge Pencapaian</h3>
+            <a href="{{ route('admin.badges.create') }}" class="btn btn--primary btn--sm">➕ Tambah Badge</a>
         </div>
-        <div class="admin-card__body" style="padding: 0;">
+        <div class="card__body" style="padding: 0;">
             
             @if(session('success'))
-                <div class="admin-flash admin-flash--success" style="margin: 16px;">
+                <div class="alert--success" style="margin: 16px;">
                     ✅ {{ session('success') }}
                 </div>
             @endif
@@ -46,11 +46,11 @@
                             <td>{{ $badge->syarat_nilai }}</td>
                             <td style="text-align: right;">
                                 <div style="display: inline-flex; gap: 8px;">
-                                    <a href="{{ route('admin.badges.edit', $badge->id) }}" class="admin-btn admin-btn--ghost admin-btn--sm">Edit ✏️</a>
+                                    <a href="{{ route('admin.badges.edit', $badge->id) }}" class="btn btn--neutral btn--sm">Edit ✏️</a>
                                     <form action="{{ route('admin.badges.destroy', $badge->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus badge ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm">Hapus 🗑️</button>
+                                        <button type="submit" class="btn btn--danger btn--sm">Hapus 🗑️</button>
                                     </form>
                                 </div>
                             </td>

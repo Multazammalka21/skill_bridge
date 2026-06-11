@@ -1,19 +1,19 @@
-@extends('admin.layouts.app')
+﻿@extends('admin.layouts.app')
 
 @section('page-title', 'Tambah Soal Quiz')
 
 @section('content')
 
     <div style="max-width: 700px;">
-        <div class="admin-card">
-            <div class="admin-card__header">
-                <h3 class="admin-card__title">📝 Tambah Soal Baru</h3>
-                <a href="{{ route('admin.quiz.index') }}" class="admin-btn admin-btn--ghost admin-btn--sm">← Kembali</a>
+        <div class="card">
+            <div class="card__header">
+                <h3 class="card__title">📝 Tambah Soal Baru</h3>
+                <a href="{{ route('admin.quiz.index') }}" class="btn btn--neutral btn--sm">← Kembali</a>
             </div>
-            <div class="admin-card__body">
+            <div class="card__body">
 
                 @if($errors->any())
-                    <div class="admin-flash admin-flash--error">
+                    <div class="alert--danger">
                         ❌ {{ $errors->first() }}
                     </div>
                 @endif
@@ -21,9 +21,9 @@
                 <form method="POST" action="{{ route('admin.quiz.store') }}" enctype="multipart/form-data">
                     @csrf
 
-                    <div class="admin-form-group">
-                        <label class="admin-form-label">Lesson *</label>
-                        <select name="lesson_id" class="admin-form-select" required>
+                    <div class="form-group">
+                        <label class="form-label">Lesson *</label>
+                        <select name="lesson_id" class="form-select" required>
                             <option value="">Pilih Lesson...</option>
                             @foreach($lessons as $lesson)
                                 <option value="{{ $lesson->id }}" {{ old('lesson_id') == $lesson->id ? 'selected' : '' }}>
@@ -33,86 +33,86 @@
                         </select>
                     </div>
 
-                    <div class="admin-form-group">
-                        <label class="admin-form-label">Tipe Soal *</label>
-                        <select name="tipe" class="admin-form-select" required>
+                    <div class="form-group">
+                        <label class="form-label">Tipe Soal *</label>
+                        <select name="tipe" class="form-select" required>
                             <option value="">Pilih Tipe...</option>
                             <option value="voice" {{ old('tipe') === 'voice' ? 'selected' : '' }}>🎧 Audio (Tunanetra)</option>
                             <option value="image" {{ old('tipe') === 'image' ? 'selected' : '' }}>👁️ Visual (Tunarungu)</option>
                         </select>
                     </div>
 
-                    <div class="admin-form-group">
-                        <label class="admin-form-label">Pertanyaan *</label>
-                        <textarea name="pertanyaan" class="admin-form-textarea" required placeholder="Tulis pertanyaan quiz...">{{ old('pertanyaan') }}</textarea>
+                    <div class="form-group">
+                        <label class="form-label">Pertanyaan *</label>
+                        <textarea name="pertanyaan" class="form-textarea" required placeholder="Tulis pertanyaan quiz...">{{ old('pertanyaan') }}</textarea>
                     </div>
 
-                    <div class="admin-form-group">
-                        <label class="admin-form-label">Jawaban Benar *</label>
-                        <input type="text" name="jawaban_benar" class="admin-form-input" required value="{{ old('jawaban_benar') }}" placeholder="Tulis jawaban yang benar...">
+                    <div class="form-group">
+                        <label class="form-label">Jawaban Benar *</label>
+                        <input type="text" name="jawaban_benar" class="form-input" required value="{{ old('jawaban_benar') }}" placeholder="Tulis jawaban yang benar...">
                     </div>
 
-                    <div class="admin-form-group" id="pilihan-container">
-                        <label class="admin-form-label">Pilihan Jawaban *</label>
+                    <div class="form-group" id="pilihan-container">
+                        <label class="form-label">Pilihan Jawaban *</label>
                         <div style="display: flex; flex-direction: column; gap: 8px;" id="pilihan-list">
                             @if(old('pilihan'))
                                 @foreach(old('pilihan') as $i => $p)
                                     <div style="display: flex; gap: 8px; align-items: center;">
-                                        <input type="text" name="pilihan[]" class="admin-form-input" required value="{{ $p }}" placeholder="Pilihan {{ $i + 1 }}">
+                                        <input type="text" name="pilihan[]" class="form-input" required value="{{ $p }}" placeholder="Pilihan {{ $i + 1 }}">
                                         @if($i > 1)
-                                            <button type="button" onclick="this.parentElement.remove()" class="admin-btn admin-btn--danger admin-btn--sm">✕</button>
+                                            <button type="button" onclick="this.parentElement.remove()" class="btn btn--danger btn--sm">✕</button>
                                         @endif
                                     </div>
                                 @endforeach
                             @else
                                 <div style="display: flex; gap: 8px; align-items: center;">
-                                    <input type="text" name="pilihan[]" class="admin-form-input" required placeholder="Pilihan 1">
+                                    <input type="text" name="pilihan[]" class="form-input" required placeholder="Pilihan 1">
                                 </div>
                                 <div style="display: flex; gap: 8px; align-items: center;">
-                                    <input type="text" name="pilihan[]" class="admin-form-input" required placeholder="Pilihan 2">
+                                    <input type="text" name="pilihan[]" class="form-input" required placeholder="Pilihan 2">
                                 </div>
                             @endif
                         </div>
-                        <button type="button" onclick="addPilihan()" class="admin-btn admin-btn--ghost admin-btn--sm" style="margin-top: 8px;">
+                        <button type="button" onclick="addPilihan()" class="btn btn--neutral btn--sm" style="margin-top: 8px;">
                             ➕ Tambah Pilihan
                         </button>
                     </div>
 
-                    <div class="admin-form-group">
-                        <label class="admin-form-label">Gambar Soal (Opsional)</label>
-                        <input type="file" name="gambar_file" class="admin-form-input" accept="image/*">
+                    <div class="form-group">
+                        <label class="form-label">Gambar Soal (Opsional)</label>
+                        <input type="file" name="gambar_file" class="form-input" accept="image/*">
                         <small class="admin-form-help" style="display: block; margin-top: 4px; color: #666;">Format JPG, PNG, WEBP. Maks 2MB. Untuk quiz visual tunarungu.</small>
                     </div>
 
-                    <div class="admin-form-group">
-                        <label class="admin-form-label">Audio Narasi Soal (Opsional)</label>
-                        <input type="file" name="audio_file" class="admin-form-input" accept="audio/*">
+                    <div class="form-group">
+                        <label class="form-label">Audio Narasi Soal (Opsional)</label>
+                        <input type="file" name="audio_file" class="form-input" accept="audio/*">
                         <small class="admin-form-help" style="display: block; margin-top: 4px; color: #666;">Format MP3, WAV. Maks 5MB. Berguna untuk deskripsi suara kuis tunanetra.</small>
                     </div>
 
-                    <div class="admin-form-group">
-                        <label class="admin-form-label">Animasi Lottie URL (Opsional)</label>
-                        <input type="text" name="animasi_url" class="admin-form-input" value="{{ old('animasi_url') }}" placeholder="https://assets.lottiefiles.com/...json">
+                    <div class="form-group">
+                        <label class="form-label">Animasi Lottie URL (Opsional)</label>
+                        <input type="text" name="animasi_url" class="form-input" value="{{ old('animasi_url') }}" placeholder="https://assets.lottiefiles.com/...json">
                         <small class="admin-form-help" style="display: block; margin-top: 4px; color: #666;">Gunakan link animasi json. Bagus untuk quiz visual tunarungu.</small>
                     </div>
 
-                    <div class="admin-form-group">
-                        <label class="admin-form-label">Efek Suara Khas (Opsional)</label>
-                        <input type="text" name="efek_suara_url" class="admin-form-input" value="{{ old('efek_suara_url') }}" placeholder="https://example.com/sound.mp3">
+                    <div class="form-group">
+                        <label class="form-label">Efek Suara Khas (Opsional)</label>
+                        <input type="text" name="efek_suara_url" class="form-input" value="{{ old('efek_suara_url') }}" placeholder="https://example.com/sound.mp3">
                         <small class="admin-form-help" style="display: block; margin-top: 4px; color: #666;">URL efek suara saat kuis dimuat.</small>
                     </div>
 
-                    <div class="admin-form-group">
-                        <label class="admin-form-label">Poin Soal *</label>
-                        <input type="number" name="poin" class="admin-form-input" required value="{{ old('poin', 10) }}" min="1">
+                    <div class="form-group">
+                        <label class="form-label">Poin Soal *</label>
+                        <input type="number" name="poin" class="form-input" required value="{{ old('poin', 10) }}" min="1">
                         <small class="admin-form-help" style="display: block; margin-top: 4px; color: #666;">Jumlah poin reward gamifikasi jika dijawab dengan benar.</small>
                     </div>
 
                     <div style="display: flex; gap: 12px; margin-top: 28px;">
-                        <button type="submit" class="admin-btn admin-btn--primary">
+                        <button type="submit" class="btn btn--primary">
                             💾 Simpan Soal
                         </button>
-                        <a href="{{ route('admin.quiz.index') }}" class="admin-btn admin-btn--ghost">Batal</a>
+                        <a href="{{ route('admin.quiz.index') }}" class="btn btn--neutral">Batal</a>
                     </div>
                 </form>
 
@@ -131,8 +131,8 @@
             div.style.gap = '8px';
             div.style.alignItems = 'center';
             div.innerHTML = `
-                <input type="text" name="pilihan[]" class="admin-form-input" required placeholder="Pilihan ${pilihanCount}">
-                <button type="button" onclick="this.parentElement.remove()" class="admin-btn admin-btn--danger admin-btn--sm">✕</button>
+                <input type="text" name="pilihan[]" class="form-input" required placeholder="Pilihan ${pilihanCount}">
+                <button type="button" onclick="this.parentElement.remove()" class="btn btn--danger btn--sm">✕</button>
             `;
             container.appendChild(div);
         }

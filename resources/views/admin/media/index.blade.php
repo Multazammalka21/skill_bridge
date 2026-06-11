@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+﻿@extends('admin.layouts.app')
 
 @section('page-title', 'Library Media')
 
@@ -6,10 +6,10 @@
 
 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
     <div>
-        <h2 style="font-size:1.4rem; font-weight:800; color:var(--admin-text-primary); margin-bottom:4px;">Library Media Aset</h2>
-        <p style="color:var(--admin-text-muted); font-size:0.85rem;">Upload dan kelola file MP3, gambar, GIF, dan animasi Lottie JSON</p>
+        <h2 style="font-size:1.4rem; font-weight:800; color:var(--text-primary); margin-bottom:4px;">Library Media Aset</h2>
+        <p style="color:var(--text-muted); font-size:0.85rem;">Upload dan kelola file MP3, gambar, GIF, dan animasi Lottie JSON</p>
     </div>
-    <button onclick="document.getElementById('uploadModal').style.display='flex'" class="admin-btn admin-btn--primary">
+    <button onclick="document.getElementById('uploadModal').style.display='flex'" class="btn btn--primary">
         ⬆️ Upload Aset Baru
     </button>
 </div>
@@ -20,36 +20,36 @@
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
             <h3 style="font-size:1.1rem; font-weight:700;">⬆️ Upload Aset Media</h3>
             <button onclick="document.getElementById('uploadModal').style.display='none'"
-                    style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--admin-text-muted);">×</button>
+                    style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-muted);">×</button>
         </div>
 
         <form action="{{ route('admin.media.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            <div class="admin-form-group">
-                <label class="admin-form-label">Nama Aset <span style="color:var(--admin-danger);">*</span></label>
-                <input type="text" name="nama" class="admin-form-input" placeholder="Nama deskriptif untuk aset ini" required maxlength="200">
+            <div class="form-group">
+                <label class="form-label">Nama Aset <span style="color:var(--red);">*</span></label>
+                <input type="text" name="nama" class="form-input" placeholder="Nama deskriptif untuk aset ini" required maxlength="200">
             </div>
 
             {{-- Drag & drop zone --}}
-            <div class="admin-form-group">
-                <label class="admin-form-label">File <span style="color:var(--admin-danger);">*</span></label>
+            <div class="form-group">
+                <label class="form-label">File <span style="color:var(--red);">*</span></label>
                 <div id="fileDropzone"
-                     style="border:2px dashed var(--admin-border); border-radius:12px; padding:32px 20px; text-align:center; cursor:pointer; transition:all 0.2s; background:#fafafa;"
+                     style="border:2px dashed var(--border); border-radius:12px; padding:32px 20px; text-align:center; cursor:pointer; transition:all 0.2s; background:#fafafa;"
                      onclick="document.getElementById('mediaFile').click()"
-                     ondragover="event.preventDefault(); this.style.borderColor='var(--admin-primary)'; this.style.background='rgba(59,130,246,0.04)'"
-                     ondragleave="this.style.borderColor='var(--admin-border)'; this.style.background='#fafafa'"
+                     ondragover="event.preventDefault(); this.style.borderColor='var(--teal)'; this.style.background='rgba(59,130,246,0.04)'"
+                     ondragleave="this.style.borderColor='var(--border)'; this.style.background='#fafafa'"
                      ondrop="handleFileDrop(event)">
                     <div id="dropzoneContent">
                         <div style="font-size:2.5rem; margin-bottom:10px;">📁</div>
-                        <div style="font-weight:600; font-size:0.92rem; color:var(--admin-text-primary); margin-bottom:4px;">Klik atau drag file ke sini</div>
-                        <div style="font-size:0.78rem; color:var(--admin-text-muted);">MP3/WAV/OGG · JPG/PNG/WebP · GIF · JSON (Lottie)</div>
-                        <div style="font-size:0.72rem; color:var(--admin-text-muted); margin-top:4px;">Maksimum 20MB per file</div>
+                        <div style="font-weight:600; font-size:0.92rem; color:var(--text-primary); margin-bottom:4px;">Klik atau drag file ke sini</div>
+                        <div style="font-size:0.78rem; color:var(--text-muted);">MP3/WAV/OGG · JPG/PNG/WebP · GIF · JSON (Lottie)</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:4px;">Maksimum 20MB per file</div>
                     </div>
                     <div id="fileSelectedInfo" style="display:none;">
                         <div style="font-size:2rem; margin-bottom:8px;" id="fileTypeEmoji">📎</div>
                         <div style="font-weight:600; font-size:0.88rem;" id="fileName"></div>
-                        <div style="font-size:0.75rem; color:var(--admin-text-muted);" id="fileSize"></div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);" id="fileSize"></div>
                     </div>
                 </div>
                 <input type="file" id="mediaFile" name="file" style="display:none" required
@@ -57,15 +57,15 @@
                        onchange="showFileInfo(this)">
             </div>
 
-            <div class="admin-form-group">
-                <label class="admin-form-label">Keterangan (opsional)</label>
-                <textarea name="keterangan" class="admin-form-textarea" rows="2" maxlength="500"
+            <div class="form-group">
+                <label class="form-label">Keterangan (opsional)</label>
+                <textarea name="keterangan" class="form-textarea" rows="2" maxlength="500"
                           placeholder="Catatan singkat tentang aset ini..."></textarea>
             </div>
 
             <div style="display:flex; gap:12px;">
-                <button type="submit" class="admin-btn admin-btn--primary" style="flex:1; justify-content:center;">⬆️ Upload Sekarang</button>
-                <button type="button" onclick="document.getElementById('uploadModal').style.display='none'" class="admin-btn admin-btn--ghost">Batal</button>
+                <button type="submit" class="btn btn--primary" style="flex:1; justify-content:center;">⬆️ Upload Sekarang</button>
+                <button type="button" onclick="document.getElementById('uploadModal').style.display='none'" class="btn btn--neutral">Batal</button>
             </div>
         </form>
     </div>
@@ -73,35 +73,35 @@
 
 {{-- Stats + Type Filter tabs --}}
 <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
-    <a href="{{ route('admin.media.index') }}" class="admin-btn {{ !$tipe ? 'admin-btn--primary' : 'admin-btn--ghost' }}">
+    <a href="{{ route('admin.media.index') }}" class="btn {{ !$tipe ? 'btn--primary' : 'btn--neutral' }}">
         📁 Semua <span style="margin-left:4px; opacity:0.7;">({{ $counts['all'] }})</span>
     </a>
-    <a href="{{ route('admin.media.index', ['tipe'=>'audio']) }}" class="admin-btn {{ $tipe=='audio' ? 'admin-btn--primary' : 'admin-btn--ghost' }}">
+    <a href="{{ route('admin.media.index', ['tipe'=>'audio']) }}" class="btn {{ $tipe=='audio' ? 'btn--primary' : 'btn--neutral' }}">
         🎵 Audio <span style="margin-left:4px; opacity:0.7;">({{ $counts['audio'] }})</span>
     </a>
-    <a href="{{ route('admin.media.index', ['tipe'=>'image']) }}" class="admin-btn {{ $tipe=='image' ? 'admin-btn--primary' : 'admin-btn--ghost' }}">
+    <a href="{{ route('admin.media.index', ['tipe'=>'image']) }}" class="btn {{ $tipe=='image' ? 'btn--primary' : 'btn--neutral' }}">
         🖼️ Gambar <span style="margin-left:4px; opacity:0.7;">({{ $counts['image'] }})</span>
     </a>
-    <a href="{{ route('admin.media.index', ['tipe'=>'gif']) }}" class="admin-btn {{ $tipe=='gif' ? 'admin-btn--primary' : 'admin-btn--ghost' }}">
+    <a href="{{ route('admin.media.index', ['tipe'=>'gif']) }}" class="btn {{ $tipe=='gif' ? 'btn--primary' : 'btn--neutral' }}">
         🎞️ GIF <span style="margin-left:4px; opacity:0.7;">({{ $counts['gif'] }})</span>
     </a>
-    <a href="{{ route('admin.media.index', ['tipe'=>'lottie']) }}" class="admin-btn {{ $tipe=='lottie' ? 'admin-btn--primary' : 'admin-btn--ghost' }}">
+    <a href="{{ route('admin.media.index', ['tipe'=>'lottie']) }}" class="btn {{ $tipe=='lottie' ? 'btn--primary' : 'btn--neutral' }}">
         ✨ Lottie <span style="margin-left:4px; opacity:0.7;">({{ $counts['lottie'] }})</span>
     </a>
 </div>
 
 {{-- Media Grid --}}
 @if($assets->isEmpty())
-    <div style="text-align:center; padding:80px 20px; background:#fff; border-radius:12px; border:1px solid var(--admin-border);">
+    <div style="text-align:center; padding:80px 20px; background:#fff; border-radius:12px; border:1px solid var(--border);">
         <div style="font-size:4rem; margin-bottom:16px;">📁</div>
         <h3 style="font-weight:700; margin-bottom:8px;">Library kosong</h3>
-        <p style="color:var(--admin-text-muted); font-size:0.88rem; margin-bottom:20px;">Upload aset media pertama untuk mulai mengisi library pembelajaran</p>
-        <button onclick="document.getElementById('uploadModal').style.display='flex'" class="admin-btn admin-btn--primary">⬆️ Upload Aset Pertama</button>
+        <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:20px;">Upload aset media pertama untuk mulai mengisi library pembelajaran</p>
+        <button onclick="document.getElementById('uploadModal').style.display='flex'" class="btn btn--primary">⬆️ Upload Aset Pertama</button>
     </div>
 @else
     <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;">
         @foreach($assets as $asset)
-        <div style="background:#fff; border:1px solid var(--admin-border); border-radius:12px; overflow:hidden; transition:all 0.2s; position:relative;"
+        <div style="background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:all 0.2s; position:relative;"
              onmouseenter="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.10)'; this.style.transform='translateY(-2px)'"
              onmouseleave="this.style.boxShadow='none'; this.style.transform='none'">
 
@@ -120,7 +120,7 @@
                 @else
                     <div style="text-align:center;">
                         <div style="font-size:3rem;">✨</div>
-                        <div style="font-size:0.72rem; color:var(--admin-text-muted);">JSON Lottie</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted);">JSON Lottie</div>
                     </div>
                 @endif
 
@@ -134,14 +134,14 @@
 
             {{-- Info --}}
             <div style="padding:12px;">
-                <div style="font-weight:700; font-size:0.85rem; color:var(--admin-text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px;" title="{{ $asset->nama }}">
+                <div style="font-weight:700; font-size:0.85rem; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px;" title="{{ $asset->nama }}">
                     {{ $asset->nama }}
                 </div>
-                <div style="font-size:0.72rem; color:var(--admin-text-muted);">{{ $asset->readable_size }}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">{{ $asset->readable_size }}</div>
 
                 {{-- URL copy box --}}
                 <div style="margin-top:10px; background:#f1f5f9; border-radius:6px; padding:6px 8px; display:flex; align-items:center; gap:6px;">
-                    <code style="font-size:0.65rem; color:var(--admin-text-secondary); flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">{{ asset($asset->url) }}</code>
+                    <code style="font-size:0.65rem; color:var(--text-secondary); flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">{{ asset($asset->url) }}</code>
                     <button onclick="copyUrl('{{ asset($asset->url) }}', this)"
                             style="background:none; border:none; cursor:pointer; font-size:0.9rem; padding:0; flex-shrink:0;"
                             title="Salin URL">📋</button>
@@ -153,7 +153,7 @@
                       style="margin-top:8px;">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" style="width:100%; justify-content:center;">
+                    <button type="submit" class="btn btn--danger btn--sm" style="width:100%; justify-content:center;">
                         🗑️ Hapus
                     </button>
                 </form>
@@ -190,7 +190,7 @@ function handleFileDrop(event) {
     const input = document.getElementById('mediaFile');
     input.files = event.dataTransfer.files;
     showFileInfo(input);
-    event.target.style.borderColor = 'var(--admin-border)';
+    event.target.style.borderColor = 'var(--border)';
     event.target.style.background = '#fafafa';
 }
 

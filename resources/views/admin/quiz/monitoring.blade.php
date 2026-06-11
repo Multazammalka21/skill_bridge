@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+﻿@extends('admin.layouts.app')
 
 @section('page-title', 'Kuis Monitoring & Analytics')
 
@@ -18,7 +18,7 @@
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 28px;">
         <!-- Card 1 -->
-        <div class="admin-card" style="padding: 20px; display: flex; align-items: center; gap: 16px;">
+        <div class="card" style="padding: 20px; display: flex; align-items: center; gap: 16px;">
             <div style="font-size: 32px; background: rgba(41, 182, 246, 0.1); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #29b6f6;">
                 🧒
             </div>
@@ -29,7 +29,7 @@
         </div>
 
         <!-- Card 2 -->
-        <div class="admin-card" style="padding: 20px; display: flex; align-items: center; gap: 16px;">
+        <div class="card" style="padding: 20px; display: flex; align-items: center; gap: 16px;">
             <div style="font-size: 32px; background: rgba(67, 160, 71, 0.1); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #43a047;">
                 🎮
             </div>
@@ -40,7 +40,7 @@
         </div>
 
         <!-- Card 3 -->
-        <div class="admin-card" style="padding: 20px; display: flex; align-items: center; gap: 16px;">
+        <div class="card" style="padding: 20px; display: flex; align-items: center; gap: 16px;">
             <div style="font-size: 32px; background: rgba(255, 112, 67, 0.1); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #ff7043;">
                 🎯
             </div>
@@ -53,11 +53,11 @@
 
     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 28px;">
         <!-- Left Side: Recent Activities -->
-        <div class="admin-card">
-            <div class="admin-card__header">
-                <h3 class="admin-card__title">🕒 Aktivitas Kuis Terbaru</h3>
+        <div class="card">
+            <div class="card__header">
+                <h3 class="card__title">🕒 Aktivitas Kuis Terbaru</h3>
             </div>
-            <div class="admin-card__body" style="padding: 0;">
+            <div class="card__body" style="padding: 0;">
                 <table class="admin-table">
                     <thead>
                         <tr>
@@ -81,9 +81,9 @@
                                 <td>{{ $activity->lesson->judul }}</td>
                                 <td>
                                     @if($activity->benar)
-                                        <span class="admin-badge admin-badge--active">✅ Benar</span>
+                                        <span class="badge badge--active">✅ Benar</span>
                                     @else
-                                        <span class="admin-badge admin-badge--inactive">❌ Salah</span>
+                                        <span class="badge badge--inactive">❌ Salah</span>
                                     @endif
                                 </td>
                                 <td><strong>{{ $activity->skor }}</strong></td>
@@ -105,11 +105,11 @@
         </div>
 
         <!-- Right Side: Star Breakdown -->
-        <div class="admin-card">
-            <div class="admin-card__header">
-                <h3 class="admin-card__title">⭐ Distribusi Bintang</h3>
+        <div class="card">
+            <div class="card__header">
+                <h3 class="card__title">⭐ Distribusi Bintang</h3>
             </div>
-            <div class="admin-card__body">
+            <div class="card__body">
                 <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 10px;">
                     @foreach($starBreakdown as $star => $count)
                         <div>
@@ -131,11 +131,11 @@
     </div>
 
     <!-- Hardest Questions Section -->
-    <div class="admin-card">
-        <div class="admin-card__header">
-            <h3 class="admin-card__title">⚠️ 5 Soal Kuis Paling Banyak Salah</h3>
+    <div class="card">
+        <div class="card__header">
+            <h3 class="card__title">⚠️ 5 Soal Kuis Paling Banyak Salah</h3>
         </div>
-        <div class="admin-card__body" style="padding: 0;">
+        <div class="card__body" style="padding: 0;">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -154,9 +154,9 @@
                                 <td>{{ $item->quizQuestion->lesson->judul }}</td>
                                 <td>
                                     @if($item->quizQuestion->tipe === 'voice')
-                                        <span class="admin-badge admin-badge--audio">🎧 Audio</span>
+                                        <span class="badge badge badge--teal">🎧 Audio</span>
                                     @else
-                                        <span class="admin-badge admin-badge--visual">👁️ Visual</span>
+                                        <span class="badge badge badge--orange">👁️ Visual</span>
                                     @endif
                                 </td>
                                 <td>{{ Str::limit($item->quizQuestion->pertanyaan, 50) }}</td>
