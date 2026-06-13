@@ -12,12 +12,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | API Routes — Pinteria (SDG #4 Quality Education)
 |--------------------------------------------------------------------------
+| Metode autentikasi:
 |
-| Tiga metode autentikasi tersedia:
-|
-|  1. JWT Bearer Token  → POST /login  → Authorization: Bearer <token>
-|  2. Basic Auth        → POST /login/basic  → Authorization: Basic base64(email:password)
-|  3. API Key           → Header: X-API-Key: <key>   (akses read-only publik)
+|  JWT Bearer Token  → POST /login  → Authorization: Bearer <token>
 |
 */
 
@@ -25,18 +22,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login',    [AuthController::class, 'login']);
 
-// ─── 2. Basic Auth Login ───────────────────────────────────────────────────
-// Kirim: Authorization: Basic base64(email:password)
-Route::post('/login/basic', [AuthController::class, 'loginBasic']);
-
-// ─── 3. API Key — Akses data publik (lessons & modules) ───────────────────
-// Kirim: X-API-Key: <APP_API_KEY dari .env>
-Route::middleware('api.key')->group(function () {
-    Route::get('/public/lessons', [LessonController::class, 'index']);
-    Route::get('/public/modules', [ModuleController::class, 'index']);
-});
-
-// ─── 4. JWT Bearer — Protected routes ─────────────────────────────────────
+// ─── 2. JWT Bearer — Protected routes ─────────────────────────────────────
 // Kirim: Authorization: Bearer <token dari /login>
 Route::middleware('auth:api')->group(function () {
 

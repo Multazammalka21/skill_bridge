@@ -65,36 +65,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Login via HTTP Basic Auth (Authorization: Basic base64(email:password)).
-     * Demonstrates the Basic Auth requirement.
-     */
-    public function loginBasic(Request $request)
-    {
-        // Basic Auth credentials come from Authorization header
-        $email    = $request->getUser();
-        $password = $request->getPassword();
-
-        if (! $email || ! $password) {
-            return response()->json([
-                'message' => 'Basic Auth credentials diperlukan.',
-            ], 401)->header('WWW-Authenticate', 'Basic realm="Pinteria API"');
-        }
-
-        $token = auth('api')->attempt([
-            'email'    => $email,
-            'password' => $password,
-        ]);
-
-        if (! $token) {
-            return response()->json([
-                'message' => 'Email atau kata sandi salah.',
-            ], 401)->header('WWW-Authenticate', 'Basic realm="Pinteria API"');
-        }
-
-        return $this->respondWithToken($token);
-    }
-
-    /**
      * Logout — invalidate the current JWT token.
      */
     public function logout()

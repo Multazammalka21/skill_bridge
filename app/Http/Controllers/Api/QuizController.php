@@ -18,10 +18,13 @@ class QuizController extends Controller
             'lesson_id' => 'required|exists:lessons,id',
             'quiz_question_id' => 'required|exists:quiz_questions,id',
             'jawaban_anak' => 'required|string',
-            'benar' => 'required|boolean',
-            'skor' => 'required|integer|min:0|max:100',
+            'benar' => 'sometimes|boolean',
+            'skor' => 'sometimes|integer|min:0|max:100',
             'percobaan' => 'required|integer|min:1',
         ]);
+
+        $validated['benar'] = $validated['benar'] ?? false;
+        $validated['skor'] = $validated['skor'] ?? 0;
 
         $result = QuizResult::create($validated);
 

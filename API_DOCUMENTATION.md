@@ -1,8 +1,8 @@
 # Pinteria API — Dokumentasi Teknis
 
 > **Platform Edukasi Inklusi Anak Difabel** | SDG #4 Quality Education
-> Framework: Laravel 11+ | Auth: JWT Bearer · Basic Auth · API Key
-> Versi Dokumentasi: 2.0 | Diperbarui: 2026-06-03
+> Framework: Laravel 11+ | Auth: JWT Bearer
+> Versi Dokumentasi: 2.1 | Diperbarui: 2026-06-13
 
 ---
 
@@ -18,16 +18,11 @@ http://skill_bridge.test/api
 
 ## 🔐 Metode Autentikasi
 
-Pinteria API mendukung **3 metode autentikasi**:
+Pinteria API mendukung autentikasi:
 
-| Metode | Header | Digunakan di |
-|--------|--------|--------------|
-| **JWT Bearer** | `Authorization: Bearer <token>` | Semua endpoint protected |
-| **Basic Auth** | `Authorization: Basic base64(email:password)` | `POST /login/basic` |
-| **API Key** | `X-API-Key: <key>` | Endpoint publik (`/public/*`) |
-
-**API Key default:** `skillbridge-api-key-2024-secret`  
-(dapat diubah via `.env` → `APP_API_KEY`)
+| Metode | Header | Keterangan |
+|--------|--------|------------|
+| **JWT Bearer** | `Authorization: Bearer <token>` | Digunakan untuk mengakses semua endpoint terproteksi |
 
 ---
 
@@ -130,33 +125,7 @@ Content-Type: application/json
 }
 ```
 
----
 
-#### `POST /api/login/basic`
-Login menggunakan HTTP Basic Authentication.
-
-**Header:**
-```
-Authorization: Basic base64(email:password)
-Accept: application/json
-```
-
-**Contoh encoding:**
-- Email: `user@test.com`, Password: `pass123`
-- Base64: `dXNlckB0ZXN0LmNvbTpwYXNzMTIz`
-- Header: `Authorization: Basic dXNlckB0ZXN0LmNvbTpwYXNzMTIz`
-
-**Response `200 OK`:** (format sama dengan JWT Login)
-
-**Response `401` (credentials kosong atau salah):**
-```json
-{
-  "message": "Basic Auth credentials diperlukan."
-}
-```
-> Header respons akan menyertakan: `WWW-Authenticate: Basic realm="Pinteria API"`
-
----
 
 #### `POST /api/refresh`
 Memperbarui JWT token sebelum kedaluwarsa. Token lama akan di-invalidate.
@@ -217,89 +186,7 @@ Membatalkan (invalidate) JWT token aktif.
 }
 ```
 
----
-
-### 2. 🔑 API Key — Akses Publik
-
-> Endpoint `/public/*` **tidak memerlukan JWT login**, cukup sertakan header `X-API-Key`.
-
-**API Key:** `skillbridge-api-key-2024-secret`
-
----
-
-#### `GET /api/public/lessons`
-Mendapatkan daftar lesson tanpa autentikasi JWT.
-
-**Header:**
-```
-X-API-Key: skillbridge-api-key-2024-secret
-Accept: application/json
-```
-
-**Query Parameters (opsional):**
-| Param | Tipe | Nilai | Keterangan |
-|-------|------|-------|------------|
-| `tipe_dunia` | string | `audio` atau `visual` | Filter berdasarkan tipe dunia |
-
-**Response `200 OK`:**
-```json
-{
-  "lessons": [
-    {
-      "id": 1,
-      "judul": "Mengenal Huruf A",
-      "deskripsi": "Belajar mengenal huruf A melalui cerita audio",
-      "tipe_dunia": "audio",
-      "kategori_usia": "4-6",
-      "urutan": 1,
-      "durasi_menit": 5,
-      "aktif": true,
-      "created_at": "...",
-      "updated_at": "..."
-    }
-  ]
-}
-```
-
-> **Catatan:** Endpoint ini hanya mengembalikan metadata lesson (tanpa field media seperti `gambar`, `audio_story_url`, dll) untuk efisiensi *lazy loading*.
-
-**Response `403` (API Key salah):**
-```json
-{
-  "message": "API Key tidak valid atau tidak diizinkan."
-}
-```
-
----
-
-#### `GET /api/public/modules`
-Mendapatkan daftar modul berdasarkan profil anak.
-
-**Header:**
-```
-X-API-Key: skillbridge-api-key-2024-secret
-Accept: application/json
-```
-
-**Query Parameters (wajib):**
-| Param | Tipe | Keterangan |
-|-------|------|------------|
-| `child_id` | integer | ID anak yang profilnya ingin dimuat |
-
-**Response `200 OK`:**
-```json
-{
-  "usia": 7,
-  "jenis_disabilitas": "tunanetra",
-  "modules": [ ... ]
-}
-```
-
-> ⚠️ Meskipun endpoint ini menggunakan API Key, sistem tetap memverifikasi bahwa anak tersebut milik pengguna yang login. Jika tidak cocok, akan mengembalikan `403 Forbidden`.
-
----
-
-### 3. 👶 Children — Manajemen Data Anak
+### 2. 👶 Children — Manajemen Data Anak
 
 > Semua endpoint ini memerlukan `Authorization: Bearer <token>`
 
@@ -433,7 +320,7 @@ Menghapus data anak (beserta semua data relasinya).
 
 ---
 
-### 4. 📊 Dashboard Orang Tua
+### 3. 📊 Dashboard Orang Tua
 
 ---
 
@@ -499,7 +386,7 @@ Mendapatkan detail progress satu anak, lengkap dengan data Chart.js-ready untuk 
 
 ---
 
-### 5. 📚 Lessons
+### 4. 📚 Lessons
 
 ---
 
@@ -534,7 +421,7 @@ Mendapatkan daftar lesson (hanya metadata, tanpa field media — lazy load).
 ---
 
 #### `GET /api/lessons/{lesson}`
-Mendapatkan detail lengkap satu lesson termasuk semua media dan soal quiz.
+Mendapatkan detail lengkap satu lesson termasuk semua media dan soal kuis.
 
 **Response `200 OK`:**
 ```json
@@ -645,12 +532,12 @@ Mengakhiri sesi belajar. Menghitung durasi otomatis dari `started_at` hingga sek
 
 ---
 
-### 6. 🧩 Quiz
+### 5. 🧩 Quiz
 
 ---
 
 #### `POST /api/quiz/answer`
-Mengirimkan jawaban quiz anak. Setiap jawaban disimpan sebagai record terpisah.
+Mengirimkan jawaban kuis anak. Setiap jawaban disimpan sebagai record terpisah.
 
 **Request Body:**
 ```json
@@ -672,8 +559,8 @@ Mengirimkan jawaban quiz anak. Setiap jawaban disimpan sebagai record terpisah.
 | `lesson_id` | integer | required, harus ada di tabel `lessons` |
 | `quiz_question_id` | integer | required, harus ada di tabel `quiz_questions` |
 | `jawaban_anak` | string | required |
-| `benar` | boolean | required (`true` / `false`) |
-| `skor` | integer | required, 0–100 |
+| `benar` | boolean | opsional (jika kosong, backend mengevaluasi secara otomatis) |
+| `skor` | integer | opsional (jika kosong, backend menghitung otomatis), 0–100 |
 | `percobaan` | integer | required, minimum 1 |
 
 **Response `201 Created`:**
@@ -698,7 +585,7 @@ Mengirimkan jawaban quiz anak. Setiap jawaban disimpan sebagai record terpisah.
 ---
 
 #### `GET /api/quiz/results`
-Mendapatkan semua hasil quiz anak untuk lesson tertentu, beserta detail soalnya.
+Mendapatkan semua hasil kuis anak untuk lesson tertentu, beserta detail soalnya.
 
 **Query Parameters (wajib):**
 | Param | Tipe | Keterangan |
@@ -742,7 +629,7 @@ Mendapatkan semua hasil quiz anak untuk lesson tertentu, beserta detail soalnya.
 |-----------|------------|
 | `400` | Bad Request — format request tidak valid |
 | `401` | Unauthenticated — token tidak ada, tidak valid, atau sudah kedaluwarsa |
-| `403` | Forbidden — API Key tidak valid, atau akses ke resource milik user lain |
+| `403` | Forbidden — akses ke resource milik user lain ditolak |
 | `404` | Not Found — resource tidak ditemukan |
 | `422` | Unprocessable Entity — validasi Laravel gagal |
 | `500` | Internal Server Error |
@@ -751,13 +638,6 @@ Mendapatkan semua hasil quiz anak untuk lesson tertentu, beserta detail soalnya.
 ```json
 {
   "message": "Tidak terautentikasi. Sertakan Bearer token yang valid."
-}
-```
-
-**Contoh 403 (API Key salah):**
-```json
-{
-  "message": "API Key tidak valid atau tidak diizinkan."
 }
 ```
 
@@ -838,7 +718,6 @@ Untuk mengubah TTL, edit `JWT_TTL` di `.env`.
 3. Jalankan **Register** atau **Login (JWT Bearer)**
    - Token otomatis tersimpan ke variable `{{jwt_token}}` via test script
 4. Semua endpoint protected langsung bisa diuji menggunakan token tersebut
-5. Untuk endpoint API Key, gunakan variable `{{api_key}}` yang sudah terisi
 
 ---
 
@@ -848,14 +727,12 @@ Untuk mengubah TTL, edit `JWT_TTL` di `.env`.
 app/
   Http/
     Controllers/Api/
-      AuthController.php          ← JWT + Basic Auth login/register
+      AuthController.php          ← JWT login/register
       ChildController.php         ← CRUD data anak (via Repository Pattern)
       LessonController.php        ← Lessons, sesi belajar
       QuizController.php          ← Submit & retrieve hasil quiz
       ParentDashboardController.php ← Statistik & grafik progress anak
       ModuleController.php        ← Modul berdasarkan profil anak
-    Middleware/
-      ApiKeyMiddleware.php        ← Validasi header X-API-Key
   Models/
     User.php                      ← implements JWTSubject, role: 'parent'
     Child.php                     ← BelongsTo User, jenis_disabilitas
@@ -869,11 +746,11 @@ app/
     Contracts/ChildRepositoryInterface.php
     ChildContentRepository.php    ← Modul filtered by age & disability type
 routes/
-  api.php                         ← Semua route API (3 grup: public, api.key, auth:api)
+  api.php                         ← Semua route API (2 grup: public, auth:api)
 config/
   auth.php                        ← Guard 'api' menggunakan driver JWT
   jwt.php                         ← Konfigurasi JWT (TTL, algoritma)
-.env                              ← JWT_SECRET, APP_API_KEY
+.env                              ← JWT_SECRET
 SkillBridge_API.postman_collection.json ← Import ke Postman untuk testing
 ```
 
@@ -896,7 +773,7 @@ SkillBridge_API.postman_collection.json ← Import ke Postman untuk testing
         ↓
 6. POST /lessons/{id}/start-session → Catat mulai belajar → dapat session_id
         ↓
-7. POST /quiz/answer        → Kirim setiap jawaban quiz
+7. POST /quiz/answer        → Kirim setiap jawaban kuis
         ↓
 8. POST /lessons/{id}/complete   → Tandai lesson selesai
         ↓

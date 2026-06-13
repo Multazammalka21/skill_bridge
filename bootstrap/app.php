@@ -16,7 +16,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Register custom middleware aliases
         $middleware->alias([
-            'api.key' => \App\Http\Middleware\ApiKeyMiddleware::class,
             'role'    => \App\Http\Middleware\RoleMiddleware::class,
         ]);
     })
