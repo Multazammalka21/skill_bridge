@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @section('page-title', 'Kuis Monitoring & Analytics')
 
@@ -81,9 +81,9 @@
                                 <td>{{ $activity->lesson->judul }}</td>
                                 <td>
                                     @if($activity->benar)
-                                        <span class="badge badge--active">✅ Benar</span>
+                                        <span class="badge badge--green">✅ Benar</span>
                                     @else
-                                        <span class="badge badge--inactive">❌ Salah</span>
+                                        <span class="badge badge--red">❌ Salah</span>
                                     @endif
                                 </td>
                                 <td><strong>{{ $activity->skor }}</strong></td>
@@ -120,7 +120,7 @@
                             @php
                                 $percent = $totalQuizAttempts > 0 ? ($count / $totalQuizAttempts) * 100 : 0;
                             @endphp
-                            <div style="height: 12px; background: #eee; border-radius: 6px; overflow: hidden;">
+                            <div style="height: 12px; background: var(--bg-page); border-radius: 6px; overflow: hidden;">
                                 <div style="height: 100%; width: {{ $percent }}%; background: #ffca28; border-radius: 6px;"></div>
                             </div>
                         </div>
@@ -167,7 +167,7 @@
                                         $ratio = $item->total_attempts > 0 ? round(($item->wrong_attempts / $item->total_attempts) * 100, 1) : 0;
                                     @endphp
                                     <div style="display: flex; align-items: center; gap: 8px;">
-                                        <div style="flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; min-width: 80px;">
+                                        <div style="flex: 1; height: 8px; background: var(--bg-page); border-radius: 4px; overflow: hidden; min-width: 80px;">
                                             <div style="height: 100%; width: {{ $ratio }}%; background: #ef5350; border-radius: 4px;"></div>
                                         </div>
                                         <span>{{ $ratio }}%</span>

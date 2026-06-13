@@ -200,7 +200,7 @@
                 <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">Kelompok Usia</div>
                 <div class="age-grid">
                     <div class="age-pill">
-                        <div class="age-pill__number" style="color:var(--color-600)">{{ $age57 }}</div>
+                        <div class="age-pill__number" style="color:var(--teal)">{{ $age57 }}</div>
                         <div class="age-pill__label">Materi 5–7 Thn</div>
                     </div>
                     <div class="age-pill">
@@ -230,7 +230,7 @@
     <div class="card__body--flush">
         @forelse($categoryStats as $cat)
         @if($cat->quiz_total > 0)
-        <div style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-bottom:1px solid #f9fafb;">
+        <div style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-bottom:1px solid var(--border);">
             <div style="width:36px; height:36px; border-radius:var(--radius-md); background:{{ $cat->warna }}20; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;">
                 {{ $cat->ikon }}
             </div>
@@ -243,7 +243,7 @@
                 </div>
             </div>
             <div style="text-align:right; flex-shrink:0; min-width:80px;">
-                <div style="font-size:16px; font-weight:700; color:{{ $cat->quiz_rate >= 70 ? 'var(--color-600)' : ($cat->quiz_rate >= 40 ? '#d97706' : 'var(--red)') }}">
+                <div style="font-size:16px; font-weight:700; color:{{ $cat->quiz_rate >= 70 ? 'var(--green)' : ($cat->quiz_rate >= 40 ? 'var(--orange)' : 'var(--red)') }}">
                     {{ $cat->quiz_rate }}%
                 </div>
                 <div style="font-size:10px; color:var(--text-muted);">{{ $cat->quiz_correct }}/{{ $cat->quiz_total }} benar</div>
@@ -331,7 +331,20 @@
 <script>
 const ctx = document.getElementById('trendChart');
 if (ctx) {
-    new Chart(ctx, {
+    const getThemeColors = () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        return {
+            text: isDark ? '#94a3b8' : '#6b7280', // --text-secondary
+            grid: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+            tooltipBg: isDark ? '#1e293b' : '#ffffff', // --bg-card
+            tooltipText: isDark ? '#f1f5f9' : '#1a1a2e', // --text-primary
+            tooltipBorder: isDark ? '#334155' : '#e8eaed', // --border
+        };
+    };
+
+    let colors = getThemeColors();
+
+    const trendChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: @json($chart30Labels),
@@ -367,6 +380,11 @@ if (ctx) {
             plugins: {
                 legend: { display: false },
                 tooltip: {
+                    backgroundColor: colors.tooltipBg,
+                    titleColor: colors.tooltipText,
+                    bodyColor: colors.tooltipText,
+                    borderColor: colors.tooltipBorder,
+                    borderWidth: 1,
                     callbacks: {
                         label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}`
                     }
@@ -375,12 +393,17 @@ if (ctx) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { precision: 0, font: { family: 'Inter', size: 11 } },
-                    grid: { color: 'rgba(0,0,0,0.04)' }
+                    ticks: { 
+                        precision: 0, 
+                        color: colors.text,
+                        font: { family: 'Inter', size: 11 } 
+                    },
+                    grid: { color: colors.grid }
                 },
                 x: {
                     grid: { display: false },
                     ticks: {
+                        color: colors.text,
                         font: { family: 'Inter', size: 10 },
                         maxTicksLimit: 10,
                         maxRotation: 0,
@@ -389,6 +412,25 @@ if (ctx) {
             }
         }
     });
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'data-theme') {
+                const newColors = getThemeColors();
+                trendChart.options.scales.y.ticks.color = newColors.text;
+                trendChart.options.scales.y.grid.color = newColors.grid;
+                trendChart.options.scales.x.ticks.color = newColors.text;
+                
+                trendChart.options.plugins.tooltip.backgroundColor = newColors.tooltipBg;
+                trendChart.options.plugins.tooltip.titleColor = newColors.tooltipText;
+                trendChart.options.plugins.tooltip.bodyColor = newColors.tooltipText;
+                trendChart.options.plugins.tooltip.borderColor = newColors.tooltipBorder;
+                
+                trendChart.update();
+            }
+        });
+    });
+    observer.observe(document.documentElement, { attributes: true });
 }
 </script>
 @endpush

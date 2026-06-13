@@ -184,7 +184,7 @@
 
             <div class="age-grid">
                 <div class="age-pill">
-                    <div class="age-pill__number" style="color:var(--color-600)">
+                    <div class="age-pill__number" style="color:var(--teal)">
                         {{ $lessonsByAge->get('5-7', 0) }}
                     </div>
                     <div class="age-pill__label">Materi usia 5–7 th</div>
@@ -214,7 +214,7 @@
         <div class="card__body">
             <div class="quiz-rate">
                 <div class="quiz-rate__number"
-                     style="color:{{ $successRate >= 70 ? 'var(--color-600)' : ($successRate >= 40 ? 'var(--color-300)' : 'var(--red)') }}">
+                     style="color:{{ $successRate >= 70 ? 'var(--green)' : ($successRate >= 40 ? 'var(--orange)' : 'var(--red)') }}">
                     {{ $successRate }}%
                 </div>
                 <div class="quiz-rate__label">Tingkat keberhasilan quiz</div>
@@ -222,7 +222,7 @@
 
             <div class="quiz-stats">
                 <div class="quiz-stat-box">
-                    <div class="quiz-stat-box__number" style="color:var(--color-600)">
+                    <div class="quiz-stat-box__number" style="color:var(--green)">
                         {{ number_format($correctAnswers) }}
                     </div>
                     <div class="quiz-stat-box__label">Jawaban Benar</div>
@@ -238,7 +238,7 @@
             <div class="progress-bar">
                 <div class="progress-bar__fill"
                      style="width:{{ $successRate }}%;
-                            background:{{ $successRate >= 70 ? 'var(--color-600)' : ($successRate >= 40 ? 'var(--color-300)' : 'var(--red)') }}">
+                            background:{{ $successRate >= 70 ? 'var(--green)' : ($successRate >= 40 ? 'var(--orange)' : 'var(--red)') }}">
                 </div>
             </div>
         </div>
@@ -253,7 +253,7 @@
         </div>
         <div class="action-list">
             <a href="{{ route('admin.lessons.create') }}" class="action-item">
-                <span class="action-item__icon" style="background:var(--color-50);color:var(--color-600)">
+                <span class="action-item__icon" style="background:var(--teal-light);color:var(--teal)">
                     <i class="ti ti-book"></i>
                 </span>
                 <span class="action-item__label">Tambah materi baru</span>
@@ -416,7 +416,20 @@
 <script>
 const ctx = document.getElementById('activityChart');
 if (ctx) {
-    new Chart(ctx, {
+    const getThemeColors = () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        return {
+            text: isDark ? '#94a3b8' : '#6b7280', // --text-secondary
+            grid: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+            tooltipBg: isDark ? '#1e293b' : '#ffffff', // --bg-card
+            tooltipText: isDark ? '#f1f5f9' : '#1a1a2e', // --text-primary
+            tooltipBorder: isDark ? '#334155' : '#e8eaed', // --border
+        };
+    };
+
+    let colors = getThemeColors();
+
+    const activityChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: @json($chartLabels),
@@ -445,6 +458,11 @@ if (ctx) {
             plugins: {
                 legend: { display: false },
                 tooltip: {
+                    backgroundColor: colors.tooltipBg,
+                    titleColor: colors.tooltipText,
+                    bodyColor: colors.tooltipText,
+                    borderColor: colors.tooltipBorder,
+                    borderWidth: 1,
                     callbacks: {
                         label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}`
                     }
@@ -453,16 +471,42 @@ if (ctx) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { precision: 0, font: { family: 'Inter', size: 11 } },
-                    grid: { color: 'rgba(0,0,0,0.04)' }
+                    ticks: { 
+                        precision: 0, 
+                        color: colors.text,
+                        font: { family: 'Inter', size: 11 } 
+                    },
+                    grid: { color: colors.grid }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { font: { family: 'Inter', size: 11 } }
+                    ticks: { 
+                        color: colors.text,
+                        font: { family: 'Inter', size: 11 } 
+                    }
                 }
             }
         }
     });
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'data-theme') {
+                const newColors = getThemeColors();
+                activityChart.options.scales.y.ticks.color = newColors.text;
+                activityChart.options.scales.y.grid.color = newColors.grid;
+                activityChart.options.scales.x.ticks.color = newColors.text;
+                
+                activityChart.options.plugins.tooltip.backgroundColor = newColors.tooltipBg;
+                activityChart.options.plugins.tooltip.titleColor = newColors.tooltipText;
+                activityChart.options.plugins.tooltip.bodyColor = newColors.tooltipText;
+                activityChart.options.plugins.tooltip.borderColor = newColors.tooltipBorder;
+                
+                activityChart.update();
+            }
+        });
+    });
+    observer.observe(document.documentElement, { attributes: true });
 }
 </script>
 @endpush
