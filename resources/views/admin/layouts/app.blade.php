@@ -133,10 +133,7 @@
                 </div>
             </div>
 
-            {{-- ⚙️ Settings Button --}}
-            <button class="topnav__icon-btn" title="Pengaturan" @click="$dispatch('open-settings')">
-                <i class="ti ti-settings"></i>
-            </button>
+
 
             {{-- 👤 User Dropdown --}}
             <div class="topnav__user" x-data="{ open: false }" @click.outside="open = false">
@@ -216,103 +213,7 @@
     </div>
 </main>
 
-{{-- ══ SETTINGS SLIDE-OVER PANEL ═══════════════════════════ --}}
-<div x-data="settingsPanel()" @open-settings.window="open = true">
-    {{-- Overlay --}}
-    <div class="settings-overlay" x-show="open" @click="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display:none;"></div>
 
-    {{-- Panel --}}
-    <div class="settings-panel" x-show="open" x-transition:enter="transition ease-out duration-250" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" style="display:none;">
-        <div class="settings-panel__header">
-            <div class="settings-panel__title"><i class="ti ti-settings"></i> Pengaturan</div>
-            <button class="settings-panel__close" @click="open = false"><i class="ti ti-x"></i></button>
-        </div>
-
-        <div class="settings-panel__body">
-
-            {{-- Flash in panel context (if redirected) --}}
-            @if(session('success'))
-            <div class="alert alert--success" style="margin-bottom:16px">
-                <i class="ti ti-circle-check"></i> {{ session('success') }}
-                <button class="alert__close" onclick="this.parentElement.remove()"><i class="ti ti-x"></i></button>
-            </div>
-            @endif
-            @if(session('error'))
-            <div class="alert alert--danger" style="margin-bottom:16px">
-                <i class="ti ti-alert-circle"></i> {{ session('error') }}
-                <button class="alert__close" onclick="this.parentElement.remove()"><i class="ti ti-x"></i></button>
-            </div>
-            @endif
-
-            {{-- ── Profil Admin ────────────────────────────── --}}
-            <div class="settings-section">
-                <div class="settings-section__title">Profil Admin</div>
-
-                {{-- Avatar preview --}}
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-                    <div style="width:48px;height:48px;border-radius:50%;background:var(--teal);color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-                    </div>
-                    <div>
-                        <div style="font-size:13px;font-weight:700;color:var(--text-primary);">{{ auth()->user()->name }}</div>
-                        <div style="font-size:11px;color:var(--text-muted);">{{ auth()->user()->email }}</div>
-                    </div>
-                </div>
-
-                <form method="POST" action="{{ route('admin.settings.profile') }}">
-                    @csrf
-                    <div class="form-group">
-                        <label class="form-label">Nama Lengkap</label>
-                        <input type="text" name="name" class="form-input" value="{{ old('name', auth()->user()->name) }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-input" value="{{ old('email', auth()->user()->email) }}" required>
-                    </div>
-                    <button type="submit" class="btn btn--primary btn--sm"><i class="ti ti-check"></i> Simpan Profil</button>
-                </form>
-            </div>
-
-            {{-- ── Ganti Password ──────────────────────────── --}}
-            <div class="settings-section">
-                <div class="settings-section__title">Ganti Password</div>
-                <form method="POST" action="{{ route('admin.settings.password') }}">
-                    @csrf
-                    <div class="form-group">
-                        <label class="form-label">Password Lama</label>
-                        <input type="password" name="current_password" class="form-input" placeholder="••••••••" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Password Baru</label>
-                        <input type="password" name="password" class="form-input" placeholder="Min. 8 karakter" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Konfirmasi Password Baru</label>
-                        <input type="password" name="password_confirmation" class="form-input" placeholder="Ulangi password baru" required>
-                    </div>
-                    <button type="submit" class="btn btn--primary btn--sm"><i class="ti ti-lock"></i> Ubah Password</button>
-                </form>
-            </div>
-
-            {{-- ── Tampilan ─────────────────────────────────── --}}
-            <div class="settings-section">
-                <div class="settings-section__title">Tampilan</div>
-
-                <div class="toggle-row">
-                    <div>
-                        <div class="toggle-row__label">Mode Gelap</div>
-                        <div class="toggle-row__sub">Tampilan admin menjadi dark mode</div>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" :checked="isDark" @change="toggleDark($event.target.checked)">
-                        <span class="toggle-switch__track"></span>
-                    </label>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
 
 {{-- Alpine.js --}}
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -349,18 +250,7 @@ function notifPanel() {
     };
 }
 
-function settingsPanel() {
-    return {
-        open: false,
-        isDark: localStorage.getItem('pinteria-theme') === 'dark',
-        toggleDark(val) {
-            this.isDark = val;
-            const theme = val ? 'dark' : 'light';
-            localStorage.setItem('pinteria-theme', theme);
-            document.documentElement.setAttribute('data-theme', theme);
-        }
-    };
-}
+
 </script>
 
 @stack('scripts')
