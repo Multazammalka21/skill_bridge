@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @section('page-title', 'Learning Path')
 
@@ -50,7 +50,7 @@
 </div>
 
 @if($lessons->isEmpty())
-    <div style="text-align:center; padding:80px 20px; background:#fff; border-radius:12px; border:1px solid var(--border);">
+    <div style="text-align:center; padding:80px 20px; background:var(--bg-card); border-radius:12px; border:1px solid var(--border);">
         <div style="font-size:3.5rem; margin-bottom:16px;">🗺️</div>
         <h3 style="font-weight:700; margin-bottom:8px;">Belum ada materi untuk path ini</h3>
         <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:20px;">Tambahkan materi pembelajaran terlebih dahulu atau ubah filter di atas.</p>
@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="card__body" style="padding:0;">
-            <div style="padding:12px 20px; background:#fffbeb; border-bottom:1px solid #fde68a; font-size:0.82rem; color:#92400e; display:flex; align-items:center; gap:8px;">
+            <div style="padding:12px 20px; background:var(--yellow-light); border-bottom:1px solid var(--border); font-size:0.82rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
                 <span>💡</span>
                 <span>Drag kartu untuk mengubah urutan. Pilih prasyarat pada setiap materi untuk sistem unlock otomatis. Klik <strong>Simpan Urutan</strong> setelah selesai.</span>
             </div>
@@ -76,7 +76,7 @@
             <div id="sortableList" style="padding:16px; display:flex; flex-direction:column; gap:10px;">
                 @foreach($lessons as $idx => $lesson)
                 <div class="path-item" data-id="{{ $lesson->id }}" data-urutan="{{ $idx }}"
-                     style="background:#fff; border:2px solid var(--border); border-radius:12px; padding:16px 18px; cursor:grab; transition:all 0.15s; display:flex; align-items:center; gap:14px; user-select:none;">
+                     style="background:var(--bg-card); border:2px solid var(--border); border-radius:12px; padding:16px 18px; cursor:grab; transition:all 0.15s; display:flex; align-items:center; gap:14px; user-select:none;">
 
                     {{-- Drag handle --}}
                     <div class="drag-handle" style="color:#cbd5e1; font-size:1.2rem; cursor:grab; flex-shrink:0;">⣿</div>

@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 
 @section('page-title', 'Library Media')
 
@@ -14,9 +14,8 @@
     </button>
 </div>
 
-{{-- Upload Modal --}}
 <div id="uploadModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:16px; padding:32px; width:100%; max-width:500px; box-shadow:0 20px 60px rgba(0,0,0,0.3); margin:20px;">
+    <div style="background:var(--bg-card); border-radius:16px; padding:32px; width:100%; max-width:500px; box-shadow:0 20px 60px rgba(0,0,0,0.3); margin:20px; border:1px solid var(--border);">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
             <h3 style="font-size:1.1rem; font-weight:700;">⬆️ Upload Aset Media</h3>
             <button onclick="document.getElementById('uploadModal').style.display='none'"
@@ -35,10 +34,10 @@
             <div class="form-group">
                 <label class="form-label">File <span style="color:var(--red);">*</span></label>
                 <div id="fileDropzone"
-                     style="border:2px dashed var(--border); border-radius:12px; padding:32px 20px; text-align:center; cursor:pointer; transition:all 0.2s; background:#fafafa;"
+                     style="border:2px dashed var(--border); border-radius:12px; padding:32px 20px; text-align:center; cursor:pointer; transition:all 0.2s; background:var(--bg-page);"
                      onclick="document.getElementById('mediaFile').click()"
                      ondragover="event.preventDefault(); this.style.borderColor='var(--teal)'; this.style.background='rgba(59,130,246,0.04)'"
-                     ondragleave="this.style.borderColor='var(--border)'; this.style.background='#fafafa'"
+                     ondragleave="this.style.borderColor='var(--border)'; this.style.background='var(--bg-page)'"
                      ondrop="handleFileDrop(event)">
                     <div id="dropzoneContent">
                         <div style="font-size:2.5rem; margin-bottom:10px;">📁</div>
@@ -92,7 +91,7 @@
 
 {{-- Media Grid --}}
 @if($assets->isEmpty())
-    <div style="text-align:center; padding:80px 20px; background:#fff; border-radius:12px; border:1px solid var(--border);">
+    <div style="text-align:center; padding:80px 20px; background:var(--bg-card); border-radius:12px; border:1px solid var(--border);">
         <div style="font-size:4rem; margin-bottom:16px;">📁</div>
         <h3 style="font-weight:700; margin-bottom:8px;">Library kosong</h3>
         <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:20px;">Upload aset media pertama untuk mulai mengisi library pembelajaran</p>
@@ -101,12 +100,12 @@
 @else
     <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;">
         @foreach($assets as $asset)
-        <div style="background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:all 0.2s; position:relative;"
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:all 0.2s; position:relative;"
              onmouseenter="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.10)'; this.style.transform='translateY(-2px)'"
              onmouseleave="this.style.boxShadow='none'; this.style.transform='none'">
 
             {{-- Preview area --}}
-            <div style="height:130px; background:#f8fafc; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+            <div style="height:130px; background:var(--bg-page); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; border-bottom:1px solid var(--border);">
                 @if($asset->tipe === 'image' || $asset->tipe === 'gif')
                     <img src="{{ asset($asset->url) }}" alt="{{ $asset->nama }}"
                          style="max-width:100%; max-height:130px; object-fit:cover;">
@@ -140,7 +139,7 @@
                 <div style="font-size:0.72rem; color:var(--text-muted);">{{ $asset->readable_size }}</div>
 
                 {{-- URL copy box --}}
-                <div style="margin-top:10px; background:#f1f5f9; border-radius:6px; padding:6px 8px; display:flex; align-items:center; gap:6px;">
+                <div style="margin-top:10px; background:var(--bg-page); border-radius:6px; padding:6px 8px; display:flex; align-items:center; gap:6px; border:1px solid var(--border);">
                     <code style="font-size:0.65rem; color:var(--text-secondary); flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">{{ asset($asset->url) }}</code>
                     <button onclick="copyUrl('{{ asset($asset->url) }}', this)"
                             style="background:none; border:none; cursor:pointer; font-size:0.9rem; padding:0; flex-shrink:0;"
@@ -191,7 +190,7 @@ function handleFileDrop(event) {
     input.files = event.dataTransfer.files;
     showFileInfo(input);
     event.target.style.borderColor = 'var(--border)';
-    event.target.style.background = '#fafafa';
+    event.target.style.background = 'var(--bg-page)';
 }
 
 function copyUrl(url, btn) {
