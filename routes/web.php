@@ -84,6 +84,10 @@ Route::middleware(['auth', 'role:parent'])->group(function () {
     Route::get('/play/tunarungu/{child}', [PlayController::class, 'tunarungu'])->name('play.tunarungu');
     Route::post('/play/quiz/submit', [PlayController::class, 'submitResult'])->name('play.quiz.submit');
     Route::post('/play/verify-password', [PlayController::class, 'verifyPassword'])->name('play.verify-password');
+
+    // ── Tunanetra AI Pipeline (Web, Session Auth) ─────────────────────────────
+    Route::post('/play/ai/tts',             [PlayController::class, 'tunanetraTts'])->name('play.ai.tts');
+    Route::post('/play/ai/evaluate-answer', [PlayController::class, 'tunanetraEvaluate'])->name('play.ai.evaluate');
 });
 
 // Fallback old routes for safety

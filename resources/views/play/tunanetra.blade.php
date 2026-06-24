@@ -88,51 +88,50 @@
                     </button>
                 </template>
 
-                <!-- Mic indicator -->
-                <div x-show="listening" class="mic-indicator" style="display: flex; align-items: center; justify-content: center; gap: 15px; margin: 10px 0; padding: 15px 30px; background: rgba(155, 114, 247, 0.15); border-radius: 50px; border: 1px solid rgba(155,114,247,0.3);">
-                    <div class="mic-icon" style="background: #9b72f7; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; animation: pulse 1.5s infinite;">🎤</div>
-                    <span style="font-size: 1.4rem; color: #d8c4ff; font-weight: bold;">Mendengarkan suaramu...</span>
+                <!-- Recording indicator -->
+                <div x-show="listening" style="display:flex;align-items:center;justify-content:center;gap:15px;margin:10px 0;padding:15px 30px;background:rgba(220,38,38,0.15);border-radius:50px;border:1px solid rgba(220,38,38,0.4);">
+                    <div style="background:#ef4444;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;color:white;animation:pulse 1.5s infinite;">🎙️</div>
+                    <span style="font-size:1.4rem;color:#fca5a5;font-weight:bold;">Merekam... lepas SPASI jika sudah!</span>
+                </div>
+                <!-- Processing indicator -->
+                <div x-show="processing" style="display:flex;align-items:center;justify-content:center;gap:15px;margin:10px 0;padding:15px 30px;background:rgba(245,158,11,0.12);border-radius:50px;border:1px solid rgba(245,158,11,0.3);">
+                    <div style="width:36px;height:36px;border:4px solid rgba(251,191,36,0.3);border-top-color:#fbbf24;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+                    <span style="font-size:1.3rem;color:#fcd34d;font-weight:bold;">Memproses jawaban...</span>
                 </div>
 
-                <p class="status-text" style="font-size: 1.5rem; color: #ffeb3b; font-weight: bold; text-align: center; min-height: 2.5rem;" x-text="quizStatus"></p>
+                <p class="status-text" style="font-size:1.5rem;color:#ffeb3b;font-weight:bold;text-align:center;min-height:2.5rem;" x-text="quizStatus"></p>
 
-                <!-- Fallback Multiple Choice Options (Visible for mentor/parent help) -->
-                <div x-show="!quizFinished" style="width: 100%; max-width: 500px; margin-top: 1rem;">
-                    <p style="font-size: 1.1rem; color: #b48fff; margin-bottom: 0.8rem; text-align: center; font-weight: bold;">
-                        💡 Pilihan Jawaban (Pendamping dapat mengklik tombol ini jika mikrofon bermasalah):
-                    </p>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%;">
+                <!-- Fallback Multiple Choice -->
+                <div x-show="!quizFinished" style="width:100%;max-width:500px;margin-top:1rem;">
+                    <p style="font-size:1.1rem;color:#b48fff;margin-bottom:0.8rem;text-align:center;font-weight:bold;">💡 Pilihan Jawaban (Pendamping dapat mengklik jika mikrofon bermasalah):</p>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:100%;">
                         <template x-for="(opt, idx) in currentQuestion.pilihan" :key="idx">
-                            <button
-                                class="btn"
-                                style="min-height: 60px; font-size: 1.2rem; background: rgba(155, 114, 247, 0.15); border: 2px solid rgba(155, 114, 247, 0.3); color: #fffffe; border-radius: 15px; padding: 10px; box-shadow: none;"
-                                @click="selectOptionFallback(opt)"
-                            >
+                            <button class="btn" style="min-height:60px;font-size:1.2rem;background:rgba(155,114,247,0.15);border:2px solid rgba(155,114,247,0.3);color:#fffffe;border-radius:15px;padding:10px;box-shadow:none;" @click="selectOptionFallback(opt)">
                                 <span x-text="opt"></span>
                             </button>
                         </template>
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;">
-                    <button
+                <div style="display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;">
+                    <!-- Push-to-talk button -->
+                    <button id="ptt-btn"
                         class="btn btn-repeat"
-                        x-show="!listening && !quizFinished"
-                        @click="startListeningSession()"
-                        aria-label="Ulangi mendengarkan jawaban suara"
-                        style="min-height: 80px;"
-                    >
-                        🎤 Jawab Lagi
-                    </button>
+                        x-show="!listening && !processing && !quizFinished"
+                        @mousedown="startRecording()"
+                        @mouseup="stopRecording()"
+                        @touchstart.prevent="startRecording()"
+                        @touchend.prevent="stopRecording()"
+                        aria-label="Tahan tombol ini atau tekan SPASI untuk menjawab dengan suara"
+                        style="min-height:80px;background:rgba(239,68,68,0.15);border-color:#ef4444;color:#fca5a5;"
+                    >🎙️ Tahan untuk Berbicara</button>
                     <button
                         class="btn btn-next"
                         x-show="quizFinished"
                         @click="nextSlide()"
                         aria-label="Lanjut"
-                        style="min-height: 80px;"
-                    >
-                        Lanjut ➡️
-                    </button>
+                        style="min-height:80px;"
+                    >Lanjut ➡️</button>
                 </div>
             </div>
         </template>
@@ -185,27 +184,28 @@
         </template>
     </div>
 
+    <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('audioWorldApp', () => ({
-                currentState: 'welcome', // welcome, narrator, quiz, victory
+                currentState: 'welcome',
                 childId: @json($child->id),
                 lessons: @json($lessons),
-                
                 lessonIndex: 0,
                 questionIndex: 0,
-                
                 currentLesson: null,
                 currentQuestion: null,
                 questionsList: [],
-                
                 narrationStatus: '',
                 quizStatus: '',
                 listening: false,
+                processing: false,
                 quizFinished: false,
                 activeAudio: null,
-
-                // Quiz session metrics
+                mediaRecorder: null,
+                audioChunks: [],
                 totalCorrect: 0,
                 totalQuestions: 0,
                 totalScore: 0,
@@ -213,28 +213,138 @@
                 correctCountForCurrentLesson: 0,
                 attemptsForCurrentQuestion: 0,
                 timerStart: null,
+                csrf: document.querySelector('meta[name="csrf-token"]')?.content ?? '',
 
                 init() {
                     this.speakTTS("Halo {{ $child->nama_panggilan ?? 'Petualang' }}, selamat datang di dunia audio Pinteria. Tekan tombol besar di tengah layar untuk memulai!");
-                },
-
-                speakTTS(msg) {
-                    return new Promise((resolve) => {
-                        const utter = new SpeechSynthesisUtterance(msg);
-                        utter.lang = 'id-ID';
-                        utter.rate = 0.85;
-                        utter.pitch = 1.2;
-                        utter.onend = resolve;
-                        utter.onerror = resolve;
-                        speechSynthesis.speak(utter);
+                    document.addEventListener('keydown', (e) => {
+                        if (e.code === 'Space' && this.currentState === 'quiz' && !this.listening && !this.processing && !this.quizFinished) {
+                            e.preventDefault();
+                            this.startRecording();
+                        }
+                    });
+                    document.addEventListener('keyup', (e) => {
+                        if (e.code === 'Space' && this.listening) {
+                            e.preventDefault();
+                            this.stopRecording();
+                        }
                     });
                 },
 
-                startAdventure() {
-                    if (this.lessons.length === 0) {
-                        this.speakTTS("Maaf, belum ada petualangan cerita untukmu hari ini. Silakan hubungi admin.");
-                        return;
+                /* ── TTS: Server-side (Google Cloud) → fallback Browser ── */
+                async speakTTS(text) {
+                    return new Promise(async (resolve) => {
+                        this.stopActiveAudio();
+                        try {
+                            const res = await fetch('{{ route("play.ai.tts") }}', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.csrf },
+                                body: JSON.stringify({ text }),
+                            });
+                            if (res.status === 200) {
+                                const blob = await res.blob();
+                                const url  = URL.createObjectURL(blob);
+                                this.activeAudio = new Audio(url);
+                                this.activeAudio.onended = () => { URL.revokeObjectURL(url); resolve(); };
+                                this.activeAudio.onerror = resolve;
+                                await this.activeAudio.play().catch(resolve);
+                                return;
+                            }
+                        } catch(e) { /* fallback */ }
+                        const u = new SpeechSynthesisUtterance(text);
+                        u.lang = 'id-ID'; u.rate = 0.85; u.pitch = 1.2;
+                        u.onend = resolve; u.onerror = resolve;
+                        speechSynthesis.speak(u);
+                    });
+                },
+
+                stopActiveAudio() {
+                    speechSynthesis.cancel();
+                    if (this.activeAudio) {
+                        try { this.activeAudio.pause(); this.activeAudio.currentTime = 0; } catch(e) {}
+                        this.activeAudio = null;
                     }
+                },
+
+                /* ── MediaRecorder Push-to-Talk ── */
+                async startRecording() {
+                    if (this.listening || this.processing) return;
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        this.audioChunks = [];
+                        const mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg';
+                        this.mediaRecorder = new MediaRecorder(stream, { mimeType: mime });
+                        this.mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) this.audioChunks.push(e.data); };
+                        this.mediaRecorder.onstop = async () => { stream.getTracks().forEach(t => t.stop()); await this.processAudioAnswer(); };
+                        this.mediaRecorder.start();
+                        this.listening = true;
+                        this.quizStatus = '🎙️ Mendengarkan... lepas SPASI jika sudah selesai!';
+                    } catch(err) {
+                        this.quizStatus = '⚠️ Akses mikrofon ditolak. Pendamping dapat memilih jawaban di bawah.';
+                        await this.speakTTS('Akses mikrofon ditolak. Pendamping dapat membantu memilih jawaban di bawah.');
+                    }
+                },
+
+                stopRecording() {
+                    this.listening = false;
+                    if (this.mediaRecorder && this.mediaRecorder.state === 'recording') this.mediaRecorder.stop();
+                },
+
+                /* ── Pipeline: Audio → Whisper → Llama → TTS feedback ── */
+                async processAudioAnswer() {
+                    if (!this.audioChunks.length) return;
+                    this.processing = true;
+                    this.quizStatus = '⏳ Memproses jawabanmu...';
+                    const mime = this.audioChunks[0].type || 'audio/webm';
+                    const ext  = mime.includes('ogg') ? 'ogg' : 'webm';
+                    const fd   = new FormData();
+                    fd.append('audio',          new Blob(this.audioChunks, { type: mime }), 'answer.' + ext);
+                    fd.append('correct_answer', this.currentQuestion.jawaban_benar);
+                    fd.append('question',       this.currentQuestion.pertanyaan);
+                    try {
+                        const res = await fetch('{{ route("play.ai.evaluate") }}', {
+                            method: 'POST',
+                            headers: { 'X-CSRF-TOKEN': this.csrf },
+                            body: fd,
+                        });
+                        this.processing = false;
+                        if (res.status === 422) {
+                            this.attemptsForCurrentQuestion++;
+                            if (this.attemptsForCurrentQuestion < 3) {
+                                this.quizStatus = 'Suara kurang jelas. Tekan SPASI untuk coba lagi!';
+                                await this.speakTTS('Suara kurang terdengar. Coba bicara lebih jelas dan lebih keras.');
+                            } else {
+                                await this.speakTTS('Waktu menjawab habis. Mari lanjut ke pertanyaan berikutnya.');
+                                this.submitQuizAnswer('Tidak terdeteksi', false);
+                            }
+                            return;
+                        }
+                        if (!res.ok) throw new Error(res.status);
+                        const data = await res.json();
+                        this.quizStatus = '💬 "' + data.transcript + '"';
+                        if (data.is_correct) {
+                            this.totalCorrect++;
+                            this.correctCountForCurrentLesson++;
+                            await this.speakTTS(data.feedback);
+                            this.submitQuizAnswer(data.transcript, true);
+                        } else {
+                            this.attemptsForCurrentQuestion++;
+                            if (this.attemptsForCurrentQuestion < 3) {
+                                await this.speakTTS(data.feedback + ' Tekan SPASI untuk coba lagi!');
+                            } else {
+                                await this.speakTTS(data.feedback);
+                                this.submitQuizAnswer(data.transcript, false);
+                            }
+                        }
+                    } catch(err) {
+                        this.processing = false;
+                        this.quizStatus = '⚠️ Koneksi bermasalah. Coba lagi.';
+                        await this.speakTTS('Terjadi kesalahan koneksi. Coba jawab lagi.');
+                    }
+                },
+
+                startAdventure() {
+                    if (!this.lessons.length) { this.speakTTS('Maaf, belum ada petualangan cerita untukmu hari ini.'); return; }
                     this.lessonIndex = 0;
                     this.currentState = 'narrator';
                     this.loadLesson();
@@ -245,83 +355,39 @@
                     this.questionsList = this.currentLesson.quiz_questions || [];
                     this.questionIndex = 0;
                     this.correctCountForCurrentLesson = 0;
-                    // Reset agar timer dari soal sebelumnya tidak bisa masuk ke lesson baru
                     this.quizFinished = false;
                     this.playNarration();
                 },
 
-                stopActiveAudio() {
-                    if (this.activeAudio) {
-                        try {
-                            this.activeAudio.pause();
-                            this.activeAudio.currentTime = 0;
-                        } catch(e) {}
-                    }
-                },
-
                 async replayQuestionAudio() {
                     if (!this.currentQuestion.audio_url) return;
-                    // Pause any active speech recognition while audio plays
-                    if (this.recognizer) {
-                        try { this.recognizer.abort(); } catch(e) {}
-                    }
                     this.stopActiveAudio();
                     this.quizStatus = '🎧 Memutar cerita...';
-                    try {
-                        this.activeAudio = new Audio(encodeURI(this.currentQuestion.audio_url));
-                        await new Promise((resolve) => {
-                            this.activeAudio.onended = resolve;
-                            this.activeAudio.onerror = resolve;
-                            this.activeAudio.play().catch(resolve);
-                        });
-                    } catch(e) {}
-                    this.quizStatus = 'Cerita selesai. Jawab pertanyaan di atas!';
-                    // Resume listening session after replay
-                    if (!this.quizFinished) {
-                        await this.speakTTS('Sekarang jawab pertanyaan tadi dengan suaramu!');
-                        this.startListeningSession();
-                    }
+                    this.activeAudio = new Audio(encodeURI(this.currentQuestion.audio_url));
+                    await new Promise((r) => { this.activeAudio.onended = r; this.activeAudio.onerror = r; this.activeAudio.play().catch(r); });
+                    this.quizStatus = 'Cerita selesai. Tekan SPASI untuk menjawab!';
+                    if (!this.quizFinished) { await this.speakTTS('Sekarang jawab pertanyaan tadi!'); }
                 },
-
 
                 async playNarration() {
                     this.stopActiveAudio();
                     this.narrationStatus = 'Memutar cerita...';
-                    
-                    // Check if lesson has a high-quality pre-recorded audio file
                     if (this.currentLesson.audio_story_url) {
                         try {
                             this.activeAudio = new Audio(encodeURI(this.currentLesson.audio_story_url));
-                            await new Promise((resolve, reject) => {
-                                this.activeAudio.onended = resolve;
-                                this.activeAudio.onerror = reject;
-                                this.activeAudio.play().catch(reject);
-                            });
-                        } catch (e) {
-                            console.error("Audio playback error, falling back to TTS:", e);
-                            await this.speakTTS(this.currentLesson.deskripsi);
-                        }
+                            await new Promise((res, rej) => { this.activeAudio.onended = res; this.activeAudio.onerror = rej; this.activeAudio.play().catch(rej); });
+                        } catch(e) { await this.speakTTS(this.currentLesson.deskripsi); }
                     } else {
-                        // Play sound effects if present
-                        if (this.currentLesson.efek_suara) {
-                            try {
-                                const audio = new Audio(encodeURI(this.currentLesson.efek_suara));
-                                await audio.play().catch(() => {});
-                            } catch (e) {}
-                        }
+                        if (this.currentLesson.efek_suara) { try { await new Audio(encodeURI(this.currentLesson.efek_suara)).play().catch(()=>{}); } catch(e){} }
                         await this.speakTTS(this.currentLesson.deskripsi);
                     }
-
-                    this.narrationStatus = 'Cerita selesai. Tekan kuis untuk mulai kuis!';
-                    await this.speakTTS("Cerita selesai. Silakan tekan tombol kuis di kanan bawah untuk mulai menjawab kuis!");
+                    this.narrationStatus = 'Cerita selesai. Tekan kuis untuk mulai!';
+                    await this.speakTTS('Cerita selesai. Silakan tekan tombol kuis di kanan bawah untuk mulai menjawab!');
                 },
 
                 startQuiz() {
                     this.stopActiveAudio();
-                    if (this.questionsList.length === 0) {
-                        this.nextLessonOrFinish();
-                        return;
-                    }
+                    if (!this.questionsList.length) { this.nextLessonOrFinish(); return; }
                     this.currentState = 'quiz';
                     this.loadQuestion();
                 },
@@ -331,197 +397,57 @@
                     this.attemptsForCurrentQuestion = 0;
                     this.quizFinished = false;
                     this.timerStart = Date.now();
-                    
                     this.quizStatus = 'Membacakan pertanyaan...';
                     await this.speakTTS(this.currentQuestion.pertanyaan);
-                    
-                    this.startListeningSession();
-                },
-
-                recognizer: null,
-
-                async startListeningSession() {
-                    // Stop any existing recognizer session before starting a new one
-                    if (this.recognizer) {
-                        try {
-                            this.recognizer.abort();
-                        } catch(e) {}
-                    }
-
-                    // Activate Mic Speech Recognition (hanya didukung Chrome & Edge)
-                    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    if (!SpeechRec) {
-                        this.quizStatus = '⚠️ Browser ini belum mendukung kuis suara. Gunakan Google Chrome atau Microsoft Edge untuk pengalaman terbaik!';
-                        await this.speakTTS('Browser ini tidak mendukung kuis suara. Silakan gunakan Google Chrome untuk pengalaman belajar terbaik.');
-                        this.quizFinished = true;
-                        return;
-                    }
-
-                    this.recognizer = new SpeechRec();
-                    this.recognizer.lang = 'id-ID';
-                    this.recognizer.interimResults = false;
-                    this.recognizer.maxAlternatives = 1;
-
-                    this.recognizer.onstart = () => {
-                        this.listening = true;
-                        this.quizStatus = 'Mendengarkan suaramu...';
-                    };
-
-                    this.recognizer.onend = () => {
-                        this.listening = false;
-                    };
-
-                    this.recognizer.onerror = async (e) => {
-                        console.error('Speech Recognition Error:', e.error);
-                        this.listening = false;
-                        
-                        if (e.error === 'not-allowed') {
-                            this.quizStatus = '⚠️ Akses mikrofon ditolak atau diblokir browser (perlu SSL/HTTPS/localhost).';
-                            await this.speakTTS("Akses mikrofon ditolak atau diblokir. Pendamping dapat membantu mengeklik pilihan jawaban di bawah.");
-                            return; // Stop retrying to prevent loops!
-                        }
-
-                        this.attemptsForCurrentQuestion++;
-                        if (this.attemptsForCurrentQuestion < 3) {
-                            this.quizStatus = 'Suara kurang terdengar. Mari coba lagi!';
-                            await this.speakTTS("Suara kurang terdengar. Coba katakan sekali lagi.");
-                            this.startListeningSession();
-                        } else {
-                            this.quizStatus = 'Kesalahan kuis. Lanjut ke soal berikutnya.';
-                            await this.speakTTS("Waktu menjawab habis. Mari lanjut ke pertanyaan berikutnya.");
-                            this.submitQuizAnswer(this.currentQuestion.pilihan[0] || 'Tidak ada', false);
-                        }
-                    };
-
-                    this.recognizer.onresult = async (e) => {
-                        const transcript = e.results[0][0].transcript;
-                        const cleanAns = this.normalize(transcript);
-                        const cleanCorrect = this.normalize(this.currentQuestion.jawaban_benar);
-
-                        if (cleanAns === cleanCorrect) {
-                            this.totalCorrect++;
-                            this.correctCountForCurrentLesson++;
-                            this.quizStatus = 'Hebat! Jawabanmu benar! 🎉';
-                            await this.speakTTS("Hebat! Jawabanmu benar!");
-                            this.submitQuizAnswer(transcript, true);
-                        } else {
-                            this.attemptsForCurrentQuestion++;
-                            if (this.attemptsForCurrentQuestion < 3) {
-                                this.quizStatus = `Jawabannya hampir benar! Coba lagi ya!`;
-                                await this.speakTTS("Hampir tepat. Coba katakan sekali lagi.");
-                                this.startListeningSession();
-                            } else {
-                                this.quizStatus = `Salah. Jawaban benar adalah ${this.currentQuestion.jawaban_benar}.`;
-                                await this.speakTTS(`Belum tepat. Jawaban yang benar adalah ${this.currentQuestion.jawaban_benar}.`);
-                                this.submitQuizAnswer(transcript, false);
-                            }
-                        }
-                    };
-
-                    try {
-                        this.recognizer.start();
-                    } catch(err) {
-                        console.error('Error starting recognition:', err);
-                    }
+                    this.quizStatus = '⬇️ Tekan SPASI atau tombol merah untuk menjawab!';
+                    await this.speakTTS('Tekan dan tahan tombol merah atau tombol SPASI, lalu ucapkan jawabanmu!');
                 },
 
                 async selectOptionFallback(opt) {
-                    if (this.recognizer) {
-                        try {
-                            this.recognizer.abort();
-                        } catch(e) {}
-                    }
-                    this.listening = false;
-
-                    const cleanAns = this.normalize(opt);
-                    const cleanCorrect = this.normalize(this.currentQuestion.jawaban_benar);
-
-                    if (cleanAns === cleanCorrect) {
+                    if (this.listening) this.stopRecording();
+                    if (this.processing) return;
+                    const norm = (s) => s.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+                    const ok   = norm(opt) === norm(this.currentQuestion.jawaban_benar);
+                    if (ok) {
                         this.totalCorrect++;
                         this.correctCountForCurrentLesson++;
                         this.quizStatus = 'Hebat! Jawabanmu benar! 🎉';
-                        await this.speakTTS("Hebat! Jawabanmu benar!");
+                        await this.speakTTS('Hebat! Jawabanmu benar!');
                         this.submitQuizAnswer(opt, true);
                     } else {
                         this.attemptsForCurrentQuestion++;
                         if (this.attemptsForCurrentQuestion < 3) {
-                            this.quizStatus = `Jawabannya hampir benar! Coba lagi ya!`;
-                            await this.speakTTS("Belum tepat. Mari coba pilih lagi.");
+                            this.quizStatus = 'Belum tepat. Coba pilih lagi!';
+                            await this.speakTTS('Belum tepat. Coba pilih lagi.');
                         } else {
-                            this.quizStatus = `Salah. Jawaban benar adalah ${this.currentQuestion.jawaban_benar}.`;
-                            await this.speakTTS(`Belum tepat. Jawaban yang benar adalah ${this.currentQuestion.jawaban_benar}.`);
+                            this.quizStatus = 'Jawaban benar: ' + this.currentQuestion.jawaban_benar;
+                            await this.speakTTS('Belum tepat. Jawaban yang benar adalah ' + this.currentQuestion.jawaban_benar);
                             this.submitQuizAnswer(opt, false);
                         }
                     }
                 },
 
-                normalize(text) {
-                    const numberMap = {
-                        '1':'satu','2':'dua','3':'tiga','4':'empat','5':'lima',
-                        '6':'enam','7':'tujuh','8':'delapan','9':'sembilan','10':'sepuluh'
-                    };
-                    let cleaned = text.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
-                    return numberMap[cleaned] || cleaned;
-                },
-
                 submitQuizAnswer(userAnswer, isCorrect) {
                     const elapsed = Math.round((Date.now() - this.timerStart) / 1000);
-                    // Skor bertahap: percobaan ke-1=100, ke-2=70, ke-3=40, gagal=0
-                    let calculatedScore = 0;
-                    if (isCorrect) {
-                        if (this.attemptsForCurrentQuestion <= 1) calculatedScore = 100;
-                        else if (this.attemptsForCurrentQuestion === 2) calculatedScore = 70;
-                        else calculatedScore = 40;
-                    }
+                    let skor = 0;
+                    if (isCorrect) { skor = this.attemptsForCurrentQuestion <= 1 ? 100 : this.attemptsForCurrentQuestion === 2 ? 70 : 40; }
                     this.totalQuestions++;
-
                     fetch('{{ route('play.quiz.submit') }}', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            child_id: this.childId,
-                            lesson_id: this.currentLesson.id,
-                            quiz_question_id: this.currentQuestion.id,
-                            jawaban_anak: userAnswer,
-                            benar: isCorrect ? 1 : 0,
-                            skor: calculatedScore,
-                            percobaan: this.attemptsForCurrentQuestion,
-                            waktu_detik: elapsed
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        // Gather earned badges if any
-                        if (data.new_badges && data.new_badges.length > 0) {
-                            this.earnedBadges = [...this.earnedBadges, ...data.new_badges];
-                        }
-                    });
-
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.csrf },
+                        body: JSON.stringify({ child_id: this.childId, lesson_id: this.currentLesson.id, quiz_question_id: this.currentQuestion.id, jawaban_anak: userAnswer, benar: isCorrect ? 1 : 0, skor, percobaan: this.attemptsForCurrentQuestion, waktu_detik: elapsed }),
+                    }).then(r => r.json()).then(d => { if (d.new_badges?.length) this.earnedBadges = [...this.earnedBadges, ...d.new_badges]; });
                     this.quizFinished = true;
-
-                    // Auto-advance ke soal berikutnya setelah jeda singkat
-                    const delay = isCorrect ? 2000 : 2800;
-                    setTimeout(() => {
-                        if (this.quizFinished) {
-                            this.nextSlide();
-                        }
-                    }, delay);
+                    setTimeout(() => { if (this.quizFinished) this.nextSlide(); }, isCorrect ? 2000 : 2800);
                 },
 
                 nextSlide() {
                     this.stopActiveAudio();
-                    // Guard: cegah double-advance dari timer otomatis + klik manual
                     if (!this.quizFinished && this.currentState === 'quiz') return;
-                    this.quizFinished = false; // reset agar timer duplikat tidak aktif lagi
+                    this.quizFinished = false;
                     this.questionIndex++;
-                    if (this.questionIndex < this.questionsList.length) {
-                        this.loadQuestion();
-                    } else {
-                        this.nextLessonOrFinish();
-                    }
+                    if (this.questionIndex < this.questionsList.length) this.loadQuestion();
+                    else this.nextLessonOrFinish();
                 },
 
                 nextLessonOrFinish() {
@@ -529,36 +455,21 @@
                     this.lessonIndex++;
                     if (this.lessonIndex < this.lessons.length) {
                         this.currentState = 'next_lesson_prompt';
-                        this.speakTTS("Pelajaran berikutnya sudah siap. Silakan tekan tombol besar di tengah layar untuk memulai cerita berikutnya.");
-                    } else {
-                        this.finishAdventure();
-                    }
+                        this.speakTTS('Pelajaran berikutnya sudah siap. Silakan tekan tombol besar untuk memulai cerita berikutnya.');
+                    } else { this.finishAdventure(); }
                 },
 
                 finishAdventure() {
                     this.stopActiveAudio();
                     this.currentState = 'victory';
                     this.totalScore = this.totalQuestions > 0 ? Math.round((this.totalCorrect / this.totalQuestions) * 100) : 0;
-                    
-                    const stars = this.getStarsCount();
-                    let endText = `Hore! Petualangan selesai! Kamu mendapatkan skor ${this.totalScore} dan mendapat ${stars} bintang!`;
-                    if (this.earnedBadges.length > 0) {
-                        endText += ` Kamu juga mendapatkan lencana baru!`;
-                    }
-                    this.speakTTS(endText);
+                    let txt = `Hore! Petualangan selesai! Kamu mendapatkan skor ${this.totalScore}!`;
+                    if (this.earnedBadges.length) txt += ' Kamu juga mendapatkan lencana baru!';
+                    this.speakTTS(txt);
                 },
 
-                getStarsCount() {
-                    if (this.totalScore >= 100) return 3;
-                    if (this.totalScore >= 70) return 2;
-                    if (this.totalScore >= 40) return 1;
-                    return 0;
-                },
-
-                getStarsEmoji() {
-                    const stars = this.getStarsCount();
-                    return '⭐'.repeat(stars) + '⏳'.repeat(Math.max(0, 3 - stars));
-                }
+                getStarsCount() { return this.totalScore >= 100 ? 3 : this.totalScore >= 70 ? 2 : this.totalScore >= 40 ? 1 : 0; },
+                getStarsEmoji() { const s = this.getStarsCount(); return '⭐'.repeat(s) + '⏳'.repeat(Math.max(0, 3 - s)); },
             }));
         });
     </script>

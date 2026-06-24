@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AIController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChildController;
 use App\Http\Controllers\Api\LessonController;
@@ -51,4 +52,24 @@ Route::middleware('auth:api')->group(function () {
     // Quiz
     Route::post('/quiz/answer',  [QuizController::class, 'submitAnswer']);
     Route::get('/quiz/results',  [QuizController::class, 'results']);
+
+    // ─── AI — Groq (Llama 3.3 + Whisper V3) & Replicate (SDXL) ───────────────
+    Route::prefix('ai')->group(function () {
+        // Llama 3.3 — Chat / Tanya-Jawab Edukatif
+        Route::post('/chat',        [AIController::class, 'chat']);
+        Route::post('/quiz-hint',   [AIController::class, 'quizHint']);
+
+        // Whisper V3 — Transkripsi Audio
+        Route::post('/transcribe',        [AIController::class, 'transcribe']);
+
+        // Google Cloud TTS — Text-to-Speech (Mode Tunanetra)
+        Route::post('/tts',               [AIController::class, 'tts']);
+
+        // Pipeline Tunanetra: Whisper → Llama (transkripsi + evaluasi dalam 1 request)
+        Route::post('/evaluate-answer',   [AIController::class, 'evaluateAnswer']);
+
+        // Stable Diffusion XL — Generasi Gambar (selalu background via queue)
+        Route::post('/generate-image',              [AIController::class, 'generateImage']);
+        Route::get('/image-status/{generationId}',  [AIController::class, 'imageStatus']);
+    });
 });

@@ -8,13 +8,17 @@ use App\Models\QuizQuestion;
 use App\Models\QuizResult;
 use App\Models\LessonCompletion;
 use App\Models\StudySession;
+use App\Services\AIService;
 use App\Services\GamificationService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PlayController extends Controller
 {
+    public function __construct(private readonly AIService $ai) {}
+
     /**
      * Get age category string from child birthdate.
      */
@@ -238,10 +242,91 @@ class PlayController extends Controller
         $newBadges = GamificationService::checkAndAwardBadges($child);
 
         return response()->json([
-            'message' => 'Hasil kuis disimpan successfully!',
-            'result' => $result,
-            'bintang' => $bintang,
+            'message'    => 'Hasil kuis disimpan successfully!',
+            'result'     => $result,
+            'bintang'    => $bintang,
             'new_badges' => $newBadges,
         ], 201);
+    }
+
+    // =========================================================================
+    // Tunanetra AI Pipeline — Web Routes (Session Auth + CSRF)
+    // =========================================================================
+
+    /**
+     * Text-to-Speech untuk Mode Tunanetra.
+     *
+     * Menerima teks, mengembalikan file MP3 binary dari Google Cloud TTS.
+     * Jika API key belum dikonfigurasi, mengembalikan 204 sehingga
+     * frontend fallback ke browser SpeechSynthesis.
+     *
+     * POST /play/ai/tts
+     * Body JSON: { "text": "..." }
+     */
+    public function tunanetraTts(Request $request)
+    {
+        $validated = $request->validate([
+            'text' => 'required|string|max:1000',
+        ]);
+
+        $mp3Binary = $this->ai->textToSpeech($validated['text']);
+
+        if ($mp3Binary === null) {
+            // Key belum ada → frontend gunakan browser TTS
+            return response()->noContent();
+        }
+
+        return response($mp3Binary, 200, [
+            'Content-Type'        => 'audio/mpeg',
+            'Content-Disposition' => 'inline; filename="tts.mp3"',
+            'Cache-Control'       => 'no-store',
+        ]);
+    }
+
+    /**
+     * Pipeline Tunanetra: Audio Anak → Whisper → Llama → Evaluasi.
+     *
+     * Menerima file audio, mentranskripsi dengan Whisper, menilai dengan Llama.
+     * Mengembalikan JSON dengan transcript, is_correct, dan feedback.
+     *
+     * POST /play/ai/evaluate-answer
+     * Form-data: audio (file), correct_answer (string), question (string)
+     */
+    public function tunanetraEvaluate(Request $request)
+    {
+        $validated = $request->validate([
+            'audio'          => 'required|file|mimes:mp3,wav,m4a,webm,ogg|max:25600',
+            'correct_answer' => 'required|string|max:500',
+            'question'       => 'required|string|max:1000',
+            'language'       => 'nullable|string|size:2',
+        ]);
+
+        // Simpan audio sementara
+        $path     = $validated['audio']->store('temp/audio', 'local');
+        $fullPath = Storage::disk('local')->path($path);
+
+        try {
+            $transcription = $this->ai->transcribeAudio($fullPath, $validated['language'] ?? 'id');
+        } finally {
+            Storage::disk('local')->delete($path);
+        }
+
+        if (!$transcription['success'] || empty($transcription['transcript'])) {
+            return response()->json([
+                'message' => 'Gagal mentranskripsi audio. Coba bicara lebih jelas.',
+            ], 422);
+        }
+
+        $evaluation = $this->ai->evaluateQuizAnswer(
+            $transcription['transcript'],
+            $validated['correct_answer'],
+            $validated['question']
+        );
+
+        return response()->json([
+            'transcript' => $transcription['transcript'],
+            'is_correct' => $evaluation['is_correct'],
+            'feedback'   => $evaluation['feedback'],
+        ]);
     }
 }
