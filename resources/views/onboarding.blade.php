@@ -390,7 +390,7 @@
                 <!-- Slide 1: Welcome -->
                 <div class="slide slide-1 active">
                     <div class="brand-logo" style="margin-bottom: 20px;">
-                        <img src="{{ asset('images/Logo_pinteria (1).png') }}" alt="Pinteria Logo" style="height: 90px; width: auto; object-fit: contain;">
+                        <img src="{{ asset('images/Logo Pinteria 2.1.png') }}" alt="Pinteria Logo" style="height: 90px; width: auto; object-fit: contain;">
                     </div>
                     <div class="illus-wrapper" style="height: 180px; margin-bottom: 20px;">
                         <div id="mascot-welcome" class="mascot-lottie" style="width: 180px; height: 180px;"></div>

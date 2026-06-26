@@ -254,7 +254,7 @@
 
     <div class="page-wrap">
         <div class="header-section">
-            <img src="{{ asset('images/Logo_pinteria (1).png') }}" alt="Pinteria Logo" style="height: 70px; width: auto; object-fit: contain; margin-bottom: 15px;">
+            <img src="{{ asset('images/Logo Pinteria 2.1.png') }}" alt="Pinteria Logo" style="height: 70px; width: auto; object-fit: contain; margin-bottom: 15px;">
             <h1>Pilih Mode Petualangan</h1>
             <p>
                 Halo <strong>{{ $child->nama_panggilan ?? 'Petualang' }}</strong>! 

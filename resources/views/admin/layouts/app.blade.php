@@ -39,7 +39,7 @@
 
         {{-- Logo --}}
         <a href="{{ route('admin.dashboard') }}" class="topnav__logo" style="display: flex; align-items: center; gap: 8px;">
-            <img src="{{ asset('images/Logo_pinteria (1).png') }}" alt="Pinteria Logo" style="height: 34px; width: auto; max-width: 140px; object-fit: contain;">
+            <img src="{{ asset('images/Logo Pinteria 2.1.png') }}" alt="Pinteria Logo" style="height: 34px; width: auto; max-width: 140px; object-fit: contain;">
             <div class="topnav__logo-text" style="display: flex; flex-direction: column; justify-content: center;">
                 <span class="topnav__logo-name">Pinteria</span>
                 <span class="topnav__logo-sub">Platform Inklusif</span>
